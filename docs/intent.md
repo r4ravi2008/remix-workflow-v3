@@ -31,7 +31,13 @@ YouTube URL + Genre/Style (user input)
 [Step 4] Generate Suno Meta-Tag Lyrics  →  saved to workspace/suno-lyrics.txt
         |
         v
-[Step 5] Upload & Generate Remix on Suno.ai
+[Step 5] Generate & Download Remix from Suno.ai  →  2 variations downloaded
+        |
+        v
+[Step 5.5] Select Remix Version  →  User chooses v1 or v2
+        |
+        v
+[Step 6] Generate Video with Remotion  →  Final music video
 ```
 
 ---
@@ -56,6 +62,11 @@ workspaces/
     <slug>-acapella.mp3       # Extracted vocals (Step 2)
     <slug>-lyrics.txt         # Raw Indic lyrics (Step 3)
     <slug>-suno-lyrics.txt    # Suno meta-tag formatted lyrics (Step 4)
+    <slug>-suno-style.txt    # Style block for Suno (Step 4)
+    <slug>-remix-v1.mp3      # Suno remix variation 1 (Step 5)
+    <slug>-remix-v2.mp3      # Suno remix variation 2 (Step 5)
+    <slug>-video.mp4         # Final music video (Step 6)
+    video/                   # Remotion project files (Step 6)
 ```
 
 **Actions:**
@@ -129,16 +140,30 @@ workspaces/
 
 ---
 
-### Step 5: Upload and Generate Remix on Suno.ai
+### Step 5: Generate & Download Remix from Suno.ai
 
 - Navigate to https://suno.com using Chrome DevTools MCP
-- Click the "Create" button to open the music creation interface
 - Upload `workspaces/<slug>/<slug>-acapella.mp3`
 - Paste the contents of `workspaces/<slug>/<slug>-suno-lyrics.txt` into the lyrics field
 - Fill in the Style field with the genre/style from `meta.json`
-- Submit and wait for Suno.ai to generate the remix
-- Retrieve and share the resulting remix link with the user
-- Optionally save the Suno remix URL back to `meta.json`
+- Submit and wait for Suno.ai to generate 2 remix variations
+- Download both variations as `<slug>-remix-v1.mp3` and `<slug>-remix-v2.mp3`
+- Save Suno URLs to `meta.json`
+
+### Step 5.5: Select Remix Version
+
+- User listens to both variations (v1 and v2)
+- User selects which version to use for video generation
+- Selection stored in conversation context for Step 6
+
+### Step 6: Generate Video with Remotion
+
+- Scaffold Remotion project using `tools/video-generator/init-video.js`
+- Copy selected audio file and lyrics into the video project
+- Apply theme based on genre (lofi, edm, hiphop, carnatic, pop, etc.)
+- Customize MusicVideo component with song title, genre, and visual theme
+- Render final video to `<slug>-video.mp4`
+- Update `meta.json` with video generation status
 
 ---
 
@@ -174,4 +199,5 @@ Step-by-step execution prompts for each stage are maintained in `/prompts/`:
 - `step-2-extract-acapella.md` — Extract acapella using Mel-Band RoFormer (UV tool), save to workspace
 - `step-3-find-lyrics.md` — Find and save Indic language lyrics to workspace
 - `step-4-generate-suno-lyrics.md` — Convert lyrics to Suno meta-tag format, save to workspace
-- `step-5-upload-to-suno.md` — Upload acapella and generate remix on Suno.ai
+- `step-5-upload-to-suno.md` — Generate and download both remix variations from Suno.ai
+- `step-6-generate-video.md` — Scaffold Remotion project and render final music video
