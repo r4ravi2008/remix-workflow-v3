@@ -1,8 +1,8 @@
-# Step 5: Upload Acapella & Generate Remix on Suno.ai
+# Step 5: Generate & Download Remix from Suno.ai
 
 ## Objective
 
-Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, paste the Suno meta-tag lyrics and style, then submit to generate the remix. Save the resulting song URL back to the workspace.
+Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, paste the Suno meta-tag lyrics and style, generate the remix (Suno creates 2 variations), then **download both audio files** to the workspace.
 
 ## Prerequisites
 
@@ -309,113 +309,176 @@ Tool: take_snapshot
 
 **Chrome DevTools MCP tool:** `wait_for`
 
-Suno.ai will generate 2 song variations. Watch for the generated songs to appear in the right-hand panel:
+Suno.ai will generate 2 song variations. Watch for the generated songs to appear:
 
 ```
 Tool: wait_for
-Text to watch for: ["Play", "Like", "Share", "Publish", slug title]
+Text to watch for: ["Play", "Download", "Like", "Share", "Publish", slug title]
 Timeout: 300000 (5 minutes)
 ```
 
-Periodically take a snapshot to check generation progress:
+---
+
+### 5.13 — Download Both Generated Songs
+
+Once generation is complete, Suno shows 2 song cards (Variation 1 and Variation 2). Each has a download button (usually three dots menu or download icon).
+
+**Download Song 1 (Variation 1):**
+
+**Chrome DevTools MCP tool:** `click`
+
+Click the three-dots menu or download icon on the first song card:
+
 ```
-Tool: take_snapshot
+Element: button with "Download" or three dots menu on first song card
 ```
 
-Generation states:
-- Queued: Spinner visible, no audio yet
-- Generating: Progress indicator on song cards
-- Complete: Play button active on generated song cards
+**Chrome DevTools MCP tool:** `click`
+
+Click the "Download" option from the dropdown:
+
+```
+Element: menu item or button labeled "Download" or "Download audio"
+```
+
+**Chrome DevTools MCP tool:** `wait_for`
+
+Wait for the download to start:
+
+```
+Tool: wait_for
+Text to watch for: ["downloaded", "complete"]
+Timeout: 60000 (1 minute)
+```
+
+**Download Song 2 (Variation 2):**
+
+Repeat the same steps for the second song card:
+
+```
+Tool: click
+Element: three dots menu or download button on second song card
+
+Tool: click
+Element: "Download" option
+
+Tool: wait_for
+Text: ["downloaded"]
+Timeout: 60000
+```
 
 ---
 
-### 5.13 — Retrieve the Remix URLs
+### 5.14 — Locate and Rename Downloaded Files
 
-**Chrome DevTools MCP tool:** `take_snapshot`
+**Bash tool:** Find the downloaded files (usually in `~/Downloads/`):
 
-Once generated, the song cards appear in the right panel. Each card has a link to the song's page.
-
-Read the snapshot and find the song URLs. They follow the pattern:
-```
-https://suno.com/song/<song-id>
+```bash
+ls -lt ~/Downloads/ | grep -E "\.mp3$|\.wav$" | head -10
 ```
 
-Click on the first generated song to open it:
+Look for files downloaded in the last few minutes with names like:
+- `suno_song_xxxx.mp3` or similar
+- Most recent MP3 files
+
+**Identify which file is which:**
+- Play or check file sizes/modification times to determine v1 vs v2
+
+**Bash tool:** Move files to workspace with proper naming:
+
+```bash
+# Replace <downloaded-v1> and <downloaded-v2> with actual filenames
+mv ~/Downloads/<downloaded-v1> workspaces/<slug>/<slug>-remix-v1.mp3
+mv ~/Downloads/<downloaded-v2> workspaces/<slug>/<slug>-remix-v2.mp3
+```
+
+---
+
+### 5.15 — Verify Downloads and Get URLs
+
+**Chrome DevTools MCP tool:** `click` and `evaluate_script`
+
+Click on the first generated song to open its detail page:
+
 ```
 Tool: click
-Element: link with the song title (slug name)
+Element: link or title of first generated song
 ```
 
-Copy the URL from the browser. You can also use:
+Get the URL:
 ```
 Tool: evaluate_script
 Function: () => window.location.href
 ```
 
+Repeat for the second song.
+
+**Bash tool:** Verify files exist:
+
+```bash
+ls -lh workspaces/<slug>/<slug>-remix-*.mp3
+```
+
 ---
 
-### 5.14 — Save Remix URLs to Workspace
+### 5.16 — Save Metadata
 
 **Write tool** (filesystem):
 
-Update `workspaces/<slug>/meta.json` with the generated song URLs and mark the step complete:
+Update `workspaces/<slug>/meta.json`:
 
 ```json
-"status": {
-  "mp3_downloaded": true,
-  "acapella_extracted": true,
-  "lyrics_saved": true,
-  "suno_lyrics_generated": true,
-  "remix_uploaded": true,
-  "suno_remix_url": "https://suno.com/song/<song-id-1>",
-  "suno_remix_url_2": "https://suno.com/song/<song-id-2>"
+{
+  "status": {
+    "mp3_downloaded": true,
+    "acapella_extracted": true,
+    "lyrics_saved": true,
+    "suno_lyrics_generated": true,
+    "remix_uploaded": true,
+    "remix_v1_downloaded": true,
+    "remix_v2_downloaded": true,
+    "suno_remix_url_v1": "https://suno.com/song/<song-id-1>",
+    "suno_remix_url_v2": "https://suno.com/song/<song-id-2>"
+  }
 }
 ```
 
 ---
 
-### 5.15 — Share Results with User
+### 5.17 — Present Options to User
 
-Print the final summary:
+Print the results and ask user to select which version to use:
 
 ```
-Remix generated successfully!
+Remix generation complete! Two variations created:
 
-Song 1: https://suno.com/song/<id-1>
-Song 2: https://suno.com/song/<id-2>
+📁 Files downloaded to workspace:
+   workspaces/<slug>/<slug>-remix-v1.mp3
+   workspaces/<slug>/<slug>-remix-v2.mp3
 
-Workspace: workspaces/<slug>/
-  original.mp3     — Downloaded YouTube audio
-  <slug>-acapella.mp3     — Extracted vocals
-  <slug>-lyrics.txt       — Original Indic lyrics
-  <slug>-suno-lyrics.txt  — Suno meta-tag formatted lyrics
-  <slug>-suno-style.txt   — Style block used
-  meta.json        — Session metadata and status
+🔗 Suno URLs:
+   Song 1: https://suno.com/song/<id-1>
+   Song 2: https://suno.com/song/<id-2>
+
+🎵 Listen to both files and tell me which version to use for the video:
+   - Reply "v1" to use <slug>-remix-v1.mp3
+   - Reply "v2" to use <slug>-remix-v2.mp3
+
+Once you select, I'll proceed to Step 6: Generate Video with Remotion.
 ```
 
 ---
 
 ## File Outputs
 
-| File | Path / Value |
+| File | Path |
 |---|---|
-| Updated metadata with remix URLs | `workspaces/<slug>/meta.json` |
-| Remix Song 1 | `https://suno.com/song/<id>` |
-| Remix Song 2 | `https://suno.com/song/<id>` |
+| Remix Variation 1 | `workspaces/<slug>/<slug>-remix-v1.mp3` |
+| Remix Variation 2 | `workspaces/<slug>/<slug>-remix-v2.mp3` |
+| Updated metadata | `workspaces/<slug>/meta.json` |
 
 ---
 
-## Error Handling
+## Next Step
 
-- **Audio upload not accepted:** Confirm the `<slug>-acapella.mp3` file is a valid MP3. Try converting to WAV if MP3 fails.
-- **Style field over 1000 characters:** Trim to core descriptors: `[<genre>, <mood>, <language>, <vocal type>]` and remove instrument/influence details.
-- **Lyrics not rendering in Indic script in Suno:** This is a display issue only — Suno still processes Unicode correctly. Proceed.
-- **Generation fails or times out:** Retry by clicking "Create song" again. Suno credits are deducted per generation attempt — confirm with user before retrying.
-- **Songs generated but don't match the style:** Try adjusting the Audio Influence slider (lower = less influence from acapella, more from style prompt) and regenerate.
-- **Login session expired:** Navigate to `https://suno.com` and log in before retrying from Step 5.1.
-
----
-
-## Pipeline Complete
-
-All steps are done. The workspace at `workspaces/<slug>/` contains all artifacts from this remix session. Share the Suno song links with the user.
+After user selects v1 or v2, proceed to **Step 6: Generate Video**.
