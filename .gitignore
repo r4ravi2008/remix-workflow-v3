@@ -1,0 +1,21 @@
+# OS artifacts
+.DS_Store
+
+# Python virtual environments
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.ruff_cache/
+
+# ML model weights (large binary files)
+*.ckpt
+*.pt
+*.pth
+*.safetensors
+
+# Workspace outputs (remix session artifacts)
+workspaces/
+
+# Workspace model caches
+.models/
