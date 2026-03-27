@@ -1,0 +1,1 @@
+{"name": "video-template","version": "1.0.0","private": true,"dependencies": {"remotion":"^4.0.0","@remotion/cli":"^4.0.0","@remotion/player":"^4.0.0","react":"^18.0.0","react-dom":"^18.0.0"}}
