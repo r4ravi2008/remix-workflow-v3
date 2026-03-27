@@ -14,6 +14,30 @@ Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, pa
 
 ---
 
+## Pre-Upload: Copyright Detection Pitch Shift
+
+Suno.ai may detect that an uploaded acapella matches an existing copyrighted work and block or flag the generation. If this happens, pitch-shift the acapella down by **2 semitones** before re-uploading.
+
+**When to apply:** If Suno rejects the upload or returns an error indicating the audio matches an existing work.
+
+**Command:**
+
+```bash
+SLUG="<slug>"
+ffmpeg -i "workspaces/$SLUG/${SLUG}-acapella.mp3" \
+  -af "rubberband=pitch=0.8909" \
+  -codec:a libmp3lame -b:a 192k \
+  "workspaces/$SLUG/${SLUG}-acapella-pitched.mp3" -y
+```
+
+**Options explained:**
+- `rubberband=pitch=0.8909` — shifts pitch down exactly 2 semitones (`2^(-2/12) ≈ 0.8909`) while preserving the original tempo
+- `-codec:a libmp3lame -b:a 192k` — re-encodes to MP3 at 192kbps
+
+**Then upload** `workspaces/<slug>/<slug>-acapella-pitched.mp3` instead of the original acapella in step 5.4.
+
+---
+
 ## Instructions
 
 ### 5.1 — Navigate to Suno Create Page
