@@ -1,0 +1,23 @@
+[project]
+name = "acapella-extractor"
+version = "0.1.0"
+description = "Extract acapella/vocals from audio using Mel-Band RoFormer (SOTA)"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = [
+    "audio-separator>=0.44.1",
+    "demucs>=4.0.1",
+    "onnxruntime>=1.24.4",
+    "torch>=2.11.0",
+    "torchaudio>=2.11.0",
+]
+
+[project.scripts]
+acapella-extract = "acapella_extractor.extract:main"
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0",
+    "black>=24.0",
+    "ruff>=0.3.0",
+]
