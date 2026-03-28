@@ -1,0 +1,43 @@
+{
+  "palette": {
+    "backgroundType": "gradient",
+    "backgroundStops": [
+      { "color": "#1a1a2e", "position": "0%" },
+      { "color": "#16213e", "position": "50%" },
+      { "color": "#0f3460", "position": "100%" }
+    ],
+    "backgroundAngle": 135,
+    "primaryColor": "#ffffff",
+    "secondaryColor": "#b2bec3",
+    "accentColor": "#74b9ff",
+    "highlightColor": "#ff7675",
+    "glowColor": "#74b9ff40"
+  },
+  "typography": {
+    "googleFont": "Space Grotesk",
+    "mainLyricSize": 80,
+    "mainLyricWeight": 700,
+    "mainLyricItalic": false,
+    "letterSpacing": "0.02em",
+    "textEffect": "glow",
+    "sectionBadgeStyle": "pill"
+  },
+  "layout": {
+    "variant": "center-stage",
+    "showSectionBadge": true,
+    "showNextLyric": true,
+    "showProgressBar": true,
+    "visualizerPosition": "bottom"
+  },
+  "motif": {
+    "primary": "particles",
+    "secondary": "noise-field",
+    "intensity": "medium"
+  },
+  "animation": {
+    "personality": "smooth",
+    "lyricEntrance": "slide-up",
+    "beatReactivity": 0.8
+  },
+  "seed": 12345
+}
