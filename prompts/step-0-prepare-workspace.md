@@ -31,17 +31,16 @@ Ask all questions upfront in a single prompt to the user before proceeding.
 
 ### 0.2 — Fetch the Video Title
 
-Navigate to the YouTube URL using Chrome DevTools MCP and extract the video title from the page.
+Use `uvx yt-dlp` to extract the video title from the YouTube URL without downloading:
 
-```
-Tool: navigate_page
-URL: <youtube_url>
+```bash
+uvx yt-dlp --get-title "<youtube_url>"
 ```
 
-Once the page loads, take a snapshot and read the page title (the `<title>` element or the heading). Strip the " - YouTube" suffix if present.
+Strip any trailing suffixes like `| Official Video`, `| Full Lyrical`, `| Audio`, etc. if present, keeping the core song/artist title.
 
 **Example:**
-- Raw page title: `Meesaala Pilla Full Lyrical | Chiranjeevi | Nayanthara | Bheems Music - YouTube`
+- Raw title: `Meesaala Pilla Full Lyrical | Chiranjeevi | Nayanthara | Bheems Music`
 - Cleaned title: `Meesaala Pilla Full Lyrical | Chiranjeevi | Nayanthara | Bheems Music`
 
 ---

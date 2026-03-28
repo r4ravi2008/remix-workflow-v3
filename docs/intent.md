@@ -37,7 +37,13 @@ YouTube URL + Genre/Style (user input)
 [Step 5.5] Select Remix Version  →  User chooses v1 or v2
         |
         v
-[Step 6] Generate Video with Remotion  →  Final music video
+[Step 6] Extract Acapella & Align Lyrics  →  lyrics-timestamps.json
+        |
+        v
+[Step 7] Fetch & Enhance Cover Art  →  <slug>-cover-art.jpg (SeedVR2 1080p)
+        |
+        v
+[Step 8] Generate Video with Remotion  →  Final music video
 ```
 
 ---
@@ -65,8 +71,11 @@ workspaces/
     <slug>-suno-style.txt    # Style block for Suno (Step 4)
     <slug>-remix-v1.mp3      # Suno remix variation 1 (Step 5)
     <slug>-remix-v2.mp3      # Suno remix variation 2 (Step 5)
-    <slug>-video.mp4         # Final music video (Step 6)
-    video/                   # Remotion project files (Step 6)
+    <slug>-remix-v1-acapella.mp3  # Vocals from remix, for alignment (Step 6)
+    lyrics-timestamps.json    # CTC-aligned word/line timestamps (Step 6)
+    <slug>-cover-art.jpg     # Enhanced cover art via SeedVR2 (Step 7)
+    <slug>-video.mp4         # Final music video (Step 8)
+    video/                   # Remotion project files (Step 8)
 ```
 
 **Actions:**
@@ -99,11 +108,9 @@ workspaces/
 
 ### Step 1: Download MP3
 
-- Navigate to https://v1.mp3now.com/ using Chrome DevTools MCP
-- Paste the YouTube URL into the converter input field
-- Click "Convert" and wait for processing to complete
-- Click "Download" to save the MP3 file
-- Move / rename the downloaded file to `workspaces/<slug>/<slug>-original.mp3`
+- Use `uvx yt-dlp` to download audio directly from the YouTube URL
+- Extract audio only (`-x`), convert to MP3 at best quality (`--audio-quality 0`)
+- Save directly to `workspaces/<slug>/<slug>-original.mp3`
 
 ---
 
@@ -156,12 +163,25 @@ workspaces/
 - User selects which version to use for video generation
 - Selection stored in conversation context for Step 6
 
-### Step 6: Generate Video with Remotion
+### Step 6: Extract Acapella & Align Lyrics
 
+- Extract vocals from the Suno remix using the Mel-Band RoFormer acapella extractor
+- Run CTC forced alignment against the Suno lyrics to produce word- and line-level timestamps
+- Verify alignment quality via terminal karaoke preview (±500ms first line, <3s end drift)
+- Save `lyrics-timestamps.json` and update `meta.json` with `acapella_aligned: true`
+
+### Step 7: Fetch & Enhance Cover Art
+
+- Search Google Images for the song's official cover art using Chrome DevTools MCP
+- Download the best result to `<slug>-cover-art-raw.jpg`
+- Upload to fal.ai and upscale to 1080p using SeedVR2 (`fal-ai/seedvr/upscale/image`)
+- Save enhanced image as `<slug>-cover-art.jpg` and update `meta.json`
+
+### Step 8: Generate Video with Remotion
+
+- Generate visual design configuration (`design.json`) from song metadata
 - Scaffold Remotion project using `tools/video-generator/init-video.js`
-- Copy selected audio file and lyrics into the video project
-- Apply theme based on genre (lofi, edm, hiphop, carnatic, pop, etc.)
-- Customize MusicVideo component with song title, genre, and visual theme
+- Copy audio, lyrics timestamps, cover art, and design config into the video project
 - Render final video to `<slug>-video.mp4`
 - Update `meta.json` with video generation status
 
@@ -195,9 +215,11 @@ workspaces/
 Step-by-step execution prompts for each stage are maintained in `/prompts/`:
 
 - `step-0-prepare-workspace.md` — Collect inputs, create workspace folder, write meta.json
-- `step-1-download-mp3.md` — Download MP3 from YouTube via MP3Now, save to workspace
+- `step-1-download-mp3.md` — Download MP3 from YouTube via yt-dlp, save to workspace
 - `step-2-extract-acapella.md` — Extract acapella using Mel-Band RoFormer (UV tool), save to workspace
 - `step-3-find-lyrics.md` — Find and save Indic language lyrics to workspace
 - `step-4-generate-suno-lyrics.md` — Convert lyrics to Suno meta-tag format, save to workspace
 - `step-5-upload-to-suno.md` — Generate and download both remix variations from Suno.ai
-- `step-6-generate-video.md` — Scaffold Remotion project and render final music video
+- `step-6-extract-acapella-and-align.md` — Extract remix acapella and generate CTC-aligned lyrics timestamps
+- `step-7-fetch-cover-art.md` — Fetch song cover art via Google Images and enhance to 1080p with SeedVR2
+- `step-8-generate-video.md` — Scaffold Remotion project and render final music video

@@ -488,7 +488,7 @@ Remix generation complete! Two variations created:
    - Reply "v1" to use <slug>-remix-v1.mp3
    - Reply "v2" to use <slug>-remix-v2.mp3
 
-Once you select, I'll proceed to Step 6: Generate Video with Remotion.
+Once you select, I'll proceed to Step 6: Extract Acapella & Align Lyrics.
 ```
 
 ---
@@ -505,4 +505,4 @@ Once you select, I'll proceed to Step 6: Generate Video with Remotion.
 
 ## Next Step
 
-After user selects v1 or v2, proceed to **Step 6: Generate Video**.
+After user selects v1 or v2, proceed to **Step 6: Extract Acapella & Align Lyrics**.

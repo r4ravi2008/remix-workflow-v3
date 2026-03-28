@@ -236,16 +236,24 @@ npx remotion render MusicVideo out/video.mp4 --frames=0-900
 
 ## Integration with Remix Pipeline
 
-This is automatically called as part of Step 6 (Generate Video):
+This is automatically called as part of Steps 6 and 7:
 
+**Step 6 (Extract Acapella & Align Lyrics):**
 1. Extract acapella from remix audio
 2. Generate lyrics timestamps via CTC alignment
-3. **Generate design.json from meta.json** ← NEW
-4. Scaffold video project with design
-5. Copy assets (audio, lyrics, design)
-6. Render video
+3. Verify alignment quality
 
-See `prompts/step-6-generate-video.md` for full workflow.
+**Step 7 (Fetch & Enhance Cover Art):**
+4. Search Google Images for cover art
+5. Enhance to 1080p via SeedVR2 on fal.ai
+
+**Step 8 (Generate Video):**
+6. **Generate design.json from meta.json**
+7. Scaffold video project with design
+8. Copy assets (audio, lyrics, cover art, design)
+9. Render video
+
+See `prompts/step-6-extract-acapella-and-align.md`, `prompts/step-7-fetch-cover-art.md`, and `prompts/step-8-generate-video.md` for full workflow.
 
 ## Migration from Old Themes
 

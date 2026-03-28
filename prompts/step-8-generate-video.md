@@ -1,4 +1,4 @@
-# Step 6: Generate Video with Remotion
+# Step 8: Generate Video with Remotion
 
 ## Objective
 
@@ -9,93 +9,30 @@ focuses on running the pipeline and wiring up the correct data.
 ## Key Requirements
 
 - **Full audio duration**: Video must match the complete audio length (not hardcoded)
-- **Lyrics synchronization**: Lyrics timed to audio via CTC forced alignment, not guessing
+- **Lyrics synchronization**: Uses the `lyrics-timestamps.json` produced in Step 6
+- **Cover art background**: Uses `<slug>-cover-art.jpg` produced in Step 7 — **mandatory**
 - **Section display**: Show current section (Verse, Chorus, etc.) prominently
 - **Indic script support**: Telugu/Hindi/Tamil text renders correctly via system fonts
 
 ## Prerequisites
 
-- Remix audio exists: `workspaces/<slug>/<slug>-remix-v1.mp3`
+- `workspaces/<slug>/<slug>-remix-v1.mp3` exists
 - `workspaces/<slug>/<slug>-suno-lyrics.txt` exists
+- `workspaces/<slug>/lyrics-timestamps.json` exists (produced in Step 6)
 - `workspaces/<slug>/meta.json` exists with `genre`, `slug`, `language`
+- `workspaces/<slug>/<slug>-cover-art.jpg` exists (produced in Step 7, **required**)
 
 ---
 
 ## Instructions
 
-### 6.1 — Read Workspace Files
+### 8.1 — Read Workspace Files
 
 Read `meta.json` and extract: `songTitle`, `genre`, `language`, `slug`.
 
 ---
 
-### 6.2 — Extract Acapella from Remix Audio
-
-Run the acapella extractor on the Suno remix (not the original) to get clean vocals for alignment:
-
-```bash
-cd tools/acapella-extractor
-uv run python src/acapella_extractor/extract.py \
-  ../../workspaces/<slug>/<slug>-remix-v1.mp3 \
-  --output-dir ../../workspaces/<slug>/
-```
-
-The separator writes a WAV file. Convert it to MP3 and give it the slug-prefixed name:
-
-```bash
-ffmpeg -i "workspaces/<slug>/<slug>-remix-v1_(vocals)_mel_band_roformer_kim_ft_unwa.wav" \
-  -codec:a libmp3lame -q:a 2 \
-  "workspaces/<slug>/<slug>-remix-v1-acapella.mp3"
-rm "workspaces/<slug>/<slug>-remix-v1_(vocals)_mel_band_roformer_kim_ft_unwa.wav"
-```
-
-Output: `workspaces/<slug>/<slug>-remix-v1-acapella.mp3`
-
-**Note:** This is separate from the Step 2 acapella (extracted from the original YouTube
-download). This one is from the Suno remix and is used only for lyrics alignment.
-
----
-
-### 6.3 — Generate Lyrics Timestamps
-
-Run the CTC forced aligner against the acapella:
-
-```bash
-cd tools/acapella-extractor
-uv run python align_lyrics.py \
-  --audio ../../workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
-  --lyrics ../../workspaces/<slug>/<slug>-suno-lyrics.txt \
-  --output ../../workspaces/<slug>/lyrics-timestamps.json \
-  --language <iso-639-3-code>
-```
-
-Use `tel` for Telugu, `hin` for Hindi, `tam` for Tamil. The script strips section headers and
-stage directions automatically, aligns at word level (~20ms resolution), and groups results
-back into lyric lines.
-
----
-
-### 6.4 — Verify Alignment
-
-Print a terminal karaoke preview and confirm timing is correct before rendering:
-
-```bash
-cd tools/acapella-extractor
-uv run python verify_lyrics.py ../../workspaces/<slug>/lyrics-timestamps.json
-```
-
-Check:
-- First vocal line appears within ±500ms of its actual onset
-- Chorus lines align within ±1s
-- No lines appear during instrumental sections
-- Total drift at end < 3s
-
-Do not proceed to render until these pass. If alignment is off, check acapella quality and
-re-run `align_lyrics.py`.
-
----
-
-### 6.4.5 — Generate Visual Design Configuration
+### 8.2 — Generate Visual Design Configuration
 
 Generate a unique visual design for this song based on its metadata:
 
@@ -116,7 +53,7 @@ the same visual identity.
 
 ---
 
-### 6.5 — Scaffold Remotion Project
+### 8.3 — Scaffold Remotion Project
 
 The `init-video.js` scaffolder copies the template, detects the audio duration from the remix
 file via ffprobe, injects song title and genre into `Root.tsx`, and copies the design.json
@@ -132,18 +69,22 @@ configuration.
 
 ---
 
-### 6.6 — Copy Assets to Video Project
+### 8.4 — Copy Assets to Video Project
 
 ```bash
 cp workspaces/<slug>/<slug>-remix-v1.mp3          workspaces/<slug>/video/public/audio.mp3
 cp workspaces/<slug>/lyrics-timestamps.json        workspaces/<slug>/video/public/
 cp workspaces/<slug>/design.json                   workspaces/<slug>/video/public/
 cp workspaces/<slug>/<slug>-suno-lyrics.txt        workspaces/<slug>/video/public/suno-lyrics.txt
+cp workspaces/<slug>/<slug>-cover-art.jpg          workspaces/<slug>/video/public/cover-art.jpg
 ```
+
+The file **must** be named `cover-art.jpg` — that is the exact filename the `CoverArtLayout`
+template looks for via `staticFile('cover-art.jpg')`.
 
 ---
 
-### 6.7 — Install Dependencies and Render
+### 8.5 — Install Dependencies and Render
 
 ```bash
 cd workspaces/<slug>/video
@@ -155,7 +96,7 @@ Rendering takes 1–2 minutes for a typical 3–4 minute song.
 
 ---
 
-### 6.8 — Copy Output to Workspace
+### 8.6 — Copy Output to Workspace
 
 ```bash
 cp workspaces/<slug>/video/out/video.mp4 workspaces/<slug>/<slug>-video.mp4
@@ -163,7 +104,7 @@ cp workspaces/<slug>/video/out/video.mp4 workspaces/<slug>/<slug>-video.mp4
 
 ---
 
-### 6.9 — Update Metadata
+### 8.7 — Update Metadata
 
 Update `workspaces/<slug>/meta.json` to record the video output:
 
@@ -172,8 +113,6 @@ Update `workspaces/<slug>/meta.json` to record the video output:
   "status": { "video_generated": true },
   "outputs": {
     "final_video": "workspaces/<slug>/<slug>-video.mp4",
-    "remix_acapella": "workspaces/<slug>/<slug>-remix-v1-acapella.mp3",
-    "lyrics_timestamps": "workspaces/<slug>/lyrics-timestamps.json",
     "design_config": "workspaces/<slug>/design.json"
   }
 }
@@ -181,7 +120,7 @@ Update `workspaces/<slug>/meta.json` to record the video output:
 
 ---
 
-### 6.10 — Present Final Results
+### 8.8 — Present Final Results
 
 ```
 Video generation complete!
@@ -192,6 +131,7 @@ Outputs in workspaces/<slug>/:
    <slug>-remix-v1-acapella.mp3      — Vocals extracted from remix
    lyrics-timestamps.json            — Word+line timestamps (CTC aligned)
    design.json                       — LLM-generated visual design configuration
+   <slug>-cover-art.jpg              — Enhanced cover art (SeedVR2 1080p)
    video/                            — Remotion project
 
 Duration: <duration>s  |  Lyrics: <n> lines synced  |  Layout: <layout>  |  Motif: <motif>
@@ -209,10 +149,16 @@ The video template in `tools/video-generator/template/` is self-contained:
 - **`MusicVideo.tsx`** — handles all synced-lyrics rendering with audio-reactive visuals:
   - Uses `useAudioData()` from `@remotion/media-utils` to get real frequency data
   - Loads `design.json` for layout, colors, fonts, and visual motifs
-  - Renders one of 5 layout variants (center-stage, full-bleed, minimal, sidebar, stacked)
+  - Renders one of 6 layout variants; default is `cover-art`
   - Displays audio-reactive visual motifs (particles, geometric-burst, aurora, waveform-rings, noise-field)
   - Uses Remotion's `delayRender` / `continueRender` for async data loading
   - Finds the active lyric line and section for the current timestamp
+
+- **`CoverArtLayout.tsx`** (default layout) — two-panel layout: 75% / 25%:
+  - **Left 75%**: renders `public/cover-art.jpg` full-bleed via Remotion's `<Img>` component,
+    with a right-edge dark gradient overlay and song title + genre badge overlaid at bottom-left
+  - **Right 25%**: scrolling karaoke lyrics + frequency bars visualizer + progress bar
+  - Falls back gracefully to a ♪ placeholder if `cover-art.jpg` fails to load
 
 - **`design.json`** — LLM-generated design configuration with palette, typography, layout,
   animation personality, and visual motif selection. Generated by `generate-design.js`.
@@ -226,10 +172,9 @@ the template if the project gets into a broken state.
 
 | Problem | Fix |
 |---|---|
-| `ModuleNotFoundError: acapella_extractor` | Use `src/acapella_extractor/extract.py` directly, not `-m` |
-| Acapella output is WAV | Convert with ffmpeg as shown in step 6.2 |
+| Cover art not showing (left panel blank) | Ensure `cover-art.jpg` is in `video/public/` with that exact filename |
+| Cover art distorted / wrong crop | SeedVR2 output is already 1080p — `objectFit: cover` handles any ratio |
 | Lyrics not syncing | Check `lyrics-timestamps.json` is in `video/public/` |
 | No lyrics visible in rendered video | Missing `delayRender` — re-scaffold from template |
 | Telugu text garbled | Font issue — system-ui fallback handles it; no fix needed |
 | ffprobe not found | `brew install ffmpeg` |
-| Alignment too far off | Check acapella quality; try `--language` code for a closer MMS checkpoint |
