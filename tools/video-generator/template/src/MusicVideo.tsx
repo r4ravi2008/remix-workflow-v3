@@ -1,23 +1,39 @@
-import React, { useEffect, useState, useMemo, useCallback } from 'react';
+import React, { useEffect, useState, useMemo, useCallback, useRef } from 'react';
 import {
   AbsoluteFill,
   Audio,
   staticFile,
   useVideoConfig,
   useCurrentFrame,
-  interpolate,
-  Easing,
   delayRender,
   continueRender,
 } from 'remotion';
+import { useAudioData, visualizeAudio } from '@remotion/media-utils';
+import { loadDesign, getBackgroundStyle, getFontFamily, DesignConfig } from './utils/designLoader';
+import {
+  computeVisualizerBars,
+  attackReleaseSmooth,
+  extractBandEnergies,
+  BandEnergies,
+} from './utils/audioUtils';
+import {
+  CenterStageLayout,
+  CoverArtLayout,
+  FullBleedLayout,
+  MinimalLayout,
+  SidebarLayout,
+  StackedLayout,
+} from './layouts';
 
-interface Word {
+// ─── Data types ──────────────────────────────────────────────────────────────
+
+export interface Word {
   text: string;
   start_time: number;
   end_time: number;
 }
 
-interface LyricLine {
+export interface LyricLine {
   text: string;
   start_time: number;
   end_time: number;
@@ -25,14 +41,14 @@ interface LyricLine {
   words?: Word[];
 }
 
-interface Section {
+export interface Section {
   name: string;
   start_time: number;
   end_time: number;
   lines: string[];
 }
 
-interface LyricsData {
+export interface LyricsData {
   audio_duration: number;
   sections: Section[];
   lyrics: LyricLine[];
@@ -46,66 +62,11 @@ interface MusicVideoProps {
   genre?: string;
 }
 
-const themes: Record<string, {
-  background: string;
-  primaryColor: string;
-  secondaryColor?: string;
-  accentColor: string;
-  highlightColor?: string;
-  sectionBackground?: string;
-}> = {
-  lofi: {
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)',
-    primaryColor: '#e8e8e8',
-    secondaryColor: '#b8b8b8',
-    accentColor: '#74b9ff',
-    highlightColor: '#ff7675',
-    sectionBackground: 'rgba(116, 185, 255, 0.15)',
-  },
-  chill: {
-    background: 'linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%)',
-    primaryColor: '#2d3436',
-    accentColor: '#ff8b94',
-    highlightColor: '#e17055',
-    sectionBackground: 'rgba(255, 139, 148, 0.15)',
-  },
-  edm: {
-    background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%)',
-    primaryColor: '#ffffff',
-    accentColor: '#00d2ff',
-    highlightColor: '#a29bfe',
-    sectionBackground: 'rgba(0, 210, 255, 0.1)',
-  },
-  hiphop: {
-    background: 'linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%)',
-    primaryColor: '#f1f1f1',
-    accentColor: '#ff6b35',
-    highlightColor: '#fdcb6e',
-    sectionBackground: 'rgba(255, 107, 53, 0.1)',
-  },
-  carnatic: {
-    background: 'linear-gradient(135deg, #c9a961 0%, #8b7355 100%)',
-    primaryColor: '#2c2416',
-    accentColor: '#d4af37',
-    highlightColor: '#8b4513',
-    sectionBackground: 'rgba(212, 175, 55, 0.15)',
-  },
-  pop: {
-    background: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%)',
-    primaryColor: '#2d3436',
-    accentColor: '#ff9ff3',
-    highlightColor: '#6c5ce7',
-    sectionBackground: 'rgba(255, 159, 243, 0.15)',
-  },
-  default: {
-    background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',
-    primaryColor: '#ffffff',
-    secondaryColor: '#b2bec3',
-    accentColor: '#74b9ff',
-    highlightColor: '#ff7675',
-    sectionBackground: 'rgba(116, 185, 255, 0.15)',
-  },
-};
+// ─── Constants ───────────────────────────────────────────────────────────────
+
+const NUM_BARS = 24; // total bars, upward-only (no mirror)
+
+// ─── Component ───────────────────────────────────────────────────────────────
 
 export const MusicVideo: React.FC<MusicVideoProps> = ({
   songTitle,
@@ -118,43 +79,103 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
   const frame = useCurrentFrame();
   const currentTime = frame / fps;
 
-  // delayRender pauses each frame capture until data is loaded.
-  // Without this, async fetch completes after the frame is captured → no lyrics rendered.
-  const [handle] = useState(() => delayRender('Loading lyrics'));
+  // Async loading handles
+  const [lyricsHandle] = useState(() => delayRender('Loading lyrics'));
+  const [designHandle] = useState(() => delayRender('Loading design'));
   const [lyricsData, setLyricsData] = useState<LyricsData | null>(null);
+  const [design, setDesign] = useState<DesignConfig | null>(null);
 
-  const currentTheme = themes[theme] || themes.default;
+  // Audio data
+  const audioData = useAudioData(staticFile(audioSrc));
 
+  // ── Visualizer bar heights (per-bar attack/release smoothing) ──────────
+  const prevBarHeights = useRef<number[] | null>(null);
+
+  const barHeights: number[] = useMemo(() => {
+    if (!audioData) return Array(NUM_BARS).fill(0);
+
+    const raw = visualizeAudio({
+      frame, fps, audioData, numberOfSamples: 64, smoothing: false,
+    });
+
+    // dB + A-weight + log-bin → 24 bars, no mirroring
+    const bars = computeVisualizerBars(raw, NUM_BARS);
+
+    // Heavy smoothing: slow attack (0.5), very slow release (0.992 ≈ 5× slower than before)
+    const smoothed = attackReleaseSmooth(bars, prevBarHeights.current, 0.5, 0.992);
+    prevBarHeights.current = smoothed;
+
+    return smoothed;
+  }, [audioData, frame, fps]);
+
+  // ── Band energies (for motifs + background pulse) ──────────────────────
+  const prevBands = useRef<number[] | null>(null);
+
+  const bandEnergies: BandEnergies = useMemo(() => {
+    if (!audioData) return { bass: 0, lowMid: 0, highMid: 0, highs: 0, overall: 0 };
+
+    const raw = visualizeAudio({
+      frame, fps, audioData, numberOfSamples: 64, smoothing: false,
+    });
+    const bands = extractBandEnergies(raw);
+    const arr = [bands.bass, bands.lowMid, bands.highMid, bands.highs, bands.overall];
+    const smoothed = attackReleaseSmooth(arr, prevBands.current, 0.12, 0.94);
+    prevBands.current = smoothed;
+
+    return {
+      bass: smoothed[0], lowMid: smoothed[1], highMid: smoothed[2],
+      highs: smoothed[3], overall: smoothed[4],
+    };
+  }, [audioData, frame, fps]);
+
+  // ── Raw frequency data for motif components ────────────────────────────
+  const prevFreq = useRef<number[] | null>(null);
+  const frequencyData = useMemo(() => {
+    if (!audioData) return Array(64).fill(0);
+    const raw = visualizeAudio({
+      frame, fps, audioData, numberOfSamples: 64, smoothing: false,
+    });
+    const smoothed = raw.map((v, i) => {
+      const prev = prevFreq.current?.[i] ?? v;
+      return prev * 0.7 + v * 0.3;
+    });
+    prevFreq.current = smoothed;
+    return smoothed;
+  }, [audioData, frame, fps]);
+
+  // ── Data loading ───────────────────────────────────────────────────────
   const loadLyrics = useCallback(async () => {
     try {
-      const response = await fetch(staticFile(lyricsDataSrc));
-      const data = await response.json();
-      setLyricsData(data);
-    } catch (error) {
-      console.error('Failed to load lyrics:', error);
+      const res = await fetch(staticFile(lyricsDataSrc));
+      setLyricsData(await res.json());
+    } catch (e) {
+      console.error('Failed to load lyrics:', e);
     } finally {
-      continueRender(handle);
+      continueRender(lyricsHandle);
     }
-  }, [handle, lyricsDataSrc]);
+  }, [lyricsHandle, lyricsDataSrc]);
 
-  useEffect(() => { loadLyrics(); }, [loadLyrics]);
+  const loadDesignConfig = useCallback(async () => {
+    setDesign(await loadDesign(staticFile));
+    continueRender(designHandle);
+  }, [designHandle]);
 
-  // Active lyric line
+  useEffect(() => { loadLyrics(); loadDesignConfig(); }, [loadLyrics, loadDesignConfig]);
+
+  // ── Lyrics state ───────────────────────────────────────────────────────
   const currentLyric = useMemo(() => {
     if (!lyricsData) return null;
     return lyricsData.lyrics.find(
-      line => currentTime >= line.start_time && currentTime < line.end_time
+      l => currentTime >= l.start_time && currentTime < l.end_time
     ) ?? null;
   }, [lyricsData, currentTime]);
 
-  // Next lyric (preview)
   const nextLyric = useMemo(() => {
     if (!lyricsData || !currentLyric) return null;
     const idx = lyricsData.lyrics.indexOf(currentLyric);
     return lyricsData.lyrics[idx + 1] ?? null;
   }, [lyricsData, currentLyric]);
 
-  // Active section
   const currentSection = useMemo(() => {
     if (!lyricsData) return null;
     return lyricsData.sections.find(
@@ -162,215 +183,64 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
     ) ?? null;
   }, [lyricsData, currentTime]);
 
-  // Fade-in animation for each new lyric line
-  const lineProgress = useMemo(() => {
-    if (!currentLyric) return 0;
-    const duration = currentLyric.end_time - currentLyric.start_time;
-    return Math.min((currentTime - currentLyric.start_time) / duration, 1);
-  }, [currentLyric, currentTime]);
-
-  const fadeIn = interpolate(lineProgress, [0, 0.15], [0, 1], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-
-  // Ambient pulse
-  const pulseOpacity = interpolate(frame % 60, [0, 30, 60], [0.3, 0.5, 0.3], {
-    extrapolateLeft: 'clamp',
-    extrapolateRight: 'clamp',
-  });
-
-  // Overall progress
   const overallProgress = lyricsData
     ? currentTime / lyricsData.audio_duration
     : frame / durationInFrames;
 
+  const pulseOpacity = 0.3 + bandEnergies.bass * 0.4;
+
+  // ── Layout rendering ──────────────────────────────────────────────────
+  const renderLayout = () => {
+    const props = {
+      design: design!,
+      frequencyData,
+      bandEnergies,
+      barHeights,
+      lyricsData,
+      currentLyric,
+      nextLyric,
+      currentSection,
+      currentTime,
+      overallProgress,
+      songTitle,
+      genre,
+    };
+
+    switch (design?.layout.variant || 'cover-art') {
+      case 'center-stage': return <CenterStageLayout {...props} />;
+      case 'full-bleed':   return <FullBleedLayout {...props} />;
+      case 'minimal':      return <MinimalLayout {...props} />;
+      case 'sidebar':      return <SidebarLayout {...props} />;
+      case 'stacked':      return <StackedLayout {...props} />;
+      default:             return <CoverArtLayout {...props} />;
+    }
+  };
+
+  const backgroundStyle = useMemo(() => {
+    if (!design) return 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)';
+    return getBackgroundStyle(design.palette);
+  }, [design]);
+
+  const fontFamily = useMemo(() => {
+    if (!design) return '"Noto Sans Telugu", "Noto Sans", system-ui, -apple-system, sans-serif';
+    return getFontFamily(design.typography.googleFont);
+  }, [design]);
+
   return (
-    <AbsoluteFill
-      style={{
-        background: currentTheme.background,
-        fontFamily: '"Noto Sans Telugu", "Noto Sans", system-ui, -apple-system, sans-serif',
-        overflow: 'hidden',
-      }}
-    >
+    <AbsoluteFill style={{ background: backgroundStyle, fontFamily, overflow: 'hidden' }}>
       <Audio src={staticFile(audioSrc)} />
 
-      {/* Ambient background glow */}
-      <div
-        style={{
-          position: 'absolute',
-          width: '100%',
-          height: '100%',
-          background: `radial-gradient(ellipse at 50% 30%, ${currentTheme.accentColor}${Math.round(pulseOpacity * 255).toString(16).padStart(2, '0')} 0%, transparent 60%)`,
-          opacity: 0.6,
-        }}
-      />
-
-      {/* Main layout */}
-      <div
-        style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '60px 80px',
-          boxSizing: 'border-box',
-          zIndex: 1,
-        }}
-      >
-        {/* Section badge */}
+      {design && (
         <div
           style={{
-            padding: '12px 32px',
-            background: currentTheme.sectionBackground ?? 'rgba(255,255,255,0.1)',
-            borderRadius: 100,
-            border: `2px solid ${currentTheme.accentColor}40`,
-            backdropFilter: 'blur(10px)',
+            position: 'absolute', width: '100%', height: '100%',
+            background: `radial-gradient(ellipse at 50% 30%, ${design.palette.glowColor}${Math.round(pulseOpacity * 255).toString(16).padStart(2, '0')} 0%, transparent 60%)`,
+            opacity: 0.6, zIndex: 0,
           }}
-        >
-          <span
-            style={{
-              color: currentTheme.accentColor,
-              fontSize: 18,
-              fontWeight: 600,
-              textTransform: 'uppercase',
-              letterSpacing: '0.15em',
-            }}
-          >
-            {currentSection ? currentSection.name : '♪'}
-          </span>
-        </div>
+        />
+      )}
 
-        {/* Lyrics display */}
-        <div
-          style={{
-            flex: 1,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            justifyContent: 'center',
-            width: '100%',
-            maxWidth: 1200,
-          }}
-        >
-          {/* Active line */}
-          <div
-            style={{
-              textAlign: 'center',
-              opacity: fadeIn,
-              transform: `translateY(${(1 - fadeIn) * 20}px)`,
-            }}
-          >
-            <h1
-              style={{
-                color: currentTheme.highlightColor ?? currentTheme.accentColor,
-                fontSize: 80,
-                fontWeight: 700,
-                margin: 0,
-                lineHeight: 1.3,
-                textShadow: `0 4px 30px ${currentTheme.highlightColor ?? currentTheme.accentColor}50`,
-                letterSpacing: '0.02em',
-              }}
-            >
-              {currentLyric ? currentLyric.text : '♪'}
-            </h1>
-          </div>
-
-          {/* Next line preview */}
-          {nextLyric && (
-            <div style={{ marginTop: 40, textAlign: 'center', opacity: 0.35 }}>
-              <p
-                style={{
-                  color: currentTheme.secondaryColor ?? currentTheme.primaryColor,
-                  fontSize: 48,
-                  fontWeight: 400,
-                  margin: 0,
-                  lineHeight: 1.4,
-                }}
-              >
-                {nextLyric.text}
-              </p>
-            </div>
-          )}
-        </div>
-
-        {/* Bottom: visualizer + progress + title */}
-        <div
-          style={{
-            width: '100%',
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            gap: 24,
-          }}
-        >
-          {/* Visualizer bars */}
-          <div style={{ display: 'flex', gap: 6, alignItems: 'flex-end', height: 80 }}>
-            {[...Array(16)].map((_, i) => {
-              const barHeight = interpolate(
-                (frame + i * 3) % 45,
-                [0, 22.5, 45],
-                [30, 100, 30],
-                { extrapolateLeft: 'clamp', extrapolateRight: 'clamp' }
-              );
-              return (
-                <div
-                  key={i}
-                  style={{
-                    width: 10,
-                    height: `${barHeight}%`,
-                    background: `linear-gradient(to top, ${currentTheme.accentColor}, ${currentTheme.highlightColor ?? currentTheme.accentColor})`,
-                    borderRadius: 5,
-                    opacity: 0.8,
-                  }}
-                />
-              );
-            })}
-          </div>
-
-          {/* Progress bar */}
-          <div
-            style={{
-              width: '60%',
-              maxWidth: 600,
-              height: 6,
-              background: `${currentTheme.primaryColor}15`,
-              borderRadius: 3,
-              overflow: 'hidden',
-            }}
-          >
-            <div
-              style={{
-                width: `${overallProgress * 100}%`,
-                height: '100%',
-                background: `linear-gradient(to right, ${currentTheme.accentColor}, ${currentTheme.highlightColor ?? currentTheme.accentColor})`,
-                borderRadius: 3,
-              }}
-            />
-          </div>
-
-          {/* Song info */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginTop: 4 }}>
-            <span style={{ color: currentTheme.primaryColor, fontSize: 20, fontWeight: 600 }}>
-              {songTitle}
-            </span>
-            <span
-              style={{
-                color: currentTheme.accentColor,
-                fontSize: 16,
-                fontWeight: 500,
-                padding: '6px 16px',
-                background: `${currentTheme.accentColor}15`,
-                borderRadius: 100,
-              }}
-            >
-              {genre}
-            </span>
-          </div>
-        </div>
-      </div>
+      {design != null && renderLayout()}
     </AbsoluteFill>
   );
 };

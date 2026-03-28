@@ -20,7 +20,7 @@ export const RemotionRoot: React.FC = () => {
           songTitle: "{{SONG_TITLE}}",
           audioSrc: "audio.mp3",
           lyricsDataSrc: "lyrics-timestamps.json",
-          theme: "{{THEME}}",
+          theme: "default",
           genre: "{{GENRE}}",
         }}
       />
