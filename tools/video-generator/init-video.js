@@ -3,16 +3,17 @@
  * Initialize a Remotion video project in a workspace.
  *
  * Usage:
- *   node init-video.js <workspace-slug> [--theme=<theme>]
+ *   node init-video.js <workspace-slug> [--design=<path>]
  *
  * Example:
- *   node init-video.js bella-bella-lofi --theme=lofi
+ *   node init-video.js bella-bella-lofi --design=../../workspaces/bella-bella-lofi/design.json
  *
  * What it does:
  *   1. Copies the template into workspaces/<slug>/video/
  *   2. Detects audio duration from <slug>-remix-v1.mp3 via ffprobe
- *   3. Substitutes all {{PLACEHOLDERS}} in Root.tsx and MusicVideo.tsx
- *   4. Creates public/ folder ready for asset copy
+ *   3. Substitutes all {{PLACEHOLDERS}} in Root.tsx
+ *   4. Copies design.json to public/ folder (if provided)
+ *   5. Creates public/ folder ready for asset copy
  */
 
 const fs = require('fs');
@@ -21,14 +22,14 @@ const { execSync } = require('child_process');
 
 const workspaceSlug = process.argv[2];
 if (!workspaceSlug) {
-  console.error('Usage: node init-video.js <workspace-slug> [--theme=<theme>]');
+  console.error('Usage: node init-video.js <workspace-slug> [--design=<path>]');
   process.exit(1);
 }
 
 // Parse optional flags
-let theme = 'default';
+let designPath = null;
 process.argv.slice(3).forEach(arg => {
-  if (arg.startsWith('--theme=')) theme = arg.replace('--theme=', '');
+  if (arg.startsWith('--design=')) designPath = arg.replace('--design=', '');
 });
 
 const templateDir = path.join(__dirname, 'template');
@@ -55,10 +56,6 @@ if (fs.existsSync(metadataPath)) {
   const meta = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
   songTitle = meta.video_title || meta.title || workspaceSlug;
   genre = meta.genre || 'unknown';
-  // Use genre as theme if no explicit --theme was given
-  if (theme === 'default' && meta.genre) {
-    theme = meta.genre.toLowerCase().replace(/[^a-z]/g, '') || 'default';
-  }
 }
 
 // ---------------------------------------------------------------------------
@@ -85,23 +82,9 @@ if (fs.existsSync(audioFile)) {
 }
 
 // ---------------------------------------------------------------------------
-// Theme configuration
-// ---------------------------------------------------------------------------
-const themes = {
-  lofi:     { background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%)', primaryColor: '#e8e8e8', accentColor: '#74b9ff', highlightColor: '#ff7675', sectionBackground: 'rgba(116, 185, 255, 0.15)' },
-  chill:    { background: 'linear-gradient(135deg, #a8e6cf 0%, #dcedc1 100%)',              primaryColor: '#2d3436', accentColor: '#ff8b94', highlightColor: '#e17055', sectionBackground: 'rgba(255, 139, 148, 0.15)' },
-  edm:      { background: 'linear-gradient(135deg, #0c0c0c 0%, #1a1a2e 100%)',              primaryColor: '#ffffff', accentColor: '#00d2ff', highlightColor: '#a29bfe', sectionBackground: 'rgba(0, 210, 255, 0.1)' },
-  hiphop:   { background: 'linear-gradient(135deg, #1a1a1a 0%, #4a4a4a 100%)',              primaryColor: '#f1f1f1', accentColor: '#ff6b35', highlightColor: '#fdcb6e', sectionBackground: 'rgba(255, 107, 53, 0.1)' },
-  carnatic: { background: 'linear-gradient(135deg, #c9a961 0%, #8b7355 100%)',              primaryColor: '#2c2416', accentColor: '#d4af37', highlightColor: '#8b4513', sectionBackground: 'rgba(212, 175, 55, 0.15)' },
-  pop:      { background: 'linear-gradient(135deg, #ff6b6b 0%, #feca57 50%, #48dbfb 100%)',primaryColor: '#2d3436', accentColor: '#ff9ff3', highlightColor: '#6c5ce7', sectionBackground: 'rgba(255, 159, 243, 0.15)' },
-  default:  { background: 'linear-gradient(135deg, #1a1a2e 0%, #16213e 100%)',              primaryColor: '#ffffff', accentColor: '#74b9ff', highlightColor: '#ff7675', sectionBackground: 'rgba(116, 185, 255, 0.15)' },
-};
-const selectedTheme = themes[theme] || themes.default;
-
-// ---------------------------------------------------------------------------
 // Copy template and substitute placeholders
 // ---------------------------------------------------------------------------
-console.log(`Scaffolding video project for "${workspaceSlug}" (theme: ${theme})...`);
+console.log(`Scaffolding video project for "${workspaceSlug}"...`);
 fs.cpSync(templateDir, videoDir, { recursive: true });
 fs.mkdirSync(path.join(videoDir, 'public'), { recursive: true });
 
@@ -111,18 +94,25 @@ let root = fs.readFileSync(rootPath, 'utf-8');
 root = root
   .replace(/\{\{AUDIO_DURATION\}\}/g, audioDuration.toFixed(3))
   .replace(/\{\{SONG_TITLE\}\}/g, songTitle)
-  .replace(/\{\{THEME\}\}/g, theme)
   .replace(/\{\{GENRE\}\}/g, genre);
 fs.writeFileSync(rootPath, root);
 
-// MusicVideo.tsx has no placeholders — it reads theme from props passed by Root.tsx.
-// (Theme colors are resolved at runtime from the themes map in MusicVideo.tsx.)
-
-// Write theme.json for reference
-fs.writeFileSync(
-  path.join(videoDir, 'public', 'theme.json'),
-  JSON.stringify({ theme, genre, ...selectedTheme }, null, 2)
-);
+// ---------------------------------------------------------------------------
+// Copy design.json if provided
+// ---------------------------------------------------------------------------
+if (designPath) {
+  const designSourcePath = path.resolve(designPath);
+  if (fs.existsSync(designSourcePath)) {
+    const designDestPath = path.join(videoDir, 'public', 'design.json');
+    fs.copyFileSync(designSourcePath, designDestPath);
+    console.log(`Design config copied: ${designSourcePath} → ${designDestPath}`);
+  } else {
+    console.warn(`Design file not found: ${designSourcePath}`);
+    console.warn('Video will use default design settings.');
+  }
+} else {
+  console.log('No design.json provided — video will use default settings.');
+}
 
 // ---------------------------------------------------------------------------
 // Done
