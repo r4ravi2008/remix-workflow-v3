@@ -11,7 +11,7 @@
  * What it does:
  *   1. Copies the template into workspaces/<slug>/video/
  *   2. Detects audio duration from <slug>-remix-v1.mp3 via ffprobe
- *   3. Substitutes all {{PLACEHOLDERS}} in Root.tsx
+ *   3. Writes public/video-config.json with duration, title, and genre
  *   4. Copies design.json to public/ folder (if provided)
  *   5. Creates public/ folder ready for asset copy
  */
@@ -74,11 +74,11 @@ if (fs.existsSync(audioFile)) {
     if (!isNaN(parsed)) audioDuration = parsed;
     console.log(`Audio duration: ${audioDuration.toFixed(3)}s`);
   } catch {
-    console.warn(`ffprobe failed — defaulting to ${audioDuration}s. Set AUDIO_DURATION manually in Root.tsx.`);
+    console.warn(`ffprobe failed — defaulting to ${audioDuration}s. Edit video-config.json to fix.`);
   }
 } else {
   console.warn(`Audio file not found: ${audioFile}`);
-  console.warn(`Defaulting to ${audioDuration}s. Set AUDIO_DURATION manually in Root.tsx.`);
+  console.warn(`Defaulting to ${audioDuration}s. Edit video-config.json to fix.`);
 }
 
 // ---------------------------------------------------------------------------

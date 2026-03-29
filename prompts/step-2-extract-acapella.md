@@ -6,7 +6,7 @@ Extract a clean vocals-only acapella track from the downloaded MP3 using the ope
 
 ## Prerequisites
 
-- `workspaces/<slug>/original.mp3` exists (produced by Step 1)
+- `workspaces/<slug>/<slug>-original.mp3` exists (produced by Step 1)
 - `workspaces/<slug>/meta.json` exists with the slug
 - Tool location: `tools/acapella-extractor/`
 
@@ -20,12 +20,12 @@ cd /Users/aira/projects/remix-gpt-coding-agent && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-workspaces/<slug>/original.mp3 \
+workspaces/<slug>/<slug>-original.mp3 \
 -o workspaces/<slug>/
 ```
 
 **Processing time:** 2-5 minutes  
-**Output:** `workspaces/<slug>/acapella.mp3`
+**Output:** `workspaces/<slug>/<slug>-acapella.mp3`
 
 ---
 
@@ -55,7 +55,7 @@ cd /Users/aira/projects/remix-gpt-coding-agent && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-workspaces/<slug>/original.mp3 \
+workspaces/<slug>/<slug>-original.mp3 \
 -o workspaces/<slug>/
 ```
 
@@ -69,7 +69,7 @@ workspaces/<slug>/original.mp3 \
 ```
 🎵 Acapella Extractor
    Model: Mel-Band RoFormer (SOTA)
-   Input: workspaces/<slug>/original.mp3
+   Input: workspaces/<slug>/<slug>-original.mp3
    Output: workspaces/<slug>/
 
 Loading Mel-Band RoFormer model...
@@ -91,18 +91,18 @@ cd workspaces/<slug>
 # Find the vocals WAV file and convert to MP3
 for f in *.wav; do
   if [ -f "$f" ]; then
-    ffmpeg -i "$f" -codec:a libmp3lame -b:a 192k acapella.mp3
+    ffmpeg -i "$f" -codec:a libmp3lame -b:a 192k <slug>-acapella.mp3
     rm "$f"
-    echo "✓ Converted $f to acapella.mp3"
+    echo "✓ Converted $f to <slug>-acapella.mp3"
     break
   fi
 done
 
-# Check if acapella.mp3 exists
-if [ -f "acapella.mp3" ]; then
-  echo "✓ Acapella ready: $(ls -lh acapella.mp3)"
+# Check if <slug>-acapella.mp3 exists
+if [ -f "<slug>-acapella.mp3" ]; then
+  echo "✓ Acapella ready: $(ls -lh <slug>-acapella.mp3)"
 else
-  echo "❌ Error: acapella.mp3 not found"
+  echo "❌ Error: <slug>-acapella.mp3 not found"
   exit 1
 fi
 ```
@@ -114,8 +114,8 @@ fi
 **Bash tool:** Confirm the file is valid:
 
 ```bash
-file workspaces/<slug>/acapella.mp3
-ls -lh workspaces/<slug>/acapella.mp3
+file workspaces/<slug>/<slug>-acapella.mp3
+ls -lh workspaces/<slug>/<slug>-acapella.mp3
 ```
 
 **Expected results:**
@@ -150,7 +150,7 @@ ls -lh workspaces/<slug>/acapella.mp3
 ```
 ✅ Step 2 Complete: Acapella Extracted
 
-📁 Output: workspaces/<slug>/acapella.mp3
+📁 Output: workspaces/<slug>/<slug>-acapella.mp3
 📊 Size: <actual file size>
 🎵 Format: MP3, 192kbps, 44.1kHz
 🤖 Model: Mel-Band RoFormer (SOTA)
@@ -186,7 +186,7 @@ Proceeding to Step 3: Find Lyrics...
 
 | File | Path | Description |
 |---|---|---|
-| Acapella | `workspaces/<slug>/acapella.mp3` | Clean vocals-only track |
+| Acapella | `workspaces/<slug>/<slug>-acapella.mp3` | Clean vocals-only track |
 | Metadata | `workspaces/<slug>/meta.json` | Updated status |
 
 ---

@@ -303,9 +303,7 @@ THUMBNAIL TEXT:
 
 Files saved:
   • youtube-metadata.json
-  • youtube-title.txt
-  • youtube-description.txt
-  • youtube-tags.txt
+  • youtube-metadata-artifact.md
 ```
 
 ---
@@ -326,9 +324,6 @@ Files saved:
 |---|---|
 | Full metadata JSON | `workspaces/<slug>/youtube-metadata.json` |
 | **Markdown artifact (copy-paste)** | `workspaces/<slug>/youtube-metadata-artifact.md` |
-| Title only | `workspaces/<slug>/youtube-title.txt` |
-| Description only | `workspaces/<slug>/youtube-description.txt` |
-| Tags only | `workspaces/<slug>/youtube-tags.txt` |
 | Updated metadata | `workspaces/<slug>/meta.json` |
 
 ## Error Handling

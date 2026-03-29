@@ -31,13 +31,13 @@ Step 8: init-video.js → Remotion template
 ```
 tools/video-generator/
 ├── README.md
-├── init-video.js              # Scaffold video project with design.json
+├── init-video.js              # Scaffold video project, write video-config.json + design.json
 ├── template/                  # Base Remotion project template
 │   ├── package.json
 │   ├── tsconfig.json
 │   └── src/
 │       ├── index.tsx
-│       ├── Root.tsx           # Composition config
+│       ├── Root.tsx           # Composition config (loads video-config.json at runtime)
 │       ├── MusicVideo.tsx     # Main video component (audio-reactive)
 │       ├── components/        # Visual motif components
 │       │   ├── ParticleField.tsx
