@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useCurrentFrame, interpolate, staticFile, Img } from 'remotion';
 import type { DesignConfig } from '../utils/designLoader';
 import type { LyricsData, LyricLine, Section } from '../MusicVideo';
-import { FrequencyBarsVisualizer } from '../components';
+import { FrequencyBarsVisualizer, WaveformRings } from '../components';
 
 interface CoverArtLayoutProps {
   design: DesignConfig;
@@ -41,13 +41,15 @@ const CONTAINER_HEIGHT = 270; // 25% of 1080px
 const CENTER_PADDING = CONTAINER_HEIGHT / 2 - LINE_HEIGHT / 2;
 
 // Inset padding for the cover art (percentage of the panel)
-const ART_INSET = '2.5%';
+const ART_INSET = '12%';
 
 const ACTIVE_SIZE_RATIO = 0.40;
 const INACTIVE_SIZE_RATIO = 0.26;
 
 export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
   design,
+  frequencyData,
+  bandEnergies,
   barHeights,
   lyricsData,
   currentTime,
@@ -57,6 +59,29 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
 }) => {
   useCurrentFrame();
   const [coverArtError, setCoverArtError] = useState(false);
+
+  // ── Music-reactive values ─────────────────────────────────────────────────
+  const bass = bandEnergies?.bass ?? 0;
+  const overall = bandEnergies?.overall ?? 0;
+
+  // Cover art breathing — subtle scale on bass hits (1.0 → 1.04)
+  const artScale = 1 + bass * 0.04;
+
+  // Vignette intensity — darkens on beats (0.2 → 0.5)
+  const vignetteOpacity = 0.2 + overall * 0.3;
+
+  // Glow ring around cover art — pulses with bass
+  const glowIntensity = bass * 0.8;
+  const glowShadow = glowIntensity > 0.05
+    ? `0 0 ${30 * glowIntensity}px ${design.palette.accentColor}${Math.round(glowIntensity * 80).toString(16).padStart(2, '0')}, 0 0 ${60 * glowIntensity}px ${design.palette.highlightColor}${Math.round(glowIntensity * 40).toString(16).padStart(2, '0')}`
+    : 'none';
+
+  // Title text glow — reactive shadow on bass
+  const titleGlowOpacity = bass * 0.7;
+
+  // Genre badge dot — scale pulse with overall energy
+  const dotScale = 1 + overall * 0.6;
+  const dotGlowSize = 8 + overall * 16;
 
   // ── Scrolling lyrics ──────────────────────────────────────────────────────
   const lyrics = lyricsData?.lyrics ?? [];
@@ -94,24 +119,27 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
       fontStyle: design.typography.mainLyricItalic ? 'italic' : 'normal',
       letterSpacing: design.typography.letterSpacing,
       margin: 0,
-      lineHeight: 1.35,
+      lineHeight: 1.4,
     };
     switch (design.typography.textEffect) {
       case 'glow':
         return {
           ...base,
-          textShadow: `0 2px 16px ${design.palette.glowColor}`,
+          textShadow: `0 0 20px ${design.palette.glowColor}, 0 0 40px ${design.palette.glowColor}80`,
         };
       case 'shadow':
-        return { ...base, textShadow: '2px 2px 6px rgba(0,0,0,0.5)' };
+        return { ...base, textShadow: '0 2px 8px rgba(0,0,0,0.6)' };
       case 'outline':
         return {
           ...base,
-          WebkitTextStroke: `1px ${design.palette.accentColor}`,
+          WebkitTextStroke: `1.5px ${design.palette.accentColor}`,
           color: 'transparent',
         };
       default:
-        return base;
+        return {
+          ...base,
+          textShadow: '0 1px 3px rgba(0,0,0,0.3)',
+        };
     }
   };
 
@@ -120,9 +148,32 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
     fontSize: inactiveFontSize,
     fontWeight: 400,
     margin: 0,
-    lineHeight: 1.35,
-    letterSpacing: design.typography.letterSpacing,
+    lineHeight: 1.4,
+    letterSpacing: '0.01em',
+    opacity: 0.85,
   };
+
+  // ── Radial ring geometry ────────────────────────────────────────────────
+  // Persistent concentric rings centered behind the cover art, pulsing with bass.
+  const NUM_RINGS = 6;
+  const rings = useMemo(() => {
+    return Array.from({ length: NUM_RINGS }, (_, i) => {
+      const t = (i + 1) / NUM_RINGS;
+      // Base radius scales from ~180px to ~650px (fills the 75% panel nicely)
+      const baseRadius = 180 + t * 470;
+      // Rings breathe with bass — inner rings react more
+      const breathFactor = (1 - t * 0.5) * 0.12; // inner: 12%, outer: 6%
+      const radius = baseRadius + bass * breathFactor * baseRadius;
+      // Opacity fades outward; pulses with bass
+      const baseOpacity = 0.35 - t * 0.12; // 0.35 → 0.23
+      const opacity = baseOpacity + bass * 0.25 * (1 - t);
+      // Alternate colors between accent and highlight
+      const color = i % 2 === 0
+        ? design.palette.accentColor
+        : design.palette.highlightColor;
+      return { radius, opacity: Math.min(opacity, 0.65), color, strokeWidth: 2.5 - t * 0.8 };
+    });
+  }, [bass, design.palette.accentColor, design.palette.highlightColor]);
 
   // ── Render ────────────────────────────────────────────────────────────────
   return (
@@ -135,28 +186,126 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
         position: 'relative',
       }}
     >
-      {/* ── Left 75%: cover art with inset + feathered edges ── */}
+      {/* ── Option A: Ambient blurred cover art background ── */}
+      {!coverArtError && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            overflow: 'hidden',
+            zIndex: 0,
+          }}
+        >
+          <Img
+            src={staticFile('cover-art.jpg')}
+            onError={() => {}}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              objectPosition: 'center',
+              // Heavy blur + slight upscale to prevent edge artifacts
+              filter: 'blur(60px) saturate(1.3)',
+              transform: 'scale(1.15)',
+            }}
+          />
+          {/* Dim overlay — keeps text legible while preserving color richness */}
+          <div
+            style={{
+              position: 'absolute',
+              inset: 0,
+              background: 'rgba(0, 0, 0, 0.45)',
+            }}
+          />
+        </div>
+      )}
+
+      {/* ── Option C: Radial rings behind cover art ── */}
+      <svg
+        width="1440"
+        height="1080"
+        viewBox="0 0 1440 1080"
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          pointerEvents: 'none',
+          zIndex: 1,
+        }}
+      >
+        {rings.map((ring, i) => (
+          <circle
+            key={i}
+            cx={720}
+            cy={480}
+            r={ring.radius}
+            fill="none"
+            stroke={ring.color}
+            strokeWidth={ring.strokeWidth}
+            opacity={ring.opacity}
+          />
+        ))}
+      </svg>
+
+      {/* ── Dynamic expanding rings on beat ── */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          width: 1440,
+          height: 1080,
+          zIndex: 1,
+          pointerEvents: 'none',
+          opacity: 0.35,
+        }}
+      >
+        <WaveformRings
+          design={design}
+          frequencyData={frequencyData}
+          width={1440}
+          height={1080}
+        />
+      </div>
+
+      {/* ── Left 75%: cover art + title below ── */}
       <div
         style={{
           width: '75%',
           height: '100%',
-          position: 'relative',
           display: 'flex',
+          flexDirection: 'column',
           alignItems: 'center',
           justifyContent: 'center',
           overflow: 'hidden',
+          padding: '24px 0',
+          boxSizing: 'border-box',
+          position: 'relative',
+          zIndex: 2,
         }}
       >
-        {/* Cover art container — inset with feathered edges */}
+        {/* Outer wrapper for glow ring + scale (not clipped by mask) */}
         <div
           style={{
-            position: 'absolute',
-            top: ART_INSET,
-            left: ART_INSET,
-            right: ART_INSET,
-            bottom: ART_INSET,
+            width: 'auto',
+            height: '75%',
+            aspectRatio: '1 / 1',
+            maxWidth: `calc(100% - 2 * ${ART_INSET})`,
+            borderRadius: 24,
+            flexShrink: 0,
+            transform: `scale(${artScale})`,
+            boxShadow: glowShadow,
+            position: 'relative',
+          }}
+        >
+        {/* Inner container — feathered edges mask */}
+        <div
+          style={{
+            width: '100%',
+            height: '100%',
             borderRadius: 24,
             overflow: 'hidden',
+            position: 'relative',
             // Feathered edge mask: refined fade for smoother blend
             maskImage:
               'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
@@ -193,7 +342,7 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
                   flexDirection: 'column',
                   alignItems: 'center',
                   gap: 32,
-                  opacity: 0.35,
+          opacity: 0.75,
                 }}
               >
                 <div
@@ -217,55 +366,46 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
             </div>
           )}
 
-          {/* Refined vignette inside the image for subtle depth */}
+          {/* Beat-reactive vignette — darkens on hits */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
               background:
-                'radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.25) 100%)',
+                `radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,${vignetteOpacity.toFixed(2)}) 100%)`,
               pointerEvents: 'none',
             }}
           />
         </div>
+        </div>
 
-        {/* Song title + genre badge at bottom-left */}
+        {/* Song title + genre badge — below cover art */}
         <div
           style={{
-            position: 'absolute',
-            bottom: 40,
-            left: 40,
             display: 'flex',
             flexDirection: 'column',
-            gap: 16,
-            zIndex: 2,
-            maxWidth: '55%',
+            alignItems: 'center',
+            gap: 14,
+            marginTop: 20,
           }}
         >
-          {/* Title with gradient text effect */}
-          <div
+          {/* Title with gradient text + bass-reactive glow */}
+          <span
             style={{
-              position: 'relative',
-              display: 'inline-block',
+              fontSize: 42,
+              fontWeight: 800,
+              lineHeight: 1.15,
+              letterSpacing: '-0.02em',
+              background: `linear-gradient(135deg, ${design.palette.primaryColor} 0%, ${design.palette.highlightColor} 100%)`,
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              filter: `drop-shadow(0 4px 8px rgba(0,0,0,0.5)) drop-shadow(0 0 ${12 + titleGlowOpacity * 20}px ${design.palette.highlightColor}${Math.round(titleGlowOpacity * 180).toString(16).padStart(2, '0')})`,
+              textAlign: 'center',
             }}
           >
-            <span
-              style={{
-                fontSize: 42,
-                fontWeight: 800,
-                lineHeight: 1.15,
-                letterSpacing: '-0.02em',
-                background: `linear-gradient(135deg, ${design.palette.primaryColor} 0%, ${design.palette.highlightColor} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                backgroundClip: 'text',
-                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))',
-                display: 'block',
-              }}
-            >
-              {songTitle}
-            </span>
-          </div>
+            {songTitle}
+          </span>
 
           {/* Genre badge with refined styling */}
           <div
@@ -279,7 +419,6 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
               borderRadius: 100,
               backdropFilter: 'blur(12px) saturate(180%)',
               WebkitBackdropFilter: 'blur(12px) saturate(180%)',
-              alignSelf: 'flex-start',
               boxShadow: `0 4px 15px ${design.palette.accentColor}20, inset 0 1px 0 ${design.palette.accentColor}30`,
             }}
           >
@@ -289,7 +428,8 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
                 height: 6,
                 borderRadius: '50%',
                 background: design.palette.highlightColor,
-                boxShadow: `0 0 8px ${design.palette.highlightColor}`,
+                boxShadow: `0 0 ${dotGlowSize}px ${design.palette.highlightColor}`,
+                transform: `scale(${dotScale})`,
               }}
             />
             <span
@@ -319,6 +459,8 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
           padding: '0 16px',
           boxSizing: 'border-box',
           gap: 28,
+          position: 'relative',
+          zIndex: 2,
         }}
       >
         {/* Lyrics window with refined fade edges */}
