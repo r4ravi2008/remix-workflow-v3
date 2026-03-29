@@ -8,20 +8,22 @@ Remotion-based video generation for music remixes with **audio-reactive visuals*
 - **LLM-Generated Designs**: Each song gets a unique visual identity based on genre, mood, and tempo
 - **5 Layout Variants**: center-stage, full-bleed, minimal, sidebar, stacked
 - **6 Visual Motifs**: particles, geometric-burst, aurora, waveform-rings, noise-field, frequency-bars
-- **Seeded Randomness**: Same song always gets the same visual layout
+- **Dynamic Color Palette**: Colors are generated based on Suno style descriptors (dark, warm, dreamy, etc.)
 
 ## Architecture
 
 ```
-meta.json → generate-design.js → design.json
-                                     ↓
-init-video.js → Remotion template
-                    ↓
-              MusicVideo.tsx
-                    ↓
-              ├─ useAudioData() → frequency data
-              ├─ load design.json → layout + motif + colors
-              └─ Render layout variant with audio-reactive components
+Step 4: Generate Suno Lyrics
+    ↓
+Generate design.json dynamically from Suno style block
+    ↓
+Step 8: init-video.js → Remotion template
+                        ↓
+                  MusicVideo.tsx
+                        ↓
+                  ├─ useAudioData() → frequency data
+                  ├─ load design.json → layout + motif + colors
+                  └─ Render layout variant with audio-reactive components
 ```
 
 ## Structure
@@ -30,7 +32,6 @@ init-video.js → Remotion template
 tools/video-generator/
 ├── README.md
 ├── init-video.js              # Scaffold video project with design.json
-├── generate-design.js         # Generate design.json from meta.json
 ├── template/                  # Base Remotion project template
 │   ├── package.json
 │   ├── tsconfig.json
@@ -60,22 +61,19 @@ tools/video-generator/
 
 ## Usage
 
-### Step 1: Generate Design Configuration
+### Step 1: Generate design.json (in Step 4)
 
-```bash
-cd tools/video-generator
-node generate-design.js <workspace-slug>
+design.json is now generated automatically by the sub-agent in Step 4 when generating Suno lyrics. The agent reads the Suno style block and creates appropriate colors, motifs, and typography based on descriptors like "dark", "warm", "dreamy", etc.
 
-# Example:
-node generate-design.js bella-bella-lofi
-# Creates: workspaces/bella-bella-lofi/design.json
+**The design.json will be at:**
 ```
-
-This generates a unique design based on the song's metadata (genre, mood, tempo, language).
+workspaces/<slug>/design.json
+```
 
 ### Step 2: Scaffold Video Project
 
 ```bash
+cd tools/video-generator
 node init-video.js <workspace-slug> --design=../../workspaces/<slug>/design.json
 
 # Example:
@@ -140,8 +138,7 @@ npx remotion render MusicVideo out/video.mp4
     "personality": "smooth",
     "lyricEntrance": "slide-up",
     "beatReactivity": 0.8
-  },
-  "seed": 12345
+  }
 }
 ```
 
@@ -186,6 +183,19 @@ Fonts are loaded from Google Fonts at render time:
 - **Warm**: Lora, Merriweather, Crimson Pro
 
 **Note**: Indic scripts (Telugu, Hindi, Tamil) automatically fall back to Noto Sans.
+
+## Color Palette Guidelines
+
+design.json colors are generated based on Suno style descriptors:
+
+| Style Descriptor | Suggested Palette |
+|---|---|
+| "dark", "nocturnal", "smoky", "moody" | Deep navy, charcoal, dark purples |
+| "warm", "golden hour", "sunset" | Amber, rust, warm browns |
+| "bright", "vibrant", "energetic" | Coral, yellow, cyan |
+| "dreamy", "ethereal", "lo-fi" | Soft pastels, muted blues, lavender |
+| "romantic", "melancholic" | Rose, dusty pink, soft grays |
+| "carnatic", "classical", "devotional" | Gold, saffron, deep maroon |
 
 ## Development
 
@@ -236,32 +246,26 @@ npx remotion render MusicVideo out/video.mp4 --frames=0-900
 
 ## Integration with Remix Pipeline
 
-This is automatically called as part of Steps 6 and 7:
+This is automatically called as part of Steps 4 and 8:
 
-**Step 6 (Extract Acapella & Align Lyrics):**
-1. Extract acapella from remix audio
-2. Generate lyrics timestamps via CTC alignment
-3. Verify alignment quality
-
-**Step 7 (Fetch & Enhance Cover Art):**
-4. Search Google Images for cover art
-5. Enhance to 1080p via SeedVR2 on fal.ai
+**Step 4 (Generate Suno Lyrics):**
+1. Read raw lyrics from lyrics.txt
+2. Generate Suno meta-tag format
+3. **Generate design.json dynamically from Suno style block**
+4. Save files to workspace
 
 **Step 8 (Generate Video):**
-6. **Generate design.json from meta.json**
-7. Scaffold video project with design
-8. Copy assets (audio, lyrics, cover art, design)
-9. Render video
+5. Scaffold video project with design.json
+6. Copy assets (audio, lyrics, cover art, design)
+7. Render video
 
-See `prompts/step-6-extract-acapella-and-align.md`, `prompts/step-7-fetch-cover-art.md`, and `prompts/step-8-generate-video.md` for full workflow.
+See `prompts/step-4-generate-suno-lyrics.md` and `prompts/step-8-generate-video.md` for full workflow.
 
-## Migration from Old Themes
+## Migration Notes
 
-The old hardcoded themes (lofi, edm, hiphop, etc.) are replaced by dynamic design.json
-generation. The `generate-design.js` script creates appropriate designs based on genre
-and mood metadata.
+The old `generate-design.js` script has been removed. design.json is now generated dynamically by the sub-agent in Step 4 based on the Suno style descriptors. This ensures each song gets colors and visuals that match its actual aesthetic rather than static genre-based defaults.
 
 To migrate existing projects:
-1. Run `generate-design.js` to create design.json
+1. Re-run Step 4 to generate a new design.json
 2. Re-run `init-video.js` with `--design` flag
 3. Re-render

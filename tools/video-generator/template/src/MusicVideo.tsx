@@ -14,7 +14,9 @@ import {
   computeVisualizerBars,
   attackReleaseSmooth,
   extractBandEnergies,
+  createEnvelopeState,
   BandEnergies,
+  EnvelopeState,
 } from './utils/audioUtils';
 import {
   CenterStageLayout,
@@ -90,6 +92,7 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
 
   // ── Visualizer bar heights (per-bar attack/release smoothing) ──────────
   const prevBarHeights = useRef<number[] | null>(null);
+  const envelopeState = useRef<EnvelopeState>(createEnvelopeState(NUM_BARS));
 
   const barHeights: number[] = useMemo(() => {
     if (!audioData) return Array(NUM_BARS).fill(0);
@@ -98,11 +101,11 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
       frame, fps, audioData, numberOfSamples: 64, smoothing: false,
     });
 
-    // dB + A-weight + log-bin → 24 bars, no mirroring
-    const bars = computeVisualizerBars(raw, NUM_BARS);
+    // Log-bin → dB → adaptive per-band normalization → 24 bars
+    const bars = computeVisualizerBars(raw, NUM_BARS, envelopeState.current);
 
-    // Heavy smoothing: slow attack (0.5), very slow release (0.992 ≈ 5× slower than before)
-    const smoothed = attackReleaseSmooth(bars, prevBarHeights.current, 0.5, 0.992);
+    // Snappy attack (0.3), moderate release (0.92) for more dynamic response
+    const smoothed = attackReleaseSmooth(bars, prevBarHeights.current, 0.3, 0.92);
     prevBarHeights.current = smoothed;
 
     return smoothed;
