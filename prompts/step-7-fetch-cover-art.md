@@ -1,17 +1,17 @@
-# Step 7: Fetch & Enhance Cover Art
+# Step 7: Fetch & Stylize Cover Art
 
 ## Objective
 
-Find the original song's cover art via Google Images, download it, and enhance it to
-1080p using the SeedVR2 upscaler on fal.ai. The enhanced image is used as a background
-asset in the Remotion video (Step 8).
+Find the original song's cover art from JioSaavn (preferred) or Google Images, then
+stylize it into Japanese anime style using the Nano Banana Pro model on fal.ai. The
+stylized image is used as the background asset in the Remotion video (Step 8).
 
 ## Key Requirements
 
-- **Native script search**: Use the song title from `meta.json` (may be in Telugu/Hindi/Tamil)
-- **Cover art quality**: Prefer official album/single artwork; avoid fan art or YouTube thumbnails
-- **Upscale target**: 1080p via SeedVR2 (`fal-ai/seedvr/upscale/image`)
-- **Output format**: JPEG saved to workspace
+- **Source**: JioSaavn CDN (preferred) or Google Images — official album/single artwork only
+- **Stylization**: Japanese anime style via `fal-ai/nano-banana-pro/edit` at 2K resolution
+- **Text on image**: Song title only — no watermarks, logos, artist names, or other text
+- **Output format**: JPEG saved as `workspaces/<slug>/<slug>-cover-art.jpg`
 
 ## Prerequisites
 
@@ -23,90 +23,96 @@ asset in the Remotion video (Step 8).
 
 ### 7.1 — Read Workspace Files
 
-Read `meta.json` and extract: `songTitle`, `language`, `slug`.
+Read `meta.json` and extract: `songTitle`, `language`, `slug`, `video_title`.
 
 ---
 
-### 7.2 — Search Google Images for Cover Art
+### 7.2 — Get Cover Art from JioSaavn (Preferred)
 
-Use Chrome DevTools MCP to navigate to Google Images and search for the cover art:
+JioSaavn CDN hosts high-quality cover art for Indian film songs. The URL pattern is:
+
+```
+https://c.saavncdn.com/<album-id>/<Album-Name>-<Language>-<Year>-<timestamp>-500x500.jpg
+```
+
+**To find the JioSaavn URL:**
+
+1. Navigate to `https://www.jiosaavn.com` using Chrome DevTools MCP
+2. Search for: `<song name> <movie name>`
+3. Open the song page
+4. Use `evaluate_script` to extract the OG image URL:
+
+```javascript
+() => document.querySelector('meta[property="og:image"]')?.content
+```
+
+This returns the direct CDN URL. Use it as the source image.
+
+**If JioSaavn does not have the song**, fall back to Google Images (step 7.3).
+
+---
+
+### 7.3 — Fallback: Find Cover Art via Google Images
+
+If JioSaavn does not have the song, use Chrome DevTools MCP to search Google Images:
 
 1. Navigate to `https://images.google.com`
-2. Search query: `<songTitle> song cover art` (use the original language title)
-   - Example: `మీసాల పిల్ల song cover art`
-   - If no results, try the romanized title + `Telugu song cover art`
-3. Look for official artwork — square or portrait format, typically from music streaming
-   platforms (Spotify, Apple Music, Gaana, JioSaavn)
-4. Avoid: YouTube thumbnails, fan-made posters, screenshots
+2. Search: `<movie name> <song name> album cover site:saavn.com OR site:gaana.com`
+3. Look for official artwork from music streaming platforms (JioSaavn, Gaana, Spotify, Apple Music)
+4. Avoid: YouTube thumbnails, fan-made edits, screenshots
+
+Right-click the best result to get the full-resolution image URL.
 
 ---
 
-### 7.3 — Download the Cover Art Image
+### 7.4 — Upload Cover Art to fal.ai CDN
 
-Once you identify a suitable image:
+Use the fal.ai MCP `upload_file` tool to upload the image by URL:
 
-1. Right-click or inspect to get the full-resolution image URL
-2. Download it to the workspace:
-
-```bash
-curl -L "<image-url>" -o "workspaces/<slug>/<slug>-cover-art-raw.jpg"
+```
+Tool: upload_file
+url: <jiosaavn-or-image-url>
 ```
 
-3. Verify the file exists and is non-zero:
-
-```bash
-ls -lh "workspaces/<slug>/<slug>-cover-art-raw.jpg"
-```
+Note the returned fal.ai CDN URL — this is `<fal-cdn-url>`.
 
 ---
 
-### 7.4 — Upload to fal.ai and Enhance with SeedVR2
+### 7.5 — Stylize with Nano Banana Pro
 
-Use the fal.ai MCP to upload the raw image and run SeedVR2 upscaling:
+Use the fal.ai MCP `run_model` tool to stylize the cover art:
 
-1. **Upload the image** to fal.ai CDN using the `upload_file` MCP tool:
-   - Read the file and base64-encode it
-   - Pass via `data` parameter with `file_name: "<slug>-cover-art-raw.jpg"`
-   - Note the returned fal.ai CDN URL
+```
+Tool: run_model
+endpoint_id: fal-ai/nano-banana-pro/edit
+input:
+  image_urls: ["<fal-cdn-url>"]
+  resolution: "2K"
+  aspect_ratio: "1:1"
+  prompt: "Japanese anime style illustration, vibrant colors, cinematic lighting, include only the text '<songTitle>' in stylized anime lettering, no other text, no watermarks, no logos"
+```
 
-2. **Run SeedVR2** using the `run_model` MCP tool:
-   - Endpoint: `fal-ai/seedvr/upscale/image`
-   - Parameters:
-     ```json
-     {
-       "image_url": "<fal-cdn-url>",
-       "upscale_mode": "target",
-       "target_resolution": "1080p",
-       "output_format": "jpg",
-       "noise_scale": 0.1
-     }
-     ```
+The model returns a 2048×2048 stylized image URL.
 
-3. **Download the enhanced image** from the returned URL:
+---
+
+### 7.6 — Download the Stylized Image
 
 ```bash
 curl -L "<output-image-url>" -o "workspaces/<slug>/<slug>-cover-art.jpg"
 ```
 
-4. Clean up the raw file:
-
-```bash
-rm "workspaces/<slug>/<slug>-cover-art-raw.jpg"
-```
-
----
-
-### 7.5 — Verify Output
+Verify:
 
 ```bash
 ls -lh "workspaces/<slug>/<slug>-cover-art.jpg"
 ```
 
-The enhanced file should be noticeably larger than the raw input (SeedVR2 upscales to 1080p).
+Expected: 500KB–2MB, 2048×2048px.
 
 ---
 
-### 7.6 — Update Metadata
+### 7.7 — Update Metadata
 
 Update `workspaces/<slug>/meta.json`:
 
@@ -121,12 +127,12 @@ Update `workspaces/<slug>/meta.json`:
 
 ---
 
-### 7.7 — Confirm Ready for Video
+### 7.8 — Confirm Ready for Video
 
 ```
 Cover art ready!
 
-   <slug>-cover-art.jpg   — Enhanced to 1080p via SeedVR2
+   <slug>-cover-art.jpg   — Anime-stylized via Nano Banana Pro (2048×2048)
 
 Proceeding to Step 8: Generate Video with Remotion.
 ```
@@ -135,17 +141,14 @@ Proceeding to Step 8: Generate Video with Remotion.
 
 ## Fallback: No Cover Art Found
 
-If no suitable cover art can be found on Google Images:
+If no suitable source image can be found:
 
-1. Try alternative searches:
-   - `<songTitle> album art site:open.spotify.com`
-   - `<songTitle> <artist> cover`
-2. If still nothing suitable, skip this step and note it in meta.json:
+1. Try alternative searches: `<songTitle> <artist> cover site:open.spotify.com`
+2. If still nothing, skip this step and note it in meta.json:
    ```json
    { "status": { "cover_art_fetched": false }, "cover_art_skipped": true }
    ```
-3. The Remotion video will render without a background image (falls back to the
-   design.json color palette).
+3. The Remotion video falls back to the `design.json` color palette with no image panel.
 
 ---
 
@@ -153,8 +156,8 @@ If no suitable cover art can be found on Google Images:
 
 | Problem | Fix |
 |---|---|
-| Google Images blocks bot | Use Chrome DevTools MCP (real browser) — screenshots if needed |
-| Image URL requires auth | Find a different result; prefer CDN-hosted images |
-| fal.ai upload fails | Ensure file is valid JPEG/PNG; check file size < 20MB |
-| SeedVR2 returns error | Try `upscale_mode: "factor"` with `upscale_factor: 2` instead |
-| curl download fails | Try `wget` or inspect redirect chain manually |
+| JioSaavn search returns no result | Fall back to Google Images (step 7.3) |
+| fal.ai upload_file rejects URL | Download the image locally first with curl, then base64-encode and pass via `data` parameter |
+| Nano Banana Pro returns unwanted text | Add `"no text, no captions, no subtitles"` to the negative prompt if the model supports it |
+| Output image has wrong aspect ratio | Pass `aspect_ratio: "1:1"` explicitly; the model respects this parameter |
+| curl download fails | Inspect the returned URL for redirects; try `wget -O` as an alternative |

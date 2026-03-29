@@ -178,7 +178,7 @@ Proceeding to Step 3: Find Lyrics...
 **Solution:** Check if WAV file was created. Run step 2.3 conversion manually.
 
 ### Poor vocal separation
-**Solution:** Mel-Band RoFormer is SOTA but results vary. The acapella is usually good enough for Suno.ai remixing.
+**Solution:** Mel-Band RoFormer is SOTA but results vary. The acapella is usually good enough for CTC forced alignment in Step 6.
 
 ---
 

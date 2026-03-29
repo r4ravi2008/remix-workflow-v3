@@ -230,12 +230,109 @@ Proceeding to Step 5: Upload to Suno.ai...
 
 ---
 
+### 4.11 — Generate design.json for Video Pipeline
+
+**Dynamically generate a design configuration** based on the Suno style block created in 4.5. The colors should match the mood/vibe described in the style.
+
+**Read the style block** from the generated `suno-style.txt` and analyze descriptors like:
+- Mood: dark, bright, warm, cold, dreamy, aggressive, melancholic, romantic
+- Atmosphere: smoky, nocturnal, hazy, vibrant, energetic, chill
+- Visual cues: reverb-drenched, lo-fi warmth, synthwave textures, OVO Sound aesthetic
+
+**Color Palette Generation Rules:**
+
+| Style Descriptor | Suggested Palette |
+|---|---|
+| "dark", "nocturnal", "smoky", "moody" | Deep navy, charcoal, dark purples (#0a0a0a, #1a1a2e, #4a1a6a) |
+| "warm", "golden hour", "sunset" | Amber, rust, warm browns (#c9a961, #8b4513, #d4af37) |
+| "bright", "vibrant", "energetic" | Coral, yellow, cyan (#ff6b6b, #feca57, #48dbfb) |
+| "dreamy", "ethereal", "lo-fi" | Soft pastels, muted blues, lavender (#a8d8ea, #d4a5a5, #9b59b6) |
+| "romantic", "melancholic" | Rose, dusty pink, soft grays (#e8b4b8, #d4a5a5, #6c5ce7) |
+| "carnatic", "classical", "devotional" | Gold, saffron, deep maroon (#d4af37, #ff9933, #800020) |
+
+**Motif Selection Rules:**
+- EDM/House: "aurora" or "geometric-burst"
+- Hip-Hop/Trap: "geometric-burst"
+- Carnatic/Classical: "waveform-rings"
+- Lo-Fi/Chill: "particles"
+- Pop/Bollywood: "aurora"
+
+**Font Selection Rules:**
+- EDM: "Orbitron"
+- Hip-Hop: "Exo 2"
+- Lo-Fi: "Lora"
+- Carnatic: "Cormorant Garamond"
+- Pop: "Space Grotesk"
+
+**Generate the design.json:**
+
+```json
+{
+  "palette": {
+    "backgroundType": "gradient",
+    "backgroundStops": [
+      { "color": "#<start-color>", "position": "0%" },
+      { "color": "#<mid-color>", "position": "50%" },
+      { "color": "#<end-color>", "position": "100%" }
+    ],
+    "backgroundAngle": <90-180>,
+    "primaryColor": "#ffffff",
+    "secondaryColor": "#b2bec3",
+    "accentColor": "#<accent>",
+    "highlightColor": "#<highlight>",
+    "glowColor": "#<accent>40"
+  },
+  "typography": {
+    "googleFont": "<font-name>",
+    "mainLyricSize": <70-100>,
+    "mainLyricWeight": <400|600|700|800>,
+    "mainLyricItalic": <true|false>,
+    "letterSpacing": "<0-0.04>em",
+    "textEffect": "<glow|shadow|none>",
+    "sectionBadgeStyle": "<pill|box>"
+  },
+  "layout": {
+    "variant": "cover-art",
+    "showSectionBadge": true,
+    "showNextLyric": true,
+    "showProgressBar": true,
+    "visualizerPosition": "bottom"
+  },
+  "motif": {
+    "primary": "<motif-name>",
+    "secondary": "<noise-field|particles|waveform-rings|null>",
+    "intensity": "<low|medium|high>"
+  },
+  "animation": {
+    "personality": "<smooth|aggressive|dreamy|bouncy|sharp>",
+    "lyricEntrance": "<fade|slide-up|scale-in>",
+    "beatReactivity": <0.5-1.0>
+  }
+}
+```
+
+**Save to:**
+```
+File path: workspaces/<slug>/design.json
+```
+
+**Update meta.json files section:**
+```json
+"files": {
+  ...,
+  "design": "workspaces/<slug>/design.json"
+}
+```
+
+---
+
 ## File Outputs
 
 | File | Path |
 |---|---|
 | Suno meta-tag lyrics | `workspaces/<slug>/<slug>-suno-lyrics.txt` |
 | Style block only | `workspaces/<slug>/<slug>-suno-style.txt` |
+| Video design config | `workspaces/<slug>/design.json` |
 | Updated metadata | `workspaces/<slug>/meta.json` |
 
 ---

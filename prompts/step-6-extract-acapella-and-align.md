@@ -31,41 +31,40 @@ Read `meta.json` and extract: `songTitle`, `genre`, `language`, `slug`.
 
 ### 6.2 — Extract Acapella from Remix Audio
 
-Run the acapella extractor on the Suno remix (not the original) to get clean vocals for alignment:
+Run the acapella extractor on the remix (not the original) to get clean vocals for alignment. All commands run from the **project root**:
 
 ```bash
-cd tools/acapella-extractor
-uv run python src/acapella_extractor/extract.py \
-  ../../workspaces/<slug>/<slug>-remix-v1.mp3 \
-  --output-dir ../../workspaces/<slug>/
+uv run --python tools/acapella-extractor/.venv/bin/python \
+  tools/acapella-extractor/src/acapella_extractor/extract.py \
+  workspaces/<slug>/<slug>-remix-v1.mp3 \
+  --output-dir workspaces/<slug>/
 ```
 
-The separator writes a WAV file. Convert it to MP3 and give it the slug-prefixed name:
+The extractor writes a WAV file to `workspaces/<slug>/`. Convert it to MP3 and name it with the slug prefix:
 
 ```bash
-ffmpeg -i "workspaces/<slug>/<slug>-remix-v1_(vocals)_mel_band_roformer_kim_ft_unwa.wav" \
-  -codec:a libmp3lame -q:a 2 \
+WAV=$(ls workspaces/<slug>/*remix-v1*vocals*.wav 2>/dev/null | head -1)
+ffmpeg -i "$WAV" -codec:a libmp3lame -q:a 2 \
   "workspaces/<slug>/<slug>-remix-v1-acapella.mp3"
-rm "workspaces/<slug>/<slug>-remix-v1_(vocals)_mel_band_roformer_kim_ft_unwa.wav"
+rm "$WAV"
 ```
 
 Output: `workspaces/<slug>/<slug>-remix-v1-acapella.mp3`
 
-**Note:** This is separate from the Step 2 acapella (extracted from the original YouTube
-download). This one is from the Suno remix and is used only for lyrics alignment.
+This acapella is extracted from the remix (not the original YouTube download) and is used exclusively for CTC lyrics alignment.
 
 ---
 
 ### 6.3 — Generate Lyrics Timestamps
 
-Run the CTC forced aligner against the acapella:
+Run the CTC forced aligner against the acapella. All commands run from the **project root**:
 
 ```bash
-cd tools/acapella-extractor
-uv run python align_lyrics.py \
-  --audio ../../workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
-  --lyrics ../../workspaces/<slug>/<slug>-suno-lyrics.txt \
-  --output ../../workspaces/<slug>/lyrics-timestamps.json \
+uv run --python tools/acapella-extractor/.venv/bin/python \
+  tools/acapella-extractor/align_lyrics.py \
+  --audio workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
+  --lyrics workspaces/<slug>/<slug>-suno-lyrics.txt \
+  --output workspaces/<slug>/lyrics-timestamps.json \
   --language <iso-639-3-code>
 ```
 
@@ -77,11 +76,12 @@ back into lyric lines.
 
 ### 6.4 — Verify Alignment
 
-Print a terminal karaoke preview and confirm timing is correct before proceeding:
+Print a terminal karaoke preview and confirm timing is correct before proceeding. Run from the **project root**:
 
 ```bash
-cd tools/acapella-extractor
-uv run python verify_lyrics.py ../../workspaces/<slug>/lyrics-timestamps.json
+uv run --python tools/acapella-extractor/.venv/bin/python \
+  tools/acapella-extractor/verify_lyrics.py \
+  workspaces/<slug>/lyrics-timestamps.json
 ```
 
 Check:
@@ -131,7 +131,7 @@ Ready to proceed to Step 7: Fetch & Enhance Cover Art.
 
 | Problem | Fix |
 |---|---|
-| `ModuleNotFoundError: acapella_extractor` | Use `src/acapella_extractor/extract.py` directly, not `-m` |
-| Acapella output is WAV | Convert with ffmpeg as shown in step 6.2 |
+| `ModuleNotFoundError: acapella_extractor` | Run from project root using the full venv path as shown in step 6.2 |
+| Acapella output is WAV | Use the glob pattern `*remix-v1*vocals*.wav` to find the output and convert with ffmpeg as shown in step 6.2 |
 | Alignment too far off | Check acapella quality; try `--language` code for a closer MMS checkpoint |
 | ffprobe not found | `brew install ffmpeg` |

@@ -88,14 +88,14 @@ console.log(`Scaffolding video project for "${workspaceSlug}"...`);
 fs.cpSync(templateDir, videoDir, { recursive: true });
 fs.mkdirSync(path.join(videoDir, 'public'), { recursive: true });
 
-// Root.tsx substitutions
-const rootPath = path.join(videoDir, 'src', 'Root.tsx');
-let root = fs.readFileSync(rootPath, 'utf-8');
-root = root
-  .replace(/\{\{AUDIO_DURATION\}\}/g, audioDuration.toFixed(3))
-  .replace(/\{\{SONG_TITLE\}\}/g, songTitle)
-  .replace(/\{\{GENRE\}\}/g, genre);
-fs.writeFileSync(rootPath, root);
+// Write video-config.json (read at runtime by Root.tsx)
+const videoConfigPath = path.join(videoDir, 'public', 'video-config.json');
+fs.writeFileSync(videoConfigPath, JSON.stringify({
+  audioDuration: parseFloat(audioDuration.toFixed(3)),
+  songTitle,
+  genre,
+}, null, 2));
+console.log(`Video config written: ${videoConfigPath}`);
 
 // ---------------------------------------------------------------------------
 // Copy design.json if provided

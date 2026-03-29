@@ -40,7 +40,50 @@ ffmpeg -i "workspaces/$SLUG/${SLUG}-acapella.mp3" \
 
 ## Instructions
 
-### 5.1 — Navigate to Suno Create Page
+### 5.1 — Create a New Suno Workspace
+
+**This must be done BEFORE navigating to the create page or uploading anything.**
+
+**Chrome DevTools MCP tool:** `navigate_page`
+
+Navigate to the Suno workspaces page:
+
+```
+URL: https://suno.com/workspaces
+```
+
+**Chrome DevTools MCP tool:** `take_snapshot`
+
+Look for a **"New Workspace"** or **"Create Workspace"** button. Click it:
+
+```
+Element: button labeled "New Workspace" or "Create Workspace"
+```
+
+**Chrome DevTools MCP tool:** `fill`
+
+Enter the slug as the workspace name:
+
+```
+Element: text input for workspace name
+Value: <slug> (e.g., "adi-enti-okkasari-dark-deep-house")
+```
+
+**Chrome DevTools MCP tool:** `click`
+
+Click the confirm/create button:
+
+```
+Element: button labeled "Create" or "Save"
+```
+
+**Chrome DevTools MCP tool:** `take_snapshot`
+
+Verify the new workspace appears in the list with the slug name before proceeding.
+
+---
+
+### 5.2 — Navigate to Suno Create Page
 
 **Chrome DevTools MCP tool:** `navigate_page`
 
@@ -64,7 +107,7 @@ Verify these elements are present on the page:
 
 ---
 
-### 5.2 — Switch to Advanced Mode
+### 5.3 — Switch to Advanced Mode
 
 **Chrome DevTools MCP tool:** `click`
 
@@ -81,38 +124,29 @@ Tool: take_snapshot
 
 ---
 
-### 5.3 — Create or Select Suno Workspace
+### 5.4 — Select the Workspace Created in Step 5.1
 
 **Chrome DevTools MCP tool:** `click`
 
-Before uploading, ensure you're working in the correct workspace. Look for a workspace selector (usually near the top-left or in the navigation bar). If no workspace is selected or you need to create a new one:
-
-Click the workspace dropdown or "New Workspace" button:
+Click the workspace dropdown (labeled "Open workspace dropdown" or "Save to...") in the create form:
 
 ```
-Element: button labeled "New Workspace" or workspace dropdown
+Element: button labeled "Open workspace dropdown"
 ```
 
-**If creating a new workspace:**
-
-**Chrome DevTools MCP tool:** `fill` then `click`
-
-Enter the slug name as the workspace name:
+Select the workspace you created in step 5.1 (named after the slug):
 
 ```
-Element: text input for workspace name
-Value: <slug> (e.g., "meesaala-pilla-lofi")
+Element: list item matching "<slug>" (e.g., "adi-enti-okkasari-dark-deep-house")
 ```
-
-Click the "Create" or "Create Workspace" button to confirm.
 
 **Chrome DevTools MCP tool:** `take_snapshot`
 
-Verify the workspace name (slug) is displayed in the interface, indicating you're now working in the correct workspace.
+Verify the dropdown now shows the slug name as the selected workspace before continuing.
 
 ---
 
-### 5.4 — Upload the Acapella Audio to the Workspace
+### 5.5 — Upload the Acapella Audio to the Workspace
 
 **Chrome DevTools MCP tool:** `click`
 
@@ -183,11 +217,11 @@ Element: library item containing "<slug>-acapella" or the uploaded acapella file
 
 The selected acapella should now appear in the audio section of the creation interface.
 
-**IMPORTANT:** Ensure the file was uploaded to the workspace you created in Step 5.3. The file should be associated with your slug-named workspace.
+**IMPORTANT:** Ensure the file was uploaded to the workspace you created in Step 5.1. The file should be associated with your slug-named workspace.
 
 ---
 
-### 5.5 — Set the Audio Influence Mode
+### 5.6 — Set the Audio Influence Mode
 
 **Chrome DevTools MCP tool:** `click`
 
@@ -201,7 +235,7 @@ Optionally adjust the "Audio Influence" slider if visible. A value between 70–
 
 ---
 
-### 5.6 — Paste the Suno Meta-Tag Lyrics
+### 5.7 — Paste the Suno Meta-Tag Lyrics
 
 **Chrome DevTools MCP tool:** `click` then `fill`
 
@@ -227,7 +261,7 @@ Tool: take_snapshot
 
 ---
 
-### 5.7 — Paste the Style Description
+### 5.8 — Paste the Style Description
 
 **Chrome DevTools MCP tool:** `click` then `fill`
 
@@ -255,7 +289,7 @@ Tool: take_snapshot
 
 ---
 
-### 5.8 — Set the Song Title
+### 5.9 — Set the Song Title
 
 **Chrome DevTools MCP tool:** `fill`
 
@@ -268,7 +302,7 @@ Value: <slug> (e.g., "meesaala-pilla-lofi")
 
 ---
 
-### 5.9 — Review Before Submitting
+### 5.10 — Review Before Submitting
 
 Take a final snapshot to review all fields before clicking Create:
 
@@ -282,33 +316,6 @@ Confirm:
 - Style field contains the genre/style block
 - Song title is set to the workspace slug
 - Character count on style is within 1000
-
----
-
-### 5.10 — Select the Workspace Before Submitting
-
-**Chrome DevTools MCP tool:** `click` then `take_snapshot`
-
-Before clicking "Create song", verify and select the correct workspace. Look for a workspace selector dropdown near the creation button or in the interface header:
-
-```
-Tool: click
-Element: workspace dropdown or selector showing current workspace name
-```
-
-If a dropdown appears, select the workspace named after your slug:
-
-```
-Tool: click
-Element: dropdown option containing "<slug>"
-```
-
-Take a snapshot to confirm the correct workspace is selected:
-```
-Tool: take_snapshot
-```
-
-**Verify:** The workspace selector should display your slug name (e.g., "meesaala-pilla-lofi"), ensuring the remix will be saved to the correct workspace.
 
 ---
 
@@ -343,101 +350,61 @@ Timeout: 300000 (5 minutes)
 
 ---
 
-### 5.13 — Download Both Generated Songs
+### 5.13 — Get Song IDs from Generated Song Pages
 
-Once generation is complete, Suno shows 2 song cards (Variation 1 and Variation 2). Each has a download button (usually three dots menu or download icon).
-
-**Download Song 1 (Variation 1):**
+Once generation is complete, Suno shows 2 song cards. Click each song title to open its detail page and capture the song ID from the URL.
 
 **Chrome DevTools MCP tool:** `click`
 
-Click the three-dots menu or download icon on the first song card:
+Click the title of the first generated song to navigate to its detail page:
 
 ```
-Element: button with "Download" or three dots menu on first song card
+Element: song title or card for Variation 1
 ```
 
-**Chrome DevTools MCP tool:** `click`
+**Chrome DevTools MCP tool:** `evaluate_script`
 
-Click the "Download" option from the dropdown:
+Extract the song ID from the URL:
 
-```
-Element: menu item or button labeled "Download" or "Download audio"
-```
-
-**Chrome DevTools MCP tool:** `wait_for`
-
-Wait for the download to start:
-
-```
-Tool: wait_for
-Text to watch for: ["downloaded", "complete"]
-Timeout: 60000 (1 minute)
+```javascript
+() => window.location.href
 ```
 
-**Download Song 2 (Variation 2):**
+The URL will be in the form `https://suno.com/song/<song-id>`. Extract the `<song-id>` portion (a UUID like `00084c0d-5978-4377-aebc-36a349cf0a7a`).
 
-Repeat the same steps for the second song card:
-
-```
-Tool: click
-Element: three dots menu or download button on second song card
-
-Tool: click
-Element: "Download" option
-
-Tool: wait_for
-Text: ["downloaded"]
-Timeout: 60000
-```
+Repeat for Variation 2.
 
 ---
 
-### 5.14 — Locate and Rename Downloaded Files
+### 5.14 — Download Songs Directly from Suno CDN
 
-**Bash tool:** Find the downloaded files (usually in `~/Downloads/`):
-
-```bash
-ls -lt ~/Downloads/ | grep -E "\.mp3$|\.wav$" | head -10
-```
-
-Look for files downloaded in the last few minutes with names like:
-- `suno_song_xxxx.mp3` or similar
-- Most recent MP3 files
-
-**Identify which file is which:**
-- Play or check file sizes/modification times to determine v1 vs v2
-
-**Bash tool:** Move files to workspace with proper naming:
+The Suno CDN serves MP3 files at a predictable URL from the song ID. Download both variations with curl:
 
 ```bash
-# Replace <downloaded-v1> and <downloaded-v2> with actual filenames
-mv ~/Downloads/<downloaded-v1> workspaces/<slug>/<slug>-remix-v1.mp3
-mv ~/Downloads/<downloaded-v2> workspaces/<slug>/<slug>-remix-v2.mp3
+SLUG="<slug>"
+SONG_ID_V1="<song-id-1>"
+SONG_ID_V2="<song-id-2>"
+
+curl -L "https://cdn1.suno.ai/${SONG_ID_V1}.mp3" \
+  -o "workspaces/${SLUG}/${SLUG}-remix-v1.mp3"
+
+curl -L "https://cdn1.suno.ai/${SONG_ID_V2}.mp3" \
+  -o "workspaces/${SLUG}/${SLUG}-remix-v2.mp3"
 ```
+
+**Verify both files downloaded correctly:**
+
+```bash
+ls -lh workspaces/<slug>/<slug>-remix-*.mp3
+```
+
+Expected: each file is 4–10MB for a typical 3–4 minute song.
 
 ---
 
-### 5.15 — Verify Downloads and Get URLs
+### 5.15 — Verify Downloads
 
-**Chrome DevTools MCP tool:** `click` and `evaluate_script`
-
-Click on the first generated song to open its detail page:
-
-```
-Tool: click
-Element: link or title of first generated song
-```
-
-Get the URL:
-```
-Tool: evaluate_script
-Function: () => window.location.href
-```
-
-Repeat for the second song.
-
-**Bash tool:** Verify files exist:
+**Bash tool:**
 
 ```bash
 ls -lh workspaces/<slug>/<slug>-remix-*.mp3
@@ -462,7 +429,9 @@ Update `workspaces/<slug>/meta.json`:
     "remix_v1_downloaded": true,
     "remix_v2_downloaded": true,
     "suno_remix_url_v1": "https://suno.com/song/<song-id-1>",
-    "suno_remix_url_v2": "https://suno.com/song/<song-id-2>"
+    "suno_remix_url_v2": "https://suno.com/song/<song-id-2>",
+    "suno_cdn_v1": "https://cdn1.suno.ai/<song-id-1>.mp3",
+    "suno_cdn_v2": "https://cdn1.suno.ai/<song-id-2>.mp3"
   }
 }
 ```
@@ -480,7 +449,7 @@ Remix generation complete! Two variations created:
    workspaces/<slug>/<slug>-remix-v1.mp3
    workspaces/<slug>/<slug>-remix-v2.mp3
 
-🔗 Suno URLs:
+🔗 Suno song pages:
    Song 1: https://suno.com/song/<id-1>
    Song 2: https://suno.com/song/<id-2>
 

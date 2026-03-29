@@ -42,8 +42,8 @@ node generate-design.js <slug>
 ```
 
 This creates `workspaces/<slug>/design.json` with:
-- **Layout variant**: center-stage, full-bleed, minimal, sidebar, or stacked
-- **Visual motif**: particles, geometric-burst, aurora, waveform-rings, or noise-field
+- **Layout variant**: MUST always be `cover-art` — this is a hard requirement. The cover-art layout is the only supported layout for this pipeline. `generate-design.js` enforces this; never override it to any other variant.
+- **Visual motif**: particles, geometric-burst, aurora, waveform-rings, or noise-field — varies by genre
 - **Color palette**: Generated from genre and mood
 - **Typography**: Font, sizing, and text effects
 - **Animation personality**: smooth, bouncy, sharp, dreamy, or aggressive
@@ -51,13 +51,17 @@ This creates `workspaces/<slug>/design.json` with:
 The design is seeded from the song slug and duration, ensuring the same song always gets
 the same visual identity.
 
+> **Why cover-art is mandatory**: The CoverArtLayout renders the official movie/song poster
+> (produced in Step 7) as the dominant left-panel visual. Without it the video has no
+> contextual imagery. Do not allow `generate-design.js` to pick any other layout variant.
+
 ---
 
 ### 8.3 — Scaffold Remotion Project
 
 The `init-video.js` scaffolder copies the template, detects the audio duration from the remix
-file via ffprobe, injects song title and genre into `Root.tsx`, and copies the design.json
-automatically. No manual code editing needed.
+file via ffprobe, writes a `video-config.json` with song title, genre, and duration, and copies
+the design.json automatically. No manual code editing needed.
 
 ```bash
 cd tools/video-generator
@@ -143,8 +147,10 @@ Duration: <duration>s  |  Lyrics: <n> lines synced  |  Layout: <layout>  |  Moti
 
 The video template in `tools/video-generator/template/` is self-contained:
 
-- **`Root.tsx`** — sets composition duration (in frames) and passes song metadata as props.
-  `init-video.js` fills in `AUDIO_DURATION`, `SONG_TITLE`, and `GENRE` automatically.
+- **`Root.tsx`** — loads `public/video-config.json` at runtime to get audio duration, song title,
+  and genre. Sets composition duration (in frames) and passes song metadata as props.
+  `init-video.js` writes `video-config.json` automatically; for local dev, a default file is
+  included in the template.
 
 - **`MusicVideo.tsx`** — handles all synced-lyrics rendering with audio-reactive visuals:
   - Uses `useAudioData()` from `@remotion/media-utils` to get real frequency data

@@ -32,4 +32,5 @@ tools/video-generator/template/public/audio.mp3
 tools/video-generator/template/public/cover-art.jpg
 tools/video-generator/template/public/design.json
 tools/video-generator/template/public/lyrics-timestamps.json
+tools/video-generator/template/public/video-config.json
 .claude/
