@@ -33,7 +33,7 @@ interface CoverArtLayoutProps {
 //  └─────────────────────────────────┴──────────────────┘
 //         75% (1440px)                    25% (480px)
 //
-// Cover art is inset by ~5% with rounded corners and feathered edges
+// Cover art is inset by ~2.5% with rounded corners and feathered edges
 // that blend smoothly into the background gradient.
 
 const LINE_HEIGHT = 60;
@@ -41,7 +41,7 @@ const CONTAINER_HEIGHT = 270; // 25% of 1080px
 const CENTER_PADDING = CONTAINER_HEIGHT / 2 - LINE_HEIGHT / 2;
 
 // Inset padding for the cover art (percentage of the panel)
-const ART_INSET = '5%';
+const ART_INSET = '2.5%';
 
 const ACTIVE_SIZE_RATIO = 0.40;
 const INACTIVE_SIZE_RATIO = 0.26;
@@ -157,12 +157,11 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
             bottom: ART_INSET,
             borderRadius: 24,
             overflow: 'hidden',
-            // Feathered edge mask: fades out on all sides so the image
-            // blends smoothly into the background gradient
+            // Feathered edge mask: refined fade for smoother blend
             maskImage:
-              'radial-gradient(ellipse 92% 92% at 45% 50%, black 60%, transparent 100%)',
+              'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
             WebkitMaskImage:
-              'radial-gradient(ellipse 92% 92% at 45% 50%, black 60%, transparent 100%)',
+              'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
           }}
         >
           {!coverArtError ? (
@@ -218,13 +217,13 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
             </div>
           )}
 
-          {/* Subtle vignette inside the image for depth */}
+          {/* Refined vignette inside the image for subtle depth */}
           <div
             style={{
               position: 'absolute',
               inset: 0,
               background:
-                'radial-gradient(ellipse at 50% 50%, transparent 50%, rgba(0,0,0,0.35) 100%)',
+                'radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,0.25) 100%)',
               pointerEvents: 'none',
             }}
           />
@@ -234,41 +233,77 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
         <div
           style={{
             position: 'absolute',
-            bottom: 48,
-            left: 48,
+            bottom: 40,
+            left: 40,
             display: 'flex',
             flexDirection: 'column',
-            gap: 12,
+            gap: 16,
             zIndex: 2,
+            maxWidth: '55%',
           }}
         >
-          <span
+          {/* Title with gradient text effect */}
+          <div
             style={{
-              color: design.palette.primaryColor,
-              fontSize: 36,
-              fontWeight: 700,
-              textShadow: '0 2px 12px rgba(0,0,0,0.7)',
-              maxWidth: 900,
-              lineHeight: 1.2,
+              position: 'relative',
+              display: 'inline-block',
             }}
           >
-            {songTitle}
-          </span>
-          <span
+            <span
+              style={{
+                fontSize: 42,
+                fontWeight: 800,
+                lineHeight: 1.15,
+                letterSpacing: '-0.02em',
+                background: `linear-gradient(135deg, ${design.palette.primaryColor} 0%, ${design.palette.highlightColor} 100%)`,
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+                backgroundClip: 'text',
+                filter: 'drop-shadow(0 4px 8px rgba(0,0,0,0.5))',
+                display: 'block',
+              }}
+            >
+              {songTitle}
+            </span>
+          </div>
+
+          {/* Genre badge with refined styling */}
+          <div
             style={{
-              color: design.palette.accentColor,
-              fontSize: 18,
-              fontWeight: 500,
-              padding: '6px 20px',
-              background: 'rgba(0,0,0,0.45)',
-              border: `1px solid ${design.palette.accentColor}60`,
+              display: 'flex',
+              alignItems: 'center',
+              gap: 10,
+              padding: '8px 20px',
+              background: `linear-gradient(135deg, ${design.palette.accentColor}15 0%, ${design.palette.highlightColor}10 100%)`,
+              border: `1.5px solid ${design.palette.accentColor}50`,
               borderRadius: 100,
-              backdropFilter: 'blur(8px)',
+              backdropFilter: 'blur(12px) saturate(180%)',
+              WebkitBackdropFilter: 'blur(12px) saturate(180%)',
               alignSelf: 'flex-start',
+              boxShadow: `0 4px 15px ${design.palette.accentColor}20, inset 0 1px 0 ${design.palette.accentColor}30`,
             }}
           >
-            {genre}
-          </span>
+            <div
+              style={{
+                width: 6,
+                height: 6,
+                borderRadius: '50%',
+                background: design.palette.highlightColor,
+                boxShadow: `0 0 8px ${design.palette.highlightColor}`,
+              }}
+            />
+            <span
+              style={{
+                color: design.palette.accentColor,
+                fontSize: 14,
+                fontWeight: 600,
+                letterSpacing: '0.08em',
+                textTransform: 'uppercase',
+              }}
+            >
+              {genre}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -286,16 +321,16 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
           gap: 28,
         }}
       >
-        {/* Lyrics window */}
+        {/* Lyrics window with refined fade edges */}
         <div
           style={{
             width: '100%',
             height: CONTAINER_HEIGHT,
             overflow: 'hidden',
             maskImage:
-              'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+              'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
             WebkitMaskImage:
-              'linear-gradient(to bottom, transparent 0%, black 15%, black 85%, transparent 100%)',
+              'linear-gradient(to bottom, transparent 0%, black 12%, black 88%, transparent 100%)',
           }}
         >
           <div
@@ -364,23 +399,25 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
           height={100}
         />
 
-        {/* Progress bar */}
+        {/* Progress bar with refined styling */}
         {design.layout.showProgressBar && (
           <div
             style={{
-              width: '80%',
-              height: 3,
-              background: `${design.palette.primaryColor}15`,
-              borderRadius: 2,
+              width: '75%',
+              height: 4,
+              background: `${design.palette.primaryColor}10`,
+              borderRadius: 100,
               overflow: 'hidden',
+              boxShadow: `inset 0 1px 2px rgba(0,0,0,0.3)`,
             }}
           >
             <div
               style={{
                 width: `${overallProgress * 100}%`,
                 height: '100%',
-                background: `linear-gradient(to right, ${design.palette.accentColor}, ${design.palette.highlightColor})`,
-                borderRadius: 2,
+                background: `linear-gradient(90deg, ${design.palette.accentColor}, ${design.palette.highlightColor})`,
+                borderRadius: 100,
+                boxShadow: `0 0 10px ${design.palette.highlightColor}60`,
               }}
             />
           </div>
