@@ -9,6 +9,8 @@ Collect all user inputs for the remix session, create a dedicated workspace fold
 - Access to the local filesystem (Bash tool)
 - The `workspaces/` directory exists at the project root, or will be created now
 
+**See also**: [Workspace Conventions](references/workspace-conventions.md) for slug format, meta.json schema, and file naming rules.
+
 ---
 
 ## Instructions
@@ -41,26 +43,21 @@ Strip any trailing suffixes like `| Official Video`, `| Full Lyrical`, `| Audio`
 
 **Example:**
 - Raw title: `Meesaala Pilla Full Lyrical | Chiranjeevi | Nayanthara | Bheems Music`
-- Cleaned title: `Meesaala Pilla Full Lyrical | Chiranjeevi | Nayanthara | Bheems Music`
+- Cleaned title: `Meesaala Pilla`
 
 ---
 
 ### 0.3 — Generate Workspace Slug
 
-Derive a short, filesystem-safe slug from the video title and genre:
+Derive a short, filesystem-safe slug from the video title and genre.
 
-**Rules:**
-1. Take the first 4–6 meaningful words of the video title (skip filler words like "Full", "Lyrical", "Video", "Official")
-2. Append the genre/style as a suffix
-3. Lowercase everything
-4. Replace spaces and special characters with hyphens
-5. Remove any characters that are not alphanumeric or hyphens
+**See**: [Workspace Conventions > Slug Format](references/workspace-conventions.md#slug-format) for detailed rules and examples.
 
-**Examples:**
-- Title: `Meesaala Pilla Full Lyrical | Chiranjeevi | Nayanthara` + Genre: `Lo-Fi`
-  → Slug: `meesaala-pilla-lofi`
-- Title: `Oo Antava Oo Oo Antava | Pushpa Songs` + Genre: `Hip-Hop`
-  → Slug: `oo-antava-hip-hop`
+**Quick reference**:
+- Take 4–6 meaningful words from title
+- Skip filler words ("Full", "Lyrical", "Official")
+- Append genre as suffix
+- Lowercase, hyphenate, remove special chars
 
 ---
 
@@ -84,6 +81,8 @@ Verify the directory was created successfully.
 
 Write a `meta.json` file inside the workspace with all collected and derived information.
 
+**See**: [Workspace Conventions > meta.json Schema](references/workspace-conventions.md#metajson-schema) for full schema reference.
+
 **File path:** `workspaces/<slug>/meta.json`
 
 **Template:**
@@ -101,7 +100,13 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
     "original_mp3": "workspaces/<slug>/<slug>-original.mp3",
     "acapella": "workspaces/<slug>/<slug>-acapella.mp3",
     "lyrics": "workspaces/<slug>/<slug>-lyrics.txt",
-    "suno_lyrics": "workspaces/<slug>/<slug>-suno-lyrics.txt"
+    "suno_lyrics": "workspaces/<slug>/<slug>-suno-lyrics.txt",
+    "suno_style": "workspaces/<slug>/<slug>-suno-style.txt",
+    "design": "workspaces/<slug>/design.json",
+    "remix_acapella": null,
+    "lyrics_timestamps": null,
+    "cover_art": null,
+    "final_video": null
   },
   "status": {
     "mp3_downloaded": false,
@@ -109,7 +114,19 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
     "lyrics_saved": false,
     "suno_lyrics_generated": false,
     "remix_uploaded": false,
-    "suno_remix_url": null
+    "remix_v1_downloaded": false,
+    "remix_v2_downloaded": false,
+    "acapella_aligned": false,
+    "cover_art_fetched": false,
+    "video_generated": false,
+    "youtube_metadata_generated": false,
+    "suno_remix_url_v1": null,
+    "suno_remix_url_v2": null,
+    "suno_cdn_v1": null,
+    "suno_cdn_v2": null,
+    "selected_remix": null,
+    "lyrics_source_url": null,
+    "cover_art_skipped": false
   },
   "created_at": "<ISO timestamp>"
 }
@@ -145,7 +162,19 @@ Proceeding to Step 1: Download MP3...
 
 ## Error Handling
 
-- **YouTube page fails to load:** Ask the user to confirm the URL is valid and publicly accessible. Do not proceed until the title is confirmed.
-- **Slug collision (folder already exists):** Append a short timestamp suffix to the slug (e.g., `meesaala-pilla-lofi-20260327`) to ensure uniqueness.
-- **User skips optional inputs:** Use defaults silently and note them in `meta.json`.
+**See**: [Error Handling Patterns](references/error-handling-patterns.md) for detailed fixes.
+
+| Error | Solution |
+|---|---|
+| YouTube page fails to load | Ask user to confirm URL is valid and publicly accessible |
+| Slug collision (folder exists) | Append timestamp suffix: `slug-20260327` |
+| User skips optional inputs | Use defaults silently, note in meta.json |
+| Permission denied on workspaces/ | Ensure directory exists with write permissions |
+
+---
+
+## Reference
+
+- [Workspace Conventions](references/workspace-conventions.md) — Slug format, meta.json schema, file naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors and recovery
 

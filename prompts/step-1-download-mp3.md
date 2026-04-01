@@ -58,16 +58,15 @@ Expected output: file exists with size > 1MB.
 
 Update `workspaces/<slug>/meta.json` to mark this step complete:
 
+Set `status.mp3_downloaded` to `true` in `meta.json`:
+
 ```json
 "status": {
-  "mp3_downloaded": true,
-  "acapella_extracted": false,
-  "lyrics_saved": false,
-  "suno_lyrics_generated": false,
-  "remix_uploaded": false,
-  "suno_remix_url": null
+  "mp3_downloaded": true
 }
 ```
+
+> **Note:** Only update the fields shown above. Do not overwrite other status fields.
 
 ---
 
@@ -95,8 +94,18 @@ Proceeding to Step 2: Extract Acapella...
 
 ## Error Handling
 
-- **Download fails with 403/401:** The video may be age-restricted or require authentication. Try adding `--cookies-from-browser chrome` or `--cookies-from-browser safari` to use browser cookies.
-- **No audio formats available:** Some videos don't have separate audio streams. Try removing `-x` to download the video with audio embedded.
-- **uvx not found:** Install uv first: `brew install uv`
-- **Conversion fails:** Ensure the YouTube URL is valid and publicly accessible. Try visiting the URL directly in a browser.
-- **File is 0 bytes:** Check disk space and permissions on the workspaces directory.
+**See**: [Error Handling Patterns > YouTube Download Errors](references/error-handling-patterns.md#youtube-download-errors-step-1) for detailed fixes.
+
+| Error | Solution |
+|---|---|
+| 403/401 Forbidden | Add `--cookies-from-browser chrome` or `--cookies-from-browser safari` |
+| No audio formats available | Try without `-x`, then extract audio with ffmpeg |
+| uvx not found | Install uv: `brew install uv` |
+| File is 0 bytes | Check disk space and permissions |
+
+---
+
+## Reference
+
+- [Workspace Conventions](references/workspace-conventions.md) — File naming conventions
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors

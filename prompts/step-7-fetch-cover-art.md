@@ -15,7 +15,9 @@ stylized image is used as the background asset in the Remotion video (Step 8).
 
 ## Prerequisites
 
-- `workspaces/<slug>/meta.json` exists with `songTitle`, `language`, `slug`
+- `workspaces/<slug>/meta.json` exists with `video_title`, `language`, `slug`
+
+**See also**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference.
 
 ---
 
@@ -23,24 +25,21 @@ stylized image is used as the background asset in the Remotion video (Step 8).
 
 ### 7.1 — Read Workspace Files
 
-Read `meta.json` and extract: `songTitle`, `language`, `slug`, `video_title`.
+Read `meta.json` and extract: `video_title`, `language`, `slug`.
 
 ---
 
 ### 7.2 — Get Cover Art from JioSaavn (Preferred)
 
-JioSaavn CDN hosts high-quality cover art for Indian film songs. The URL pattern is:
+**See**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md)
 
-```
-https://c.saavncdn.com/<album-id>/<Album-Name>-<Language>-<Year>-<timestamp>-500x500.jpg
-```
+JioSaavn CDN hosts high-quality cover art for Indian film songs.
 
-**To find the JioSaavn URL:**
-
-1. Navigate to `https://www.jiosaavn.com` using Chrome DevTools MCP
+**Steps:**
+1. Navigate to `https://www.jiosaavn.com`
 2. Search for: `<song name> <movie name>`
 3. Open the song page
-4. Use `evaluate_script` to extract the OG image URL:
+4. Extract the OG image URL:
 
 ```javascript
 () => document.querySelector('meta[property="og:image"]')?.content
@@ -48,18 +47,20 @@ https://c.saavncdn.com/<album-id>/<Album-Name>-<Language>-<Year>-<timestamp>-500
 
 This returns the direct CDN URL. Use it as the source image.
 
-**If JioSaavn does not have the song**, fall back to Google Images (step 7.3).
+**If JioSaavn doesn't have the song**, fall back to Google Images (step 7.3).
 
 ---
 
 ### 7.3 — Fallback: Find Cover Art via Google Images
 
-If JioSaavn does not have the song, use Chrome DevTools MCP to search Google Images:
+**See**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md)
+
+If JioSaavn doesn't have the song:
 
 1. Navigate to `https://images.google.com`
 2. Search: `<movie name> <song name> album cover site:saavn.com OR site:gaana.com`
-3. Look for official artwork from music streaming platforms (JioSaavn, Gaana, Spotify, Apple Music)
-4. Avoid: YouTube thumbnails, fan-made edits, screenshots
+3. Look for official artwork from streaming platforms
+4. Avoid: YouTube thumbnails, fan edits, screenshots
 
 Right-click the best result to get the full-resolution image URL.
 
@@ -119,7 +120,7 @@ Update `workspaces/<slug>/meta.json`:
 ```json
 {
   "status": { "cover_art_fetched": true },
-  "outputs": {
+  "files": {
     "cover_art": "workspaces/<slug>/<slug>-cover-art.jpg"
   }
 }
@@ -154,10 +155,20 @@ If no suitable source image can be found:
 
 ## Error Handling
 
+**See**: [Error Handling Patterns](references/error-handling-patterns.md)
+
 | Problem | Fix |
 |---|---|
 | JioSaavn search returns no result | Fall back to Google Images (step 7.3) |
-| fal.ai upload_file rejects URL | Download the image locally first with curl, then base64-encode and pass via `data` parameter |
-| Nano Banana Pro returns unwanted text | Add `"no text, no captions, no subtitles"` to the negative prompt if the model supports it |
-| Output image has wrong aspect ratio | Pass `aspect_ratio: "1:1"` explicitly; the model respects this parameter |
-| curl download fails | Inspect the returned URL for redirects; try `wget -O` as an alternative |
+| fal.ai upload_file rejects URL | Download image locally with curl, then base64-encode |
+| Nano Banana Pro returns unwanted text | Add `"no text, no captions"` to prompt |
+| Output image has wrong aspect ratio | Pass `aspect_ratio: "1:1"` explicitly |
+| curl download fails | Try `wget -O` as alternative |
+
+---
+
+## Reference
+
+- [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation
+- [Workspace Conventions](references/workspace-conventions.md) — File naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors

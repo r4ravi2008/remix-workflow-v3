@@ -7,7 +7,11 @@ Search for the original song lyrics in native Indic script (Telugu, Hindi, Tamil
 ## Prerequisites
 
 - `workspaces/<slug>/meta.json` exists with `video_title` and `language` fields
-- The song is a Telugu or other Indic language song
+- Chrome DevTools MCP available
+
+**See also:**
+- [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference
+- [Workspace Conventions > Native Script Rule](references/workspace-conventions.md#native-script-rule)
 
 ---
 
@@ -33,52 +37,32 @@ Strip filler words from the video title for the search (e.g. "Full Lyrical", "Vi
 
 ### 3.2 — Try lyricstape.com First (Preferred for Telugu)
 
-**Chrome DevTools MCP tool:** `navigate_page`
+**Chrome DevTools MCP:** See [Common Navigation Patterns](references/chrome-devtools-patterns.md#common-navigation-patterns)
 
-For Telugu songs, first attempt a direct search on lyricstape.com before falling back to Google:
-
+Navigate to:
 ```
-URL: https://www.lyricstape.com/?s=<url-encoded-song-name>
-```
-
-Example:
-```
-URL: https://www.lyricstape.com/?s=Meesaala+Pilla
+https://www.lyricstape.com/?s=<url-encoded-song-name>
 ```
 
-Take a snapshot to check if results appear:
-```
-Tool: take_snapshot
-```
-
-If a matching result is found, click it and skip to Step 3.4. If no results, fall back to the Google search in the next step.
+Take a snapshot to check if results appear. If a matching result is found, click it and skip to Step 3.4. If no results, fall back to Google search.
 
 ---
 
 ### 3.3 — Search Google for Lyrics (Fallback)
 
-**Chrome DevTools MCP tool:** `navigate_page`
+**Chrome DevTools MCP:**
 
-If lyricstape.com did not return results, navigate to Google with the search query:
-
+Navigate to Google with the search query:
 ```
-URL: https://www.google.com/search?q=<url-encoded-search-query>
-```
-
-Example:
-```
-URL: https://www.google.com/search?q=Meesaala+Pilla+Telugu+lyrics+site:lyricstape.com
+https://www.google.com/search?q=<url-encoded-search-query>
 ```
 
-Try a site-scoped search for lyricstape.com first, then broaden if needed:
+Try a site-scoped search for lyricstape.com first:
 ```
-URL: https://www.google.com/search?q=Meesaala+Pilla+Telugu+lyrics
+https://www.google.com/search?q=Meesaala+Pilla+Telugu+lyrics+site:lyricstape.com
 ```
 
-Take a snapshot to see the search results:
-```
-Tool: take_snapshot
-```
+Take a snapshot to see the search results.
 
 ---
 
@@ -95,74 +79,35 @@ If falling back to Google, scan the search results snapshot for links to Indic l
 6. lyricsintelugu.com — Telugu lyrics
 7. Any site that shows Telugu/Devanagari/Tamil script in the search snippet
 
-**Avoid:** Sites that only show romanized/transliterated lyrics (e.g., "malle theegaroy" instead of "మల్లె తీగరోయ్")
+**Avoid:** Sites that only show romanized/transliterated lyrics
 
-**Chrome DevTools MCP tool:** `take_snapshot`
-
-Read the search result snippets to identify which site has native script lyrics.
+**See:** [Native Script Rule](references/workspace-conventions.md#native-script-rule) — Never use romanized text.
 
 ---
 
 ### 3.5 — Navigate to the Lyrics Page
 
-**Chrome DevTools MCP tool:** `navigate_page`
+**Chrome DevTools MCP:** Navigate to the best matching result URL.
 
-Click on the best matching lyrics result or navigate to its URL directly.
-
-```
-Tool: navigate_page
-Type: url
-URL: <lyrics page URL from search results>
-```
-
-Take a snapshot to verify the page loaded:
-```
-Tool: take_snapshot
-```
+Take a snapshot to verify the page loaded.
 
 ---
 
 ### 3.6 — Verify Lyrics Are in Native Script
 
-After the page loads, take a snapshot and confirm:
-- Lyrics are displayed in native Indic script (e.g., Telugu: మల్లె తీగరోయ్)
-- NOT in romanized form (e.g., "malle theegaroy" is romanized — skip this page)
+After the page loads, confirm:
+- Lyrics are displayed in native Indic script (e.g., Telugu: `మల్లె తీగరోయ్`)
+- NOT in romanized form (e.g., "malle theegaroy" — skip this page)
 
-If the page shows romanized lyrics only, go back and try the next result:
-```
-Tool: navigate_page
-Type: back
-```
+If romanized only, go back and try the next result.
 
 ---
 
 ### 3.7 — Extract the Lyrics Text
 
-**Chrome DevTools MCP tool:** `evaluate_script`
+**Chrome DevTools MCP:** Use `evaluate_script` with common selectors.
 
-Once on a valid lyrics page with native script, extract the full lyrics text using JavaScript:
-
-```javascript
-() => {
-  // Try common lyrics container selectors
-  const selectors = [
-    '.lyrics', '.lyric', '.song-lyrics', '.lyrics-body',
-    '[class*="lyric"]', '[class*="Lyric"]',
-    'article', '.entry-content', '.post-content', 'main p'
-  ];
-  for (const sel of selectors) {
-    const el = document.querySelector(sel);
-    if (el && el.innerText.trim().length > 100) {
-      return el.innerText.trim();
-    }
-  }
-  // Fallback: get all paragraph text
-  return Array.from(document.querySelectorAll('p'))
-    .map(p => p.innerText.trim())
-    .filter(t => t.length > 20)
-    .join('\n\n');
-}
-```
+**See:** [Extract Text Content by Selector](references/chrome-devtools-patterns.md#extract-text-content-by-selector)
 
 Review the extracted text to confirm it contains the correct Indic script lyrics.
 
@@ -170,9 +115,7 @@ Review the extracted text to confirm it contains the correct Indic script lyrics
 
 ### 3.8 — Save Lyrics to Workspace
 
-**Write tool** (filesystem, not browser):
-
-Save the extracted lyrics to the workspace:
+**Write tool:** Save the extracted lyrics:
 
 ```
 File path: workspaces/<slug>/<slug>-lyrics.txt
@@ -238,11 +181,20 @@ Proceeding to Step 4: Generate Suno Meta-Tag Lyrics...
 
 ## Error Handling
 
-- **No Indic script lyrics found in search results:** Try alternative queries:
-  - `<song name> <language> పాట సాహిత్యం` (for Telugu, adds "song lyrics" in Telugu)
-  - `<song name> lyrics <movie name>`
-  - Search YouTube comments for lyrics if no dedicated site found
-- **Lyrics page requires JavaScript and won't load properly:** Try taking a screenshot instead to visually read the lyrics, then manually transcribe into the file.
-- **Partial lyrics found:** Note which sections are missing in a comment at the top of `<slug>-lyrics.txt` so Step 4 can handle gaps appropriately.
-- **Lyrics in multiple scripts on same page:** Only keep the Indic script section — remove any romanized or English translation sections before saving.
+**See**: [Error Handling Patterns > Lyrics Errors](references/error-handling-patterns.md#lyrics-errors-step-3) and [Browser Automation Errors](references/error-handling-patterns.md#browser-automation-errors-steps-3-5-7)
+
+| Error | Solution |
+|---|---|
+| No Indic script lyrics found | Try queries with native language terms (e.g., `పాట సాహిత్యం` for Telugu) |
+| Page requires JavaScript | Take screenshot to visually read lyrics |
+| Partial lyrics found | Note missing sections in file header |
+| Multiple scripts on page | Keep only Indic script section |
+
+---
+
+## Reference
+
+- [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation
+- [Workspace Conventions](references/workspace-conventions.md) — Native script rules
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors
 

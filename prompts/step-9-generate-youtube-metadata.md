@@ -15,7 +15,7 @@ Create optimized YouTube metadata (title, description, tags, thumbnail text) for
 
 ## Prerequisites
 
-- `workspaces/<slug>/meta.json` exists with `title`, `genre`, `language`, `youtube_url`
+- `workspaces/<slug>/meta.json` exists with `video_title`, `genre`, `language`, `youtube_url`
 - `workspaces/<slug>/<slug>-suno-style.txt` exists (for style descriptors)
 - `workspaces/<slug>/<slug>-video.mp4` exists (video is ready to upload)
 
@@ -328,7 +328,18 @@ Files saved:
 
 ## Error Handling
 
-- **Title too long:** Trim secondary descriptors, keep core "Song (Remix) — Genre | Language"
-- **Missing original credits:** Use placeholder text: "[Original artist info unavailable — please verify]"
-- **Description over 5000 chars:** Truncate tags section or remove timestamps
-- **No design.json:** Use neutral colors (#1a1a2e, #ffffff) for thumbnail suggestions
+**See**: [Error Handling Patterns](references/error-handling-patterns.md) for detailed fixes.
+
+| Error | Solution |
+|---|---|
+| Title too long | Trim secondary descriptors, keep "Song (Remix) — Genre \| Language" |
+| Missing original credits | Use placeholder: "[Original artist info unavailable — please verify]" |
+| Description over 5000 chars | Truncate tags section or remove timestamps |
+| No design.json | Use neutral colors (#1a1a2e, #ffffff) for thumbnail suggestions |
+
+---
+
+## Reference
+
+- [Workspace Conventions](references/workspace-conventions.md) — File naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors

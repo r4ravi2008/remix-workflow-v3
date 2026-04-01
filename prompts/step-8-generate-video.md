@@ -22,13 +22,15 @@ focuses on running the pipeline and wiring up the correct data.
 - `workspaces/<slug>/meta.json` exists with `genre`, `slug`, `language`
 - `workspaces/<slug>/<slug>-cover-art.jpg` exists (produced in Step 7, **required**)
 
+**See also**: Load the `remotion-best-practices` skill when working on this step.
+
 ---
 
 ## Instructions
 
 ### 8.1 — Read Workspace Files
 
-Read `meta.json` and extract: `songTitle`, `genre`, `language`, `slug`.
+Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
 
 ---
 
@@ -104,7 +106,7 @@ Update `workspaces/<slug>/meta.json` to record the video output:
 ```json
 {
   "status": { "video_generated": true },
-  "outputs": {
+  "files": {
     "final_video": "workspaces/<slug>/<slug>-video.mp4",
     "design_config": "workspaces/<slug>/design.json"
   }
@@ -124,7 +126,7 @@ Outputs in workspaces/<slug>/:
    <slug>-remix-v1-acapella.mp3      — Vocals extracted from remix
    lyrics-timestamps.json            — Word+line timestamps (CTC aligned)
    design.json                       — LLM-generated visual design configuration
-   <slug>-cover-art.jpg              — Enhanced cover art (SeedVR2 1080p)
+   <slug>-cover-art.jpg              — Anime-stylized cover art (Nano Banana Pro 2K)
    video/                            — Remotion project
 
 Duration: <duration>s  |  Lyrics: <n> lines synced  |  Layout: <layout>  |  Motif: <motif>
@@ -165,11 +167,21 @@ the template if the project gets into a broken state.
 
 ## Error Handling
 
+**See**: [Error Handling Patterns > Video Generation Errors](references/error-handling-patterns.md#video-generation-errors-step-8)
+
 | Problem | Fix |
 |---|---|
 | Cover art not showing (left panel blank) | Ensure `cover-art.jpg` is in `video/public/` with that exact filename |
-| Cover art distorted / wrong crop | SeedVR2 output is already 1080p — `objectFit: cover` handles any ratio |
+| Cover art distorted / wrong crop | Nano Banana Pro output is 2048×2048 — `objectFit: cover` handles any ratio |
 | Lyrics not syncing | Check `lyrics-timestamps.json` is in `video/public/` |
 | No lyrics visible in rendered video | Missing `delayRender` — re-scaffold from template |
 | Telugu text garbled | Font issue — system-ui fallback handles it; no fix needed |
 | ffprobe not found | `brew install ffmpeg` |
+
+---
+
+## Reference
+
+- [Workspace Conventions](references/workspace-conventions.md) — File naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors
+- Load `remotion-best-practices` skill for Remotion-specific guidance

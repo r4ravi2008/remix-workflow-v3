@@ -19,28 +19,34 @@ generation step.
 - `workspaces/<slug>/<slug>-suno-lyrics.txt` exists
 - `workspaces/<slug>/meta.json` exists with `genre`, `slug`, `language`
 
+**See also**: [Acapella Extractor Usage](references/acapella-extractor-usage.md) — Detailed tool documentation.
+
 ---
 
 ## Instructions
 
 ### 6.1 — Read Workspace Files
 
-Read `meta.json` and extract: `songTitle`, `genre`, `language`, `slug`.
+Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
 
 ---
 
 ### 6.2 — Extract Acapella from Remix Audio
 
+**See**: [Acapella Extractor Usage > Extraction from Remix](references/acapella-extractor-usage.md#extraction-from-remix-step-6)
+
 Run the acapella extractor on the remix (not the original) to get clean vocals for alignment. All commands run from the **project root**:
 
 ```bash
+cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
+PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
-  tools/acapella-extractor/src/acapella_extractor/extract.py \
-  workspaces/<slug>/<slug>-remix-v1.mp3 \
-  --output-dir workspaces/<slug>/
+python -m acapella_extractor.extract \
+workspaces/<slug>/<slug>-remix-v1.mp3 \
+-o workspaces/<slug>/
 ```
 
-The extractor writes a WAV file to `workspaces/<slug>/`. Convert it to MP3 and name it with the slug prefix:
+The extractor outputs WAV — convert to MP3:
 
 ```bash
 WAV=$(ls workspaces/<slug>/*remix-v1*vocals*.wav 2>/dev/null | head -1)
@@ -51,47 +57,52 @@ rm "$WAV"
 
 Output: `workspaces/<slug>/<slug>-remix-v1-acapella.mp3`
 
-This acapella is extracted from the remix (not the original YouTube download) and is used exclusively for CTC lyrics alignment.
-
 ---
 
 ### 6.3 — Generate Lyrics Timestamps
 
+**See**: [Acapella Extractor Usage > CTC Forced Alignment](references/acapella-extractor-usage.md#ctc-forced-alignment-step-6)
+
 Run the CTC forced aligner against the acapella. All commands run from the **project root**:
 
 ```bash
+cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
+PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
-  tools/acapella-extractor/align_lyrics.py \
-  --audio workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
-  --lyrics workspaces/<slug>/<slug>-suno-lyrics.txt \
-  --output workspaces/<slug>/lyrics-timestamps.json \
-  --language <iso-639-3-code>
+tools/acapella-extractor/align_lyrics.py \
+--audio workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
+--lyrics workspaces/<slug>/<slug>-suno-lyrics.txt \
+--output workspaces/<slug>/lyrics-timestamps.json \
+--language <iso-639-3-code>
 ```
 
-Use `tel` for Telugu, `hin` for Hindi, `tam` for Tamil. The script strips section headers and
-stage directions automatically, aligns at word level (~20ms resolution), and groups results
-back into lyric lines.
+**Language codes**: `tel` (Telugu), `hin` (Hindi), `tam` (Tamil)
+
+The script strips section headers, aligns at ~20ms word-level resolution, and groups back into lines.
 
 ---
 
 ### 6.4 — Verify Alignment
 
-Print a terminal karaoke preview and confirm timing is correct before proceeding. Run from the **project root**:
+**See**: [Acapella Extractor Usage > Alignment Verification](references/acapella-extractor-usage.md#alignment-verification-step-6)
+
+Print a terminal karaoke preview:
 
 ```bash
+cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
+PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
-  tools/acapella-extractor/verify_lyrics.py \
-  workspaces/<slug>/lyrics-timestamps.json
+tools/acapella-extractor/verify_lyrics.py \
+workspaces/<slug>/lyrics-timestamps.json
 ```
 
-Check:
-- First vocal line appears within ±500ms of its actual onset
-- Chorus lines align within ±1s
-- No lines appear during instrumental sections
-- Total drift at end < 3s
+**Quality checks**:
+- First vocal within ±500ms of actual onset
+- Chorus lines within ±1s
+- No lines during instrumental sections
+- Total end drift < 3s
 
-Do not proceed to Step 7 (cover art) until these pass. If alignment is off, check acapella
-quality and re-run `align_lyrics.py`.
+**Do not proceed to Step 7 until these pass.**
 
 ---
 
@@ -102,7 +113,7 @@ Update `workspaces/<slug>/meta.json` to record the alignment outputs:
 ```json
 {
   "status": { "acapella_aligned": true },
-  "outputs": {
+  "files": {
     "remix_acapella": "workspaces/<slug>/<slug>-remix-v1-acapella.mp3",
     "lyrics_timestamps": "workspaces/<slug>/lyrics-timestamps.json"
   }
@@ -129,9 +140,19 @@ Ready to proceed to Step 7: Fetch & Enhance Cover Art.
 
 ## Error Handling
 
+**See**: [Error Handling Patterns > Alignment Errors](references/error-handling-patterns.md#alignment-errors-step-6) and [Acapella Extractor Usage > Troubleshooting](references/acapella-extractor-usage.md#troubleshooting)
+
 | Problem | Fix |
 |---|---|
-| `ModuleNotFoundError: acapella_extractor` | Run from project root using the full venv path as shown in step 6.2 |
-| Acapella output is WAV | Use the glob pattern `*remix-v1*vocals*.wav` to find the output and convert with ffmpeg as shown in step 6.2 |
-| Alignment too far off | Check acapella quality; try `--language` code for a closer MMS checkpoint |
+| `ModuleNotFoundError: acapella_extractor` | Ensure `PYTHONPATH` and full venv path are set |
+| Acapella output is WAV | Use glob pattern `*remix-v1*vocals*.wav` to find and convert |
+| Alignment too far off | Check acapella quality; verify language code |
 | ffprobe not found | `brew install ffmpeg` |
+
+---
+
+## Reference
+
+- [Acapella Extractor Usage](references/acapella-extractor-usage.md) — Full tool documentation
+- [Workspace Conventions](references/workspace-conventions.md) — File naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors

@@ -12,29 +12,26 @@ Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, pa
 - `workspaces/<slug>/meta.json` exists with `genre`, `slug`
 - Logged into Suno.ai (https://suno.com)
 
+**See also:**
+- [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference
+- [Suno Format Guide](references/suno-format-guide.md) — Meta-tag format reference
+
 ---
 
 ## Pre-Upload: Copyright Detection Pitch Shift
 
-Suno.ai may detect that an uploaded acapella matches an existing copyrighted work and block or flag the generation. If this happens, pitch-shift the acapella down by **2 semitones** before re-uploading.
+**See**: [Error Handling Patterns > Copyright Detection](references/error-handling-patterns.md#copyright-detection-step-5)
 
-**When to apply:** If Suno rejects the upload or returns an error indicating the audio matches an existing work.
-
-**Command:**
+If Suno detects copyrighted material, pitch-shift the acapella down by 2 semitones:
 
 ```bash
-SLUG="<slug>"
-ffmpeg -i "workspaces/$SLUG/${SLUG}-acapella.mp3" \
+ffmpeg -i "workspaces/<slug>/<slug>-acapella.mp3" \
   -af "rubberband=pitch=0.8909" \
   -codec:a libmp3lame -b:a 192k \
-  "workspaces/$SLUG/${SLUG}-acapella-pitched.mp3" -y
+  "workspaces/<slug>/<slug>-acapella-pitched.mp3" -y
 ```
 
-**Options explained:**
-- `rubberband=pitch=0.8909` — shifts pitch down exactly 2 semitones (`2^(-2/12) ≈ 0.8909`) while preserving the original tempo
-- `-codec:a libmp3lame -b:a 192k` — re-encodes to MP3 at 192kbps
-
-**Then upload** `workspaces/<slug>/<slug>-acapella-pitched.mp3` instead of the original acapella in step 5.4.
+Then upload the pitched version instead.
 
 ---
 
@@ -469,6 +466,34 @@ Once you select, I'll proceed to Step 6: Extract Acapella & Align Lyrics.
 | Remix Variation 1 | `workspaces/<slug>/<slug>-remix-v1.mp3` |
 | Remix Variation 2 | `workspaces/<slug>/<slug>-remix-v2.mp3` |
 | Updated metadata | `workspaces/<slug>/meta.json` |
+
+---
+
+## Error Handling
+
+**See**:
+- [Error Handling Patterns > Suno Generation Errors](references/error-handling-patterns.md#suno-generation-errors-steps-4-5)
+- [Error Handling Patterns > Browser Automation Errors](references/error-handling-patterns.md#browser-automation-errors-steps-3-5-7)
+- [Error Handling Patterns > Copyright Detection](references/error-handling-patterns.md#copyright-detection-step-5)
+
+| Error | Solution |
+|---|---|
+| Suno rejects acapella (copyright) | Pitch-shift down 2 semitones (see Pre-Upload section above) |
+| Acapella not appearing in library | Ensure workspace was created first (Step 5.1); try Remix > Library tab |
+| Style field exceeds 1000 chars | Trim to: genre + mood + language + vocal type |
+| Generation fails / times out | Refresh page, verify Suno account has credits, retry |
+| Song cards don't appear after 5 min | Check Suno status page; try shorter lyrics |
+| CDN download returns 404 | Wait 1-2 minutes for CDN propagation; retry curl |
+| Element not found in snapshot | Take fresh snapshot — page may have loaded async content |
+
+---
+
+## Reference
+
+- [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation
+- [Suno Format Guide](references/suno-format-guide.md) — Meta-tag format
+- [Workspace Conventions](references/workspace-conventions.md) — File naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors
 
 ---
 

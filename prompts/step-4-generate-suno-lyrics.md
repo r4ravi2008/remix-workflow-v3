@@ -39,94 +39,47 @@ Before generating, confirm or collect the following if missing:
 
 ### 4.3 — Understand Suno Meta-Tag Format
 
-Suno.ai uses bracket-style metatags to structure lyrics. These guide the AI on song structure and production style.
+**See**: [Suno Format Guide](references/suno-format-guide.md) for complete format reference.
 
-**Style block (placed at the very top of lyrics):**
-```
-[genre, mood, language, vocal type, bpm, key, instruments, influences]
-```
-
-**Section tags:**
-```
-[Intro]
-[Verse 1]
-[Pre-Chorus]
-[Chorus]
-[Verse 2]
-[Bridge]
-[Outro]
-[Instrumental Break]
-[Hook]
-[Refrain]
-[Build]
-[Drop]
-[Adlib]
-[Spoken]
-```
-
-**Production direction tags (optional, inline):**
-```
-(soft guitar intro)
-(drums kick in)
-(tempo drops)
-(crowd chant)
-(whispered)
-```
-
-**Key rules:**
-- Place the style descriptor block in square brackets at the very top
-- Section tags go on their own line before the lyrics of that section
-- Indic script lyrics go directly under section tags — **never romanize or translate**
-- Suno reads metatags as production instructions, not as lyrics to sing
-- Keep the style block under 1000 characters total
+**Quick overview:**
+- **Style block** (top of file): `[genre, mood, language, vocal type, bpm, instruments]`
+- **Section tags**: `[Intro]`, `[Verse 1]`, `[Chorus]`, `[Bridge]`, `[Outro]`, etc.
+- **Production cues**: `(soft guitar intro)`, `(drums kick in)` — inline parentheses
+- **Key rules**:
+  - Style block first, under 1000 characters
+  - Section tags on their own line
+  - Indic script only — **never romanize**
 
 ---
 
 ### 4.4 — Map Original Lyrics to Song Structure
 
-Analyze the raw lyrics from `lyrics.txt` and identify natural song sections:
+**See**: [Suno Format Guide > Indic-to-Suno Section Mapping](references/suno-format-guide.md#indic-to-suno-section-mapping)
 
-- **Pallavi** (పల్లవి) → maps to `[Chorus]`
-- **Charanam** (చరణం) → maps to `[Verse]`
-- **Anupallavi** (అనుపల్లవి) → maps to `[Pre-Chorus]` or `[Bridge]`
-- **Muktayimpu** (ముక్తాయింపు) → maps to `[Outro]`
-- Repeated hook lines → `[Hook]` or `[Refrain]`
-- Opening instrumental cues → `[Intro]`
+| Indic Term | Suno Tag |
+|------------|----------|
+| పల్లవి (Pallavi) | `[Chorus]` |
+| చరణం (Charanam) | `[Verse]` |
+| అనుపల్లవి (Anupallavi) | `[Pre-Chorus]` or `[Bridge]` |
+| ముక్తాయింపు (Muktayimpu) | `[Outro]` |
 
-If the source lyrics don't have section labels, use context and repetition to infer them.
+If lyrics lack section labels, use context and repetition to infer them.
 
 ---
 
 ### 4.5 — Build the Style Block
 
-Construct the style block based on `meta.json` values:
+**See**: [Suno Format Guide > Style Block Templates by Genre](references/suno-format-guide.md#style-block-templates-by-genre)
 
 **Template:**
 ```
-[<genre>, <mood>, <language>, <vocal type>, <bpm if known>, <key if known>, <instruments>, <artist influences>]
+[<genre>, <mood>, <language>, <vocal type>, <bpm>, <instruments>, <influences>]
 ```
 
-**Examples by genre:**
-
-Lo-Fi:
-```
-[lo-fi hip hop, nostalgic, Telugu, soft male vocal, 75 bpm, lo-fi guitar, vinyl crackle, dusty samples, J Dilla vibe]
-```
-
-EDM / Deep House:
-```
-[deep house, dark sexy, Telugu, breathy male vocal, 122 bpm, key E minor, serum synths, 4-on-floor kick, ZHU, After Hours vibe]
-```
-
-Carnatic Fusion:
-```
-[carnatic fusion, devotional-modern, Telugu, classical male vocal, mridangam, veena, subtle synth pads, AR Rahman vibe]
-```
-
-Hip-Hop:
-```
-[Telugu hip hop, confident, Telugu, trap male vocal, 95 bpm, 808 bass, hi-hats, boom bap drums]
-```
+Select a template matching the genre from the guide and customize:
+- Replace `<language>` with actual language (Telugu/Hindi/Tamil)
+- Match vocal type to original singer gender
+- Adjust BPM based on tempo preference (slow: 70-85, medium: 90-110, energetic: 120-130)
 
 ---
 
@@ -135,51 +88,27 @@ Hip-Hop:
 Assemble the complete formatted lyrics:
 
 1. Start with the style block on line 1
-2. Add `[Intro]` with any production cue if applicable
-3. Map each section of the original lyrics to the appropriate Suno tag
+2. Add `[Intro]` with production cue if applicable
+3. Map each section to appropriate Suno tag using section mapping
 4. Preserve all Indic script lyrics exactly as-is
-5. Add optional inline production cues in parentheses where helpful
+5. Add optional inline production cues in parentheses
 6. End with `[Outro]` or `[Final Chorus]`
 
-**Example output structure:**
-```
-[lo-fi hip hop, nostalgic, Telugu, soft male vocal, 75 bpm, lo-fi guitar, vinyl crackle]
-
-[Intro]
-(soft guitar loop + vinyl crackle fade in)
-
-[Chorus]
-మల్లె తీగరోయ్ మనసే లాగుతోందిరోయ్
-పిట్ట నడుమురోయ్ పిల్లా చంపుతోందిరోయ్
-హే నవ్వమాకురోయ్ కలలే రువ్వమాకురోయ్
-నరము నరములో వేడి పెంచామాకురోయ్
-
-[Verse 1]
-అల్లుకోకూరోయ్ అలలా గిళ్లిపోకూరోయ్
-అగ్గిపుల్లవై నాలో భగ్గుమనకూరోయ్
-
-[Bridge]
-(tempo drops, soft piano)
-అంతో ఇంతో నే ట్రై చేస్తా
-ఏంతో ఇంతో రూటుకు తెస్తా
-
-[Final Chorus]
-మల్లె తీగరోయ్ మనసే లాగుతోందిరోయ్
-పిట్ట నడుమురోయ్ పిల్లా చంపుతోందిరోయ్
-
-[Outro]
-(guitar loop fades out with vinyl crackle)
-```
+**See**: [Suno Format Guide > Example Complete Format](references/suno-format-guide.md#example-complete-format) for a full example.
 
 ---
 
 ### 4.7 — Check Length Constraints
 
-Suno.ai has a **1000-character limit on the Style field** and processes roughly **3000 characters of lyrics** effectively.
+**See**: [Suno Format Guide > Length Constraints](references/suno-format-guide.md#length-constraints)
 
-- Count the total character length of the style block
-- If lyrics are very long and `song_length` is `"shortened"`, trim to: Intro + Chorus + Verse 1 + Chorus + Bridge + Outro
-- If `song_length` is `"full"`, keep all sections
+| Component | Limit |
+|-----------|-------|
+| Style block | 1000 characters (hard limit) |
+| Lyrics | ~3000 characters (effective limit) |
+
+If lyrics are too long for "shortened" version, trim to:
+`Intro → Chorus → Verse 1 → Chorus → Bridge → Outro`
 
 ---
 
@@ -339,8 +268,20 @@ File path: workspaces/<slug>/design.json
 
 ## Error Handling
 
-- **Lyrics too long:** If lyrics exceed Suno's effective processing length, split into two parts and generate two separate `suno-lyrics-part1.txt` / `suno-lyrics-part2.txt` files for separate Suno submissions.
-- **Style block over 1000 chars:** Trim instrument and influence details, keep genre + mood + language + vocal type as minimum.
-- **Song structure unclear:** Default to: Intro → Chorus → Verse → Chorus → Bridge → Chorus → Outro.
-- **Missing lyrics sections:** Note gaps with a comment `# [section missing from source]` in the output file.
+**See**: [Error Handling Patterns > Suno Generation Errors](references/error-handling-patterns.md#suno-generation-errors-steps-4-5)
+
+| Error | Solution |
+|---|---|
+| Lyrics too long | Split into `suno-lyrics-part1.txt` / `part2.txt` for separate submissions |
+| Style block over 1000 chars | Trim to: genre + mood + language + vocal type |
+| Song structure unclear | Default: Intro → Chorus → Verse → Chorus → Bridge → Chorus → Outro |
+| Missing sections | Add comment: `# [section missing from source]` |
+
+---
+
+## Reference
+
+- [Suno Format Guide](references/suno-format-guide.md) — Complete format reference
+- [Workspace Conventions](references/workspace-conventions.md) — File naming
+- [Error Handling Patterns](references/error-handling-patterns.md) — Common errors
 
