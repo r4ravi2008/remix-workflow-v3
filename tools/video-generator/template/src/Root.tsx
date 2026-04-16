@@ -1,6 +1,7 @@
 import { Composition } from 'remotion';
 import { staticFile } from 'remotion';
 import { MusicVideo } from './MusicVideo';
+import { MusicVideoShort } from './MusicVideoShort';
 import { useEffect, useState } from 'react';
 import { delayRender, continueRender } from 'remotion';
 
@@ -10,6 +11,11 @@ interface VideoConfig {
   audioDuration: number;
   songTitle: string;
   genre: string;
+  short?: {
+    startTime: number;
+    endTime: number;
+    duration: number;
+  };
 }
 
 export const RemotionRoot: React.FC = () => {
@@ -24,7 +30,6 @@ export const RemotionRoot: React.FC = () => {
         continueRender(handle);
       })
       .catch(() => {
-        // Fallback defaults for local dev
         setConfig({ audioDuration: 180, songTitle: 'Untitled', genre: 'unknown' });
         continueRender(handle);
       });
@@ -49,6 +54,25 @@ export const RemotionRoot: React.FC = () => {
           genre: config.genre,
         }}
       />
+
+      {config.short && (
+        <Composition
+          id="MusicVideoShort"
+          component={MusicVideoShort}
+          durationInFrames={Math.ceil(config.short.duration * FPS)}
+          fps={FPS}
+          width={1080}
+          height={1920}
+          defaultProps={{
+            songTitle: config.songTitle,
+            audioSrc: "audio.mp3",
+            lyricsDataSrc: "lyrics-timestamps.json",
+            genre: config.genre,
+            clipStartTime: config.short.startTime,
+            clipEndTime: config.short.endTime,
+          }}
+        />
+      )}
     </>
   );
 };
