@@ -44,6 +44,15 @@ YouTube URL + Genre/Style (user input)
         |
         v
 [Step 8] Generate Video with Remotion  →  Final music video
+        |
+        v
+[Step 9] Generate YouTube Metadata
+        |
+        v
+[Step 10] Select Short Clip  →  shorts-segments.json
+        |
+        v
+[Step 11] Generate Short Video  →  <slug>-short.mp4 (1080x1920 vertical)
 ```
 
 ---
@@ -75,6 +84,8 @@ workspaces/
     lyrics-timestamps.json    # CTC-aligned word/line timestamps (Step 6)
     <slug>-cover-art.jpg     # Enhanced cover art via SeedVR2 (Step 7)
     <slug>-video.mp4         # Final music video (Step 8)
+    <slug>-short.mp4         # Rendered vertical short video (Step 11)
+    shorts-segments.json     # Clip segment analysis (Step 10)
     video/                   # Remotion project files (Step 8)
 ```
 
@@ -185,6 +196,29 @@ workspaces/
 - Render final video to `<slug>-video.mp4`
 - Update `meta.json` with video generation status
 
+### Step 9: Generate YouTube Metadata
+
+- Generate title, description, tags, and thumbnail text optimized for YouTube
+- Save metadata to `youtube-metadata.json`
+- Create human-readable `youtube-metadata-artifact.md` for review
+- Update `meta.json` with generation status
+
+### Step 10: Select Short Clip
+
+- Analyze lyrics-timestamps.json sections (Chorus, Verse, Bridge) and FFmpeg EBU R128 loudness
+- Score candidate segments: Chorus +10, Verse +5, Bridge +3, plus energy bonus 0-5
+- Auto-select highest-scoring segment (default) or present candidates if user opted into manual mode
+- Save analysis to `shorts-segments.json` and merge clip config into `video-config.json`
+
+### Step 11: Generate Short Video
+
+- Render 9:16 vertical video using existing Remotion project's `MusicVideoShort` composition
+- Audio trimmed via Remotion's native `trimBefore`/`trimAfter`
+- Lyrics filtered and rebased to clip window (timestamps start at 0)
+- Uses `CoverArtVerticalLayout`: cover art top 60%, lyrics middle 30%, visualizer bottom 10%
+- Same design.json palette, motifs, and audio-reactive effects as full video
+- Save as `<slug>-short.mp4`
+
 ---
 
 ## Key Constraints
@@ -223,3 +257,5 @@ Step-by-step execution prompts for each stage are maintained in `/prompts/`:
 - `step-6-extract-acapella-and-align.md` — Extract remix acapella and generate CTC-aligned lyrics timestamps
 - `step-7-fetch-cover-art.md` — Fetch song cover art via Google Images and enhance to 1080p with SeedVR2
 - `step-8-generate-video.md` — Scaffold Remotion project and render final music video
+- `step-10-select-short-clip.md` — Analyze audio and lyrics to select best short clip segment
+- `step-11-generate-short-video.md` — Render 9:16 vertical short video using Remotion

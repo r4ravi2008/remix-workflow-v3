@@ -49,7 +49,9 @@ workspaces/
     ├── <slug>-video.mp4               ← Final rendered video
     ├── design.json                    ← Video design configuration
     ├── youtube-metadata.json          ← YouTube upload metadata
-    └── youtube-metadata-artifact.md   ← Human-readable metadata
+    ├── youtube-metadata-artifact.md   ← Human-readable metadata
+    ├── shorts-segments.json            ← Clip segment candidates + selection
+    └── <slug>-short.mp4                ← Rendered vertical short video (1080x1920)
 ```
 
 ## meta.json Schema
@@ -63,6 +65,8 @@ workspaces/
   "language": "Telugu",
   "tempo": "medium",
   "song_length": "full",
+  "shorts_clip_mode": "auto",
+  "shorts_duration": 30,
   "workspace": "workspaces/song-name-genre/",
   "files": {
     "original_mp3": "workspaces/<slug>/<slug>-original.mp3",
@@ -74,7 +78,9 @@ workspaces/
     "remix_acapella": null,
     "lyrics_timestamps": null,
     "cover_art": null,
-    "final_video": null
+    "final_video": null,
+    "shorts_segments": null,
+    "short_video": null
   },
   "status": {
     "mp3_downloaded": false,
@@ -88,6 +94,8 @@ workspaces/
     "cover_art_fetched": false,
     "video_generated": false,
     "youtube_metadata_generated": false,
+    "shorts_clip_selected": false,
+    "short_video_generated": false,
     "suno_remix_url_v1": null,
     "suno_remix_url_v2": null,
     "suno_cdn_v1": null,
@@ -125,6 +133,7 @@ All files in a workspace follow this pattern:
 | `remix-v1-acapella` | Vocals extracted from remix v1 |
 | `cover-art` | AI-stylized cover image |
 | `video` | Final rendered music video |
+| `short` | Rendered vertical short video |
 
 ## Native Script Rule
 

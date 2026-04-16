@@ -26,6 +26,8 @@ YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics 
 | 7 | `step-7-fetch-cover-art.md` | Fetch original cover art + AI stylization | `<slug>-cover-art.jpg` | Step 0 |
 | 8 | `step-8-generate-video.md` | Generate music video with Remotion | `<slug>-video.mp4` | Steps 6, 7 |
 | 9 | `step-9-generate-youtube-metadata.md` | Generate title, description, tags, thumbnail text | `youtube-metadata.json` | Step 8 |
+| 10 | `step-10-select-short-clip.md` | Analyze audio + lyrics, select best clip segment | `shorts-segments.json` | Step 9 |
+| 11 | `step-11-generate-short-video.md` | Render 9:16 vertical short in existing Remotion project | `<slug>-short.mp4` | Step 10 |
 
 ## Shared References
 
@@ -45,11 +47,11 @@ Common patterns and conventions are extracted into the `references/` directory:
 2. **Follow sequentially**: Each step updates `meta.json` with status
 3. **Check meta.json**: Always read the workspace's `meta.json` before acting
 4. **Handle Step 5.5**: Pause for user selection between v1 and v2
-5. **Complete Steps 6-9**: Autonomous after user selection
+5. **Complete Steps 6-11**: Autonomous after user selection
 
 ## Key Conventions
 
-- **Sequential execution**: Steps must run 0→1→2→3→4→5→6→7→8→9
+- **Sequential execution**: Steps must run 0→1→2→3→4→5→6→7→8→9→10→11
 - **Workspace state**: `workspaces/<slug>/meta.json` is the single source of truth
 - **Native script only**: Never romanize or transliterate Indic lyrics
 - **Browser automation**: Steps 3, 5, 7 use Chrome DevTools MCP
