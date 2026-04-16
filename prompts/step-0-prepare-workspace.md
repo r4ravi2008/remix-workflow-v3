@@ -26,6 +26,8 @@ Ask the user for the following. If any optional inputs are not provided, use the
 | Language of the song | No | Infer from video title | `Telugu`, `Hindi`, `Tamil` |
 | Tempo preference | No | `medium` | `slow`, `medium`, `energetic` |
 | Song length preference | No | `full` | `full`, `shortened` |
+| Short clip selection | No | `auto` | `auto` (best segment), `manual` (present choices) |
+| Short clip duration (seconds) | No | `30` | `15`, `30`, `60` |
 
 Ask all questions upfront in a single prompt to the user before proceeding.
 
@@ -95,6 +97,8 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
   "language": "<language>",
   "tempo": "<tempo>",
   "song_length": "<song_length>",
+  "shorts_clip_mode": "<auto or manual>",
+  "shorts_duration": "<duration>",
   "workspace": "workspaces/<slug>/",
   "files": {
     "original_mp3": "workspaces/<slug>/<slug>-original.mp3",
@@ -106,7 +110,9 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
     "remix_acapella": null,
     "lyrics_timestamps": null,
     "cover_art": null,
-    "final_video": null
+    "final_video": null,
+    "shorts_segments": null,
+    "short_video": null
   },
   "status": {
     "mp3_downloaded": false,
@@ -119,6 +125,8 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
     "acapella_aligned": false,
     "cover_art_fetched": false,
     "video_generated": false,
+    "shorts_clip_selected": false,
+    "short_video_generated": false,
     "youtube_metadata_generated": false,
     "suno_remix_url_v1": null,
     "suno_remix_url_v2": null,
@@ -140,11 +148,13 @@ Print a summary to the user before proceeding:
 
 ```
 Workspace ready: workspaces/<slug>/
-  Video   : <video_title>
-  Genre   : <genre>
-  Language: <language>
-  Tempo   : <tempo>
-  Length  : <song_length>
+  Video        : <video_title>
+  Genre        : <genre>
+  Language     : <language>
+  Tempo        : <tempo>
+  Length       : <song_length>
+  Shorts Mode  : <shorts_clip_mode>
+  Shorts Dur   : <shorts_duration>s
 
 Proceeding to Step 1: Download MP3...
 ```
