@@ -309,85 +309,85 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
             position: 'relative',
           }}
         >
-          {/* Inner container — feathered edges mask */}
-          <div
-            style={{
-              width: '100%',
-              height: '100%',
-              borderRadius: 24,
-              overflow: 'hidden',
-              position: 'relative',
-              // Feathered edge mask: refined fade for smoother blend
-              maskImage:
-                'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
-              WebkitMaskImage:
-                'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
-            }}
-          >
-            {!coverArtError ? (
-              <Img
-                src={staticFile('cover-art.jpg')}
-                onError={() => setCoverArtError(true)}
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                }}
-              />
-            ) : (
-              /* Fallback placeholder if cover art fails */
-              <div
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  background: `${design.palette.accentColor}08`,
-                }}
-              >
+            {/* Inner container — feathered edges mask */}
+            <div
+              style={{
+                width: '100%',
+                height: '100%',
+                borderRadius: 24,
+                overflow: 'hidden',
+                position: 'relative',
+                // Feathered edge mask: refined fade for smoother blend
+                maskImage:
+                  'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
+                WebkitMaskImage:
+                  'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
+              }}
+            >
+              {!coverArtError ? (
+                <Img
+                  src={staticFile('cover-art.jpg')}
+                  onError={() => setCoverArtError(true)}
+                  style={{
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                  }}
+                />
+              ) : (
+                /* Fallback placeholder if cover art fails */
                 <div
                   style={{
+                    width: '100%',
+                    height: '100%',
                     display: 'flex',
-                    flexDirection: 'column',
                     alignItems: 'center',
-                    gap: 32,
-                    opacity: 0.75,
+                    justifyContent: 'center',
+                    background: `${design.palette.accentColor}08`,
                   }}
                 >
                   <div
                     style={{
-                      width: 320,
-                      height: 320,
-                      borderRadius: 24,
-                      background: `${design.palette.accentColor}20`,
-                      border: `2px solid ${design.palette.accentColor}30`,
                       display: 'flex',
+                      flexDirection: 'column',
                       alignItems: 'center',
-                      justifyContent: 'center',
-                      fontSize: 120,
-                      lineHeight: 1,
-                      color: design.palette.primaryColor,
+                      gap: 32,
+                      opacity: 0.75,
                     }}
                   >
-                    &#9835;
+                    <div
+                      style={{
+                        width: 320,
+                        height: 320,
+                        borderRadius: 24,
+                        background: `${design.palette.accentColor}20`,
+                        border: `2px solid ${design.palette.accentColor}30`,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        fontSize: 120,
+                        lineHeight: 1,
+                        color: design.palette.primaryColor,
+                      }}
+                    >
+                      &#9835;
+                    </div>
                   </div>
                 </div>
-              </div>
-            )}
+              )}
 
-            {/* Beat-reactive vignette — darkens on hits */}
-            <div
-              style={{
-                position: 'absolute',
-                inset: 0,
-                background:
-                  `radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,${vignetteOpacity.toFixed(2)}) 100%)`,
-                pointerEvents: 'none',
-              }}
-            />
-          </div>
+              {/* Beat-reactive vignette — darkens on hits */}
+              <div
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  background:
+                    `radial-gradient(ellipse at 50% 50%, transparent 55%, rgba(0,0,0,${vignetteOpacity.toFixed(2)}) 100%)`,
+                  pointerEvents: 'none',
+                }}
+              />
+            </div>
         </div>
 
         {/* Song title + genre badge — below cover art */}
@@ -564,7 +564,7 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
         <FrequencyBarsVisualizer
           design={design}
           barHeights={barHeights}
-          width={800}
+          width={1000}
           height={100}
         />
 
