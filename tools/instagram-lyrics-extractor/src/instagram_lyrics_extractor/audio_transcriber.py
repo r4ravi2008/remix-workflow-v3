@@ -43,7 +43,6 @@ def transcribe_audio(
     result = model.transcribe(str(audio_path), **transcribe_kwargs)
 
     segments = []
-    total_logprob = 0.0
     for seg in result.get("segments", []):
         avg_logprob = seg.get("avg_logprob", -1.0)
         no_speech_prob = seg.get("no_speech_prob", 1.0)
@@ -63,7 +62,6 @@ def transcribe_audio(
                 confidence=round(seg_confidence, 3),
             )
         )
-        total_logprob += avg_logprob
 
     # Overall confidence: average of segment confidences
     if segments:
