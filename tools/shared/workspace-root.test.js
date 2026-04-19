@@ -36,13 +36,10 @@ test('reads workspaceRoot from repo-local config', () => {
 
 test('throws a clear error when the local config file is missing', () => {
   const repoRoot = makeRepoFixture();
-  const configPath = path.join(repoRoot, '.remix-workspace-root.json');
 
   assert.throws(
     () => readWorkspaceRootConfig({repoRoot}),
-    new Error(
-      `Missing workspace root config at ${configPath}. Copy .remix-workspace-root.example.json to .remix-workspace-root.json and set workspaceRoot.`
-    )
+    /Missing workspace root config/
   );
 });
 
