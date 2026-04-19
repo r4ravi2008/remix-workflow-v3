@@ -8,7 +8,7 @@ during Step 0, present candidates for selection.
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` is `v1` or `v2` from the user's Step 5.5 choice)
+- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` comes from `meta.json.status.selected_remix`, set after Step 5.5)
 - `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
 - `${WORKSPACE_DIR}/meta.json` exists with `shorts_clip_mode` and `shorts_duration`
 
@@ -32,9 +32,10 @@ Read `meta.json` and extract:
 - `shorts_clip_mode` (default: `"auto"`)
 - `shorts_duration` (default: `30`)
 - `slug`
+- `status.selected_remix`
 - Selected remix file path
 
-Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+Resolve `SELECTED_REMIX` from `meta.json.status.selected_remix` first. It must be `v1` or `v2`. If it is missing, stop and go back to Step 5 to persist the user's chosen remix before continuing.
 
 Read `lyrics-timestamps.json` and extract all sections with their start/end times.
 

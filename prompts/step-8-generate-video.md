@@ -16,7 +16,7 @@ focuses on running the pipeline and wiring up the correct data.
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` is `v1` or `v2` from the user's Step 5.5 choice)
+- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` comes from `meta.json.status.selected_remix`, set after Step 5.5)
 - `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists
 - `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
 - `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`, `language`
@@ -40,9 +40,9 @@ Before using any filesystem path in this step:
 
 ### 8.1 — Read Workspace Files
 
-Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
+Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`, `status.selected_remix`.
 
-Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+Resolve `SELECTED_REMIX` from `meta.json.status.selected_remix` first. It must be `v1` or `v2`. If it is missing, stop and go back to Step 5 to persist the user's chosen remix before continuing.
 
 ---
 

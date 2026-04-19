@@ -46,14 +46,16 @@ function initializeVideoProject(options) {
   const metadataPath = path.join(workspaceDir, 'meta.json');
   let songTitle = workspaceSlug;
   let genre = 'unknown';
+  let selectedRemix = 'v1';
 
   if (fs.existsSync(metadataPath)) {
     const meta = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
     songTitle = meta.video_title || meta.title || workspaceSlug;
     genre = meta.genre || 'unknown';
+    selectedRemix = meta.status?.selected_remix || 'v1';
   }
 
-  const audioFile = path.join(workspaceDir, `${workspaceSlug}-remix-v1.mp3`);
+  const audioFile = path.join(workspaceDir, `${workspaceSlug}-remix-${selectedRemix}.mp3`);
   let audioDuration = 180;
 
   if (fs.existsSync(audioFile)) {
@@ -108,7 +110,7 @@ function initializeVideoProject(options) {
   logger.log(`Video project created at: ${videoDir}`);
   logger.log('Next steps:');
   logger.log(`  cd ${path.relative(processCwd, videoDir)} && npm install`);
-  logger.log(`  cp "${path.join(workspaceDir, `${workspaceSlug}-remix-v1.mp3`)}" "${path.join(videoDir, 'public', 'audio.mp3')}"`);
+  logger.log(`  cp "${path.join(workspaceDir, `${workspaceSlug}-remix-${selectedRemix}.mp3`)}" "${path.join(videoDir, 'public', 'audio.mp3')}"`);
   logger.log(`  cp "${path.join(workspaceDir, 'lyrics-timestamps.json')}" "${path.join(videoDir, 'public')}"`);
   logger.log('  npx remotion render MusicVideo out/video.mp4');
 

@@ -469,6 +469,22 @@ Once you select, I'll proceed to Step 6: Extract Acapella & Align Lyrics.
 
 ---
 
+### 5.18 — Persist the Selected Remix in meta.json
+
+After the user replies with `v1` or `v2`, update `${WORKSPACE_DIR}/meta.json` before proceeding:
+
+```json
+{
+  "status": {
+    "selected_remix": "v1 or v2"
+  }
+}
+```
+
+If the user response is anything else, stop and ask them to choose `v1` or `v2` explicitly.
+
+---
+
 ## File Outputs
 
 | File | Path |
@@ -509,4 +525,4 @@ Once you select, I'll proceed to Step 6: Extract Acapella & Align Lyrics.
 
 ## Next Step
 
-After user selects v1 or v2, proceed to **Step 6: Extract Acapella & Align Lyrics**.
+After user selects v1 or v2 and `meta.json.status.selected_remix` is updated, proceed to **Step 6: Extract Acapella & Align Lyrics**.

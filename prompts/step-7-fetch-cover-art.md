@@ -157,7 +157,7 @@ If no suitable source image can be found:
 1. Try alternative searches: `<songTitle> <artist> cover site:open.spotify.com`
 2. If still nothing, skip this step and note it in meta.json:
    ```json
-   { "status": { "cover_art_fetched": false }, "cover_art_skipped": true }
+   { "status": { "cover_art_fetched": false, "cover_art_skipped": true } }
    ```
 3. The Remotion cover-art layout falls back gracefully to its placeholder if `cover-art.jpg` is unavailable.
 

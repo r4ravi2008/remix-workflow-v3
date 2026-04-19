@@ -86,7 +86,7 @@ Expected: `Audio file with ID3... MPEG ADTS, layer III, v1, 192 kbps, 44.1 kHz, 
 
 Extract vocals from the Suno remix for CTC alignment.
 
-Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+Resolve `SELECTED_REMIX` from `meta.json.status.selected_remix` first. It must be `v1` or `v2`. If it is missing, stop and go back to Step 5 to persist the user's chosen remix before continuing.
 
 ### Command
 
