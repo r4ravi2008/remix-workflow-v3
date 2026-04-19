@@ -134,8 +134,8 @@ Video generation complete!
 
 Outputs in <workspaceRoot>/<slug>/:
    <slug>-video.mp4                  — Final music video (1920×1080) with audio-reactive visuals
-   <slug>-remix-<selected-remix>.mp3               — Remix audio
-   <slug>-remix-<selected-remix>-acapella.mp3      — Vocals extracted from remix
+   <slug>-remix-${SELECTED_REMIX}.mp3               — Remix audio
+   <slug>-remix-${SELECTED_REMIX}-acapella.mp3      — Vocals extracted from remix
    lyrics-timestamps.json            — Word+line timestamps (CTC aligned)
    design.json                       — LLM-generated visual design configuration
    <slug>-cover-art.jpg              — Optional anime-stylized cover art (Nano Banana Pro 2K), if available

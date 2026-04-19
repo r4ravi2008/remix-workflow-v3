@@ -58,7 +58,7 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── <slug>-suno-style.txt
     ├── <slug>-remix-v1.mp3
     ├── <slug>-remix-v2.mp3
-    ├── <slug>-remix-v1-acapella.mp3
+    ├── <slug>-remix-${SELECTED_REMIX}-acapella.mp3
     ├── lyrics-timestamps.json
     ├── <slug>-cover-art.jpg
     ├── <slug>-video.mp4
@@ -147,7 +147,7 @@ Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.
 | `suno-style` | Style block for Suno.ai |
 | `remix-v1` | First Suno variation |
 | `remix-v2` | Second Suno variation |
-| `remix-v1-acapella` | Vocals extracted from remix v1 |
+| `remix-${SELECTED_REMIX}-acapella` | Vocals extracted from the selected remix |
 | `cover-art` | AI-stylized cover image |
 | `video` | Final rendered music video |
 | `short` | Rendered vertical short video |

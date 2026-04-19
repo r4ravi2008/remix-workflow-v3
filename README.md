@@ -137,7 +137,7 @@ Each remix session produces a complete workspace:
 ├── design.json                  # AI-generated visual design config
 ├── <slug>-remix-<candidate-a>.mp3 # First generated Suno remix candidate
 ├── <slug>-remix-<candidate-b>.mp3 # Second generated Suno remix candidate
-├── <slug>-remix-<selected-remix>-acapella.mp3 # Vocals from the chosen remix (for alignment)
+├── <slug>-remix-${SELECTED_REMIX}-acapella.mp3 # Vocals from the chosen remix (for alignment)
 ├── lyrics-timestamps.json       # CTC-aligned word/line timestamps
 ├── <slug>-cover-art.jpg         # Stylized album art
 ├── <slug>-video.mp4             # Final rendered music video

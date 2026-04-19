@@ -123,7 +123,7 @@ Update `${WORKSPACE_DIR}/meta.json` to record the alignment outputs:
 {
   "status": { "acapella_aligned": true },
   "files": {
-    "remix_acapella": "<slug>/<slug>-remix-<selected-remix>-acapella.mp3",
+    "remix_acapella": "<slug>/<slug>-remix-${SELECTED_REMIX}-acapella.mp3",
     "lyrics_timestamps": "<slug>/lyrics-timestamps.json"
   }
 }
@@ -137,7 +137,7 @@ Update `${WORKSPACE_DIR}/meta.json` to record the alignment outputs:
 Acapella extraction and lyrics alignment complete!
 
 Outputs in <workspaceRoot>/<slug>/:
-   <slug>-remix-<selected-remix>-acapella.mp3   — Vocals extracted from remix (alignment source)
+   <slug>-remix-${SELECTED_REMIX}-acapella.mp3   — Vocals extracted from remix (alignment source)
    lyrics-timestamps.json          — Word+line timestamps (CTC aligned)
 
 Alignment verified: <n> lines synced  |  End drift: <Xs>
