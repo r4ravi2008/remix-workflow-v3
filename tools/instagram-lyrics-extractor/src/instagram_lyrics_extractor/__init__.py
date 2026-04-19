@@ -17,14 +17,21 @@ async def _extract_async(
     language=None,
     frame_rate=1,
     whisper_model="base",
+    mode="both",
 ):
     """Internal async implementation."""
     from pathlib import Path
-    from .video_processor import extract_frames, extract_audio, get_video_duration
-    from .visual_analyzer import analyze_frames
     from .audio_transcriber import transcribe_audio
+    from .formatter import (
+        format_plain_text,
+        format_timestamped_json,
+        write_outputs,
+        write_visual_debug_output,
+    )
     from .merger import merge_results
-    from .formatter import format_plain_text, format_timestamped_json, write_outputs
+    from .models import AudioResult
+    from .video_processor import extract_audio, extract_frames, get_video_duration
+    from .visual_analyzer import analyze_frames
 
     import asyncio
 
@@ -34,21 +41,32 @@ async def _extract_async(
 
     duration = get_video_duration(video_path)
 
-    # Extract frames + audio in parallel
+    # Extract frames and optionally audio.
     loop = asyncio.get_running_loop()
     frames_dir = output_dir / "_frames"
     audio_path = output_dir / "_audio.wav"
 
-    frame_paths, _ = await asyncio.gather(
-        loop.run_in_executor(None, extract_frames, video_path, frames_dir, frame_rate),
-        loop.run_in_executor(None, extract_audio, video_path, audio_path),
-    )
-
-    # Analyze in parallel
-    visual_result, audio_result = await asyncio.gather(
-        loop.run_in_executor(None, analyze_frames, frame_paths, frame_rate),
-        loop.run_in_executor(None, transcribe_audio, audio_path, whisper_model, language),
-    )
+    if mode == "visual":
+        frame_paths = await loop.run_in_executor(
+            None, extract_frames, video_path, frames_dir, frame_rate
+        )
+        visual_result = await loop.run_in_executor(
+            None, analyze_frames, frame_paths, frame_rate
+        )
+        audio_result = AudioResult(
+            segments=[],
+            language=language or "unknown",
+            confidence=0.0,
+        )
+    else:
+        frame_paths, _ = await asyncio.gather(
+            loop.run_in_executor(None, extract_frames, video_path, frames_dir, frame_rate),
+            loop.run_in_executor(None, extract_audio, video_path, audio_path),
+        )
+        visual_result, audio_result = await asyncio.gather(
+            loop.run_in_executor(None, analyze_frames, frame_paths, frame_rate),
+            loop.run_in_executor(None, transcribe_audio, audio_path, whisper_model, language),
+        )
 
     # Merge
     merged = merge_results(visual_result, audio_result)
@@ -58,6 +76,8 @@ async def _extract_async(
     text_path = output_dir / f"{slug}-lyrics.txt"
     json_path = output_dir / "lyrics-timestamps.json"
     write_outputs(merged, text_path, json_path, audio_duration=duration)
+    if mode == "visual":
+        write_visual_debug_output(visual_result, output_dir / "visual-frames.json")
 
     return LyricsResult(
         plain_text=format_plain_text(merged),
@@ -74,6 +94,7 @@ def extract_lyrics(
     language=None,
     frame_rate=1,
     whisper_model="base",
+    mode="both",
 ) -> LyricsResult:
     """Extract lyrics from an Instagram video file.
 
@@ -94,5 +115,12 @@ def extract_lyrics(
     import asyncio
 
     return asyncio.run(
-        _extract_async(video_path, output_dir, language, frame_rate, whisper_model)
+        _extract_async(
+            video_path,
+            output_dir,
+            language,
+            frame_rate,
+            whisper_model,
+            mode,
+        )
     )

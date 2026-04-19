@@ -34,7 +34,7 @@ def _load_pipeline(model_name: str = "llava-hf/llava-1.5-7b-hf"):
 
     print(f"Loading LLaVA model: {model_name}")
     _pipeline = pipeline(
-        "image-to-text",
+        "image-text-to-text",
         model=model_name,
         device_map="auto",
     )
@@ -66,10 +66,26 @@ def _analyze_single_frame(
         "Return only the text content, nothing else. "
         "If there is no text, say 'No text visible'."
     )
+    messages = [
+        {
+            "role": "user",
+            "content": [
+                {"type": "image", "image": image},
+                {"type": "text", "text": prompt},
+            ],
+        }
+    ]
 
     try:
-        result = pipe(image, prompt=prompt, generate_kwargs={"max_new_tokens": 200})
-        generated = result[0].get("generated_text", "").strip()
+        result = pipe(
+            text=messages,
+            max_new_tokens=200,
+            return_full_text=False,
+        )
+        generated = result[0].get("generated_text", "")
+        if isinstance(generated, list):
+            generated = generated[-1].get("content", "") if generated else ""
+        generated = generated.strip()
 
         if _is_meaningful_text(generated):
             confidence = 0.9  # High confidence when text is detected

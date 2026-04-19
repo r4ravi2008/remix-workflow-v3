@@ -1,8 +1,10 @@
 """Tests for video processor (FFmpeg frame + audio extraction)."""
 
 import subprocess
-import pytest
 from pathlib import Path
+
+import pytest
+from PIL import Image
 from instagram_lyrics_extractor.video_processor import (
     extract_frames,
     extract_audio,
@@ -64,6 +66,26 @@ class TestExtractFrames:
         frames = extract_frames(video, output_dir, frame_rate=1)
         assert output_dir.exists()
         assert len(frames) >= 1
+
+    def test_preserves_aspect_ratio(self, tmp_path: Path):
+        video_path = tmp_path / "portrait.mp4"
+        subprocess.run(
+            [
+                "ffmpeg", "-y",
+                "-f", "lavfi", "-i", "color=c=blue:s=180x320:d=1",
+                "-c:v", "libx264", "-preset", "ultrafast",
+                str(video_path),
+            ],
+            capture_output=True,
+            check=True,
+        )
+
+        frames = extract_frames(video_path, tmp_path / "frames", frame_rate=1)
+        image = Image.open(frames[0])
+
+        assert image.width != image.height
+        ratio = image.width / image.height
+        assert 0.5 <= ratio <= 0.65
 
 
 class TestExtractAudio:

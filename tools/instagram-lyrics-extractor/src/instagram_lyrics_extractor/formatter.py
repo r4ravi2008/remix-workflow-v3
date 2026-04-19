@@ -21,7 +21,7 @@ produced by tools/acapella-extractor/align_lyrics.py:
 import json
 from pathlib import Path
 
-from .models import MergedResult
+from .models import MergedResult, VisualResult
 
 
 def format_plain_text(merged: MergedResult) -> str:
@@ -113,3 +113,25 @@ def write_outputs(
         encoding="utf-8",
     )
     print(f"  Wrote timestamps: {json_path}")
+
+
+def write_visual_debug_output(visual: VisualResult, debug_path: Path) -> None:
+    """Write raw visual extraction results per frame for inspection."""
+    debug_path.parent.mkdir(parents=True, exist_ok=True)
+    debug_path.write_text(
+        json.dumps(
+            [
+                {
+                    "frame_index": frame.frame_index,
+                    "timestamp": round(frame.timestamp, 3),
+                    "text": frame.text,
+                    "confidence": frame.confidence,
+                }
+                for frame in visual.frames
+            ],
+            ensure_ascii=False,
+            indent=2,
+        ),
+        encoding="utf-8",
+    )
+    print(f"  Wrote visual debug: {debug_path}")

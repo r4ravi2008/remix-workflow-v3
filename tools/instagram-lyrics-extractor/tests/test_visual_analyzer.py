@@ -1,11 +1,14 @@
 """Tests for LLaVA visual analyzer."""
 
-import pytest
 from pathlib import Path
-from unittest.mock import patch, MagicMock
+from types import SimpleNamespace
+from unittest.mock import MagicMock, patch
+
 from PIL import Image
+
+from instagram_lyrics_extractor.models import VisualResult
 from instagram_lyrics_extractor.visual_analyzer import analyze_frames
-from instagram_lyrics_extractor.models import VisualResult, VisualFrame
+import instagram_lyrics_extractor.visual_analyzer as visual_analyzer
 
 
 def _create_test_frames(path: Path, count: int = 3) -> list[Path]:
@@ -20,6 +23,24 @@ def _create_test_frames(path: Path, count: int = 3) -> list[Path]:
 
 
 class TestAnalyzeFrames:
+    def test_load_pipeline_uses_image_text_to_text_task(self):
+        mock_pipeline_factory = MagicMock(return_value="pipe")
+        visual_analyzer._pipeline = None
+
+        with patch.dict(
+            "sys.modules",
+            {"transformers": SimpleNamespace(pipeline=mock_pipeline_factory)},
+        ):
+            result = visual_analyzer._load_pipeline("custom-model")
+
+        assert result == "pipe"
+        mock_pipeline_factory.assert_called_once_with(
+            "image-text-to-text",
+            model="custom-model",
+            device_map="auto",
+        )
+        visual_analyzer._pipeline = None
+
     def test_returns_visual_result(self, tmp_path: Path):
         """Test that analyze_frames returns a VisualResult."""
         frames = _create_test_frames(tmp_path, count=3)
@@ -36,6 +57,33 @@ class TestAnalyzeFrames:
 
         assert isinstance(result, VisualResult)
         assert len(result.frames) == 3
+
+    def test_pipeline_receives_chat_formatted_messages(self, tmp_path: Path):
+        frames = _create_test_frames(tmp_path, count=1)
+
+        mock_pipe = MagicMock()
+        mock_pipe.return_value = [{"generated_text": "frame text here"}]
+
+        with patch(
+            "instagram_lyrics_extractor.visual_analyzer._load_pipeline",
+            return_value=mock_pipe,
+        ):
+            analyze_frames(frames, frame_rate=1)
+
+        _, kwargs = mock_pipe.call_args
+        message = kwargs["text"][0]
+        assert message["role"] == "user"
+        assert message["content"][0]["type"] == "image"
+        assert "image" in message["content"][0]
+        assert message["content"][1] == {
+            "type": "text",
+            "text": (
+                "Extract all text visible in this image. "
+                "Return only the text content, nothing else. "
+                "If there is no text, say 'No text visible'."
+            ),
+        }
+        assert "images" not in kwargs
 
     def test_empty_frames_list(self):
         """Test that empty frame list returns empty result."""

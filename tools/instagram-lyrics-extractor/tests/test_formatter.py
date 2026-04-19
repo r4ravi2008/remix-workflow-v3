@@ -1,12 +1,19 @@
 """Tests for output formatter (plain text + timestamped JSON)."""
 
 import json
-import pytest
 from pathlib import Path
-from instagram_lyrics_extractor.formatter import format_plain_text, format_timestamped_json, write_outputs
+
+from instagram_lyrics_extractor.formatter import (
+    format_plain_text,
+    format_timestamped_json,
+    write_outputs,
+    write_visual_debug_output,
+)
 from instagram_lyrics_extractor.models import (
     MergedResult,
     LineTimestamp,
+    VisualFrame,
+    VisualResult,
     WordTimestamp,
 )
 
@@ -138,3 +145,32 @@ class TestWriteOutputs:
 
         raw = json_path.read_text(encoding="utf-8")
         assert "తెలుగు" in raw  # Not escaped as \uXXXX
+
+
+class TestWriteVisualDebugOutput:
+    def test_writes_visual_frame_text(self, tmp_path: Path):
+        visual = VisualResult(
+            frames=[
+                VisualFrame(
+                    frame_index=0,
+                    timestamp=0.0,
+                    text="WHAT IF KALYANI had a telugu version?",
+                    confidence=0.9,
+                ),
+                VisualFrame(
+                    frame_index=1,
+                    timestamp=1.0,
+                    text="",
+                    confidence=0.1,
+                ),
+            ],
+            confidence=0.9,
+        )
+        debug_path = tmp_path / "visual-frames.json"
+
+        write_visual_debug_output(visual, debug_path)
+
+        data = json.loads(debug_path.read_text(encoding="utf-8"))
+        assert data[0]["text"] == "WHAT IF KALYANI had a telugu version?"
+        assert data[0]["frame_index"] == 0
+        assert data[1]["text"] == ""

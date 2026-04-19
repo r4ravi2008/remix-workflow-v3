@@ -39,3 +39,11 @@ class TestParseArgs:
     def test_default_whisper_model(self):
         args = parse_args(["video.mp4"])
         assert args.whisper_model == "base"
+
+    def test_default_mode(self):
+        args = parse_args(["video.mp4"])
+        assert args.mode == "both"
+
+    def test_visual_mode_flag(self):
+        args = parse_args(["video.mp4", "--mode", "visual"])
+        assert args.mode == "visual"

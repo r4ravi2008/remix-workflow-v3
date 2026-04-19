@@ -40,7 +40,7 @@ def extract_frames(
     video_path: Path,
     output_dir: Path,
     frame_rate: int = 1,
-    size: str = "512x512",
+    max_dimension: int = 512,
 ) -> list[Path]:
     """Extract frames from video at the given frame rate.
 
@@ -48,7 +48,7 @@ def extract_frames(
         video_path: Path to input video file.
         output_dir: Directory to save extracted frames.
         frame_rate: Frames per second to extract (default: 1).
-        size: Output frame size as WxH (default: 512x512).
+        max_dimension: Max width/height while preserving aspect ratio.
 
     Returns:
         List of paths to extracted JPEG frames, sorted by frame index.
@@ -56,11 +56,15 @@ def extract_frames(
     output_dir.mkdir(parents=True, exist_ok=True)
 
     pattern = str(output_dir / "frame_%04d.jpg")
+    scale_filter = (
+        f"fps={frame_rate},"
+        f"scale='if(gt(iw,ih),{max_dimension},-2)':'if(gt(iw,ih),-2,{max_dimension})'"
+    )
     subprocess.run(
         [
             "ffmpeg", "-y",
             "-i", str(video_path),
-            "-vf", f"fps={frame_rate},scale={size}",
+            "-vf", scale_filter,
             "-q:v", "2",
             pattern,
         ],
