@@ -125,10 +125,12 @@ Each cloned repo uses a local, untracked config file at the repo root:
 
 ## File Naming Convention
 
-All files in a workspace follow this pattern:
+Slug-prefixed asset files in a workspace follow this pattern:
 ```
 <slug>-<purpose>.<ext>
 ```
+
+Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.json`, `lyrics-timestamps.json`, `youtube-metadata.json`, `youtube-metadata-artifact.md`, and `shorts-segments.json`.
 
 - `<slug>`: The workspace slug (lowercase, hyphenated)
 - `<purpose>`: Brief descriptor of the file's role
