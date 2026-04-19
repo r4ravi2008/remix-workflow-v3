@@ -25,7 +25,7 @@ function readWorkspaceRootConfig(options = {}) {
   const configPath = path.join(repoRoot, CONFIG_FILE);
 
   if (!fs.existsSync(configPath)) {
-    throw new Error(`Missing workspace root config at ${configPath}`);
+    throw new Error(`Missing workspace root config at ${configPath}. Copy .remix-workspace-root.example.json to .remix-workspace-root.json and set workspaceRoot.`);
   }
 
   let config;
