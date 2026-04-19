@@ -29,7 +29,7 @@ tools/
   remotion-best-practices/ ← Remotion rules (load via skill tool)
   suno-music-creator/      ← Suno AI workflow (load via skill tool)
   video-generation/        ← AI video generation (load via skill tool)
-workspaces/                ← Runtime output (gitignored) — one folder per remix
+.remix-workspace-root.example.json ← Example repo-local config for external workspace root
 ```
 
 ## Core Principles

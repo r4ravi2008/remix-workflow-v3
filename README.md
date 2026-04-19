@@ -71,7 +71,7 @@ remix-gpt-coding-agent/
 ├── .agents/skills/                    # Agent skill definitions
 │   ├── suno-music-creator/            # Suno.ai music creation workflows
 │   └── video-generation/              # AI video generation capabilities
-└── workspaces/                        # Output directory (one folder per remix)
+└── .remix-workspace-root.example.json # Example machine-local workspace root config
 ```
 
 ## Pipeline Details
@@ -135,9 +135,9 @@ Each remix session produces a complete workspace:
 ├── <slug>-suno-lyrics.txt       # Suno-formatted lyrics
 ├── <slug>-suno-style.txt        # Style block for Suno
 ├── design.json                  # AI-generated visual design config
-├── <slug>-remix-v1.mp3          # Suno remix variation 1
-├── <slug>-remix-v2.mp3          # Suno remix variation 2
-├── <slug>-remix-v1-acapella.mp3 # Vocals from remix (for alignment)
+├── <slug>-remix-<candidate-a>.mp3 # First generated Suno remix candidate
+├── <slug>-remix-<candidate-b>.mp3 # Second generated Suno remix candidate
+├── <slug>-remix-<selected-remix>-acapella.mp3 # Vocals from the chosen remix (for alignment)
 ├── lyrics-timestamps.json       # CTC-aligned word/line timestamps
 ├── <slug>-cover-art.jpg         # Stylized album art
 ├── <slug>-video.mp4             # Final rendered music video
@@ -161,14 +161,15 @@ Each remix session produces a complete workspace:
    ```bash
    cp .remix-workspace-root.example.json .remix-workspace-root.json
    ```
-3. Install Python dependencies for the acapella extractor:
+3. Edit `.remix-workspace-root.json` and set `workspaceRoot` to a real existing machine-local directory.
+4. Install Python dependencies for the acapella extractor:
    ```bash
    cd tools/acapella-extractor && uv sync
    ```
-4. Start a Claude Code session and provide:
+5. Start a Claude Code session and provide:
    - A YouTube URL of the song to remix
    - A target genre/style (e.g., "Lo-Fi", "EDM", "Hip-Hop", "Carnatic Fusion")
-5. The agent walks through each step sequentially, with a user checkpoint at Step 5.5 to select the preferred remix variation
+6. The agent walks through each step sequentially, with a user checkpoint at Step 5.5 to select the preferred remix variation
 
 ## Supported Languages
 

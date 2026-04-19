@@ -31,7 +31,7 @@ Step 8: init-video.js → Remotion template
 ```
 tools/video-generator/
 ├── README.md
-├── init-video.js              # Scaffold video project, write video-config.json + design.json
+├── init-video.js              # Scaffold video project, write video-config.json and copy design.json when provided
 ├── template/                  # Base Remotion project template
 │   ├── package.json
 │   ├── tsconfig.json
@@ -79,7 +79,7 @@ The generated video project is created in `<workspaceRoot>/<slug>/video/`.
 ### Step 3: Copy Assets
 
 ```bash
-cp <workspaceRoot>/<slug>/<slug>-remix-v1.mp3  <workspaceRoot>/<slug>/video/public/audio.mp3
+cp <workspaceRoot>/<slug>/<slug>-selected-remix.mp3  <workspaceRoot>/<slug>/video/public/audio.mp3
 cp <workspaceRoot>/<slug>/lyrics-timestamps.json <workspaceRoot>/<slug>/video/public/
 # design.json is automatically copied by init-video.js
 ```
