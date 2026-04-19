@@ -1,0 +1,9 @@
+Clean deep house, minimal electronic track with a brooding atmosphere, hypnotic groove, layered with clean sub bass hits, Sparse, tight kicks, dry claps, spacey hi-hats leaving lots of empty space, Haunting, heavily processed and slightly pitched down, synth textures, Drop hits with aggressive, bass modulation and sharp rhythmic stabs, creating a cold, melancholic, cinematic intensity
+
+# style 2
+
+Dark, melancholic deep house at ~106 BPM in a minor key, built around a slow hypnotic groove, Start with a sparse atmospheric intro of filtered pads and distant reverb textures, Introduce a deep, warm sub-bass with subtle harmonic movement, paired with a tight, minimal kick and soft, shuffled hi-hats, Layer breathy, intimate vocals drenched in reverb and delay, sitting low in the mix like an instrument rather than a lead, Gradually add muted synth stabs and low-pass filtered chords, creating tension without brightness, Keep the arrangement minimal and moody, focusing on space and groove, In the drop, bring in a rolling bassline with slight distortion and sidechain compression, maintaining a restrained, hypnotic rhythm rather than a big energetic peak, Use repetition, vocal chops, and evolving textures to build emotional weight, Avoid bright melodies; keep everything shadowy, sensual, and introspective with a steady pulse and subtle progression
+
+# style 3
+
+Dark, melancholic deep house at 98 minor key built around a slow hypnotic groove, Start with a sparse atmospheric intro of filtered pads and distant reverb textures, deep, warm sub-bass with subtle harmonic movement, paired with a tight, minimal kick and soft, shuffled hi-hats, Keep the arrangement minimal and moody, focusing on space and groove, In the drop, bring in a rolling bassline with slight distortion and sidechain compression, maintaining a restrained, hypnotic rhythm rather than a big energetic peak
