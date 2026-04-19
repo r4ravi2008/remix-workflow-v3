@@ -47,6 +47,8 @@ def extract_vocals(
     separator = Separator(
         output_dir=str(output_path),
         model_file_dir=str(model_cache_dir),
+        output_format="MP3",
+        output_bitrate="192k",
         output_single_stem="vocals",  # Only extract vocals
         mdx_params={
             "hop_length": 1024,
@@ -67,6 +69,8 @@ def extract_vocals(
     # Let's rename it to "acapella.mp3"
     if output_files:
         original_output = Path(output_files[0])
+        if not original_output.is_absolute():
+            original_output = output_path / original_output
         acapella_file = output_path / "acapella.mp3"
 
         # Rename to standard name
