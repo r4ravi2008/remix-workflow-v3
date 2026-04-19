@@ -159,7 +159,7 @@ If no suitable source image can be found:
    ```json
    { "status": { "cover_art_fetched": false }, "cover_art_skipped": true }
    ```
-3. The Remotion video falls back to the `design.json` color palette with no image panel.
+3. The Remotion cover-art layout falls back gracefully to its placeholder if `cover-art.jpg` is unavailable.
 
 ---
 

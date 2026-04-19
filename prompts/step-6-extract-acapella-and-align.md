@@ -15,7 +15,7 @@ generation step.
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` exists (user-selected version from Step 5)
+- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` is `v1` or `v2` from the user's Step 5.5 choice)
 - `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists
 - `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`, `language`
 
@@ -39,6 +39,8 @@ Before using any filesystem path in this step:
 
 Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
 
+Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+
 ---
 
 ### 6.2 — Extract Acapella from Remix Audio
@@ -51,20 +53,20 @@ Run the acapella extractor on the remix (not the original) to get clean vocals f
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-"${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3" \
+"${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3" \
 -o "${WORKSPACE_DIR}"
 ```
 
 The extractor outputs WAV — convert to MP3:
 
 ```bash
-WAV=$(ls "${WORKSPACE_DIR}"/*remix-v1*vocals*.wav 2>/dev/null | head -1)
+WAV=$(ls "${WORKSPACE_DIR}"/*remix-${SELECTED_REMIX}*vocals*.wav 2>/dev/null | head -1)
 ffmpeg -i "$WAV" -codec:a libmp3lame -q:a 2 \
-  "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3"
+  "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}-acapella.mp3"
 rm "$WAV"
 ```
 
-Output: `${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3`
+Output: `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}-acapella.mp3`
 
 ---
 
@@ -78,7 +80,7 @@ Run the CTC forced aligner against the acapella:
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/align_lyrics.py \
---audio "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3" \
+--audio "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}-acapella.mp3" \
 --lyrics "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" \
 --output "${WORKSPACE_DIR}/lyrics-timestamps.json" \
 --language <iso-639-3-code>
@@ -121,7 +123,7 @@ Update `${WORKSPACE_DIR}/meta.json` to record the alignment outputs:
 {
   "status": { "acapella_aligned": true },
   "files": {
-    "remix_acapella": "<slug>/<slug>-remix-v1-acapella.mp3",
+    "remix_acapella": "<slug>/<slug>-remix-<selected-remix>-acapella.mp3",
     "lyrics_timestamps": "<slug>/lyrics-timestamps.json"
   }
 }
@@ -135,7 +137,7 @@ Update `${WORKSPACE_DIR}/meta.json` to record the alignment outputs:
 Acapella extraction and lyrics alignment complete!
 
 Outputs in <workspaceRoot>/<slug>/:
-   <slug>-remix-v1-acapella.mp3   — Vocals extracted from remix (alignment source)
+   <slug>-remix-<selected-remix>-acapella.mp3   — Vocals extracted from remix (alignment source)
    lyrics-timestamps.json          — Word+line timestamps (CTC aligned)
 
 Alignment verified: <n> lines synced  |  End drift: <Xs>
@@ -152,7 +154,7 @@ Ready to proceed to Step 7: Fetch & Enhance Cover Art.
 | Problem | Fix |
 |---|---|
 | `ModuleNotFoundError: acapella_extractor` | Ensure `PYTHONPATH` and full venv path are set |
-| Acapella output is WAV | Use glob pattern `*remix-v1*vocals*.wav` to find and convert |
+| Acapella output is WAV | Use glob pattern `*remix-${SELECTED_REMIX}*vocals*.wav` to find and convert |
 | Alignment too far off | Check acapella quality; verify language code |
 | ffprobe not found | `brew install ffmpeg` |
 

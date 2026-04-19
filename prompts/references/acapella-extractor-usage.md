@@ -86,22 +86,24 @@ Expected: `Audio file with ID3... MPEG ADTS, layer III, v1, 192 kbps, 44.1 kHz, 
 
 Extract vocals from the Suno remix for CTC alignment.
 
+Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+
 ### Command
 
 ```bash
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-"${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3" \
+"${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3" \
 -o "${WORKSPACE_DIR}"
 ```
 
 ### Convert and Rename
 
 ```bash
-WAV=$(ls "${WORKSPACE_DIR}"/*remix-v1*vocals*.wav 2>/dev/null | head -1)
+WAV=$(ls "${WORKSPACE_DIR}"/*remix-${SELECTED_REMIX}*vocals*.wav 2>/dev/null | head -1)
 ffmpeg -i "$WAV" -codec:a libmp3lame -q:a 2 \
-  "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3"
+  "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}-acapella.mp3"
 rm "$WAV"
 ```
 
@@ -115,7 +117,7 @@ Generate precise word- and line-level timestamps using wav2vec 2.0/MMS CTC model
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/align_lyrics.py \
---audio "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3" \
+--audio "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}-acapella.mp3" \
 --lyrics "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" \
 --output "${WORKSPACE_DIR}/lyrics-timestamps.json" \
 --language <iso-639-3-code>

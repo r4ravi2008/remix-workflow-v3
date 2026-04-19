@@ -10,17 +10,17 @@ focuses on running the pipeline and wiring up the correct data.
 
 - **Full audio duration**: Video must match the complete audio length (not hardcoded)
 - **Lyrics synchronization**: Uses the `lyrics-timestamps.json` produced in Step 6
-- **Cover art background**: Uses `<slug>-cover-art.jpg` produced in Step 7 — **mandatory**
+- **Cover art background**: Uses `<slug>-cover-art.jpg` from Step 7 when available; the template falls back gracefully if it is missing
 - **Section display**: Show current section (Verse, Chorus, etc.) prominently
 - **Indic script support**: Telugu/Hindi/Tamil text renders correctly via system fonts
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` exists
+- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` is `v1` or `v2` from the user's Step 5.5 choice)
 - `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists
 - `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
 - `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`, `language`
-- `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` exists (produced in Step 7, **required**)
+- `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` may exist if Step 7 found artwork
 
 ## Workspace Path Resolution
 
@@ -42,6 +42,8 @@ Before using any filesystem path in this step:
 
 Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
 
+Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+
 ---
 
 ### 8.2 — Verify Design Configuration
@@ -52,9 +54,8 @@ Verify it exists at `${WORKSPACE_DIR}/design.json` before proceeding.
 **Hard requirement**: The `layout.variant` must be `"cover-art"`. If it's set to anything else,
 fix it before continuing.
 
-> **Why cover-art is mandatory**: The CoverArtLayout renders the official movie/song poster
-> (produced in Step 7) as the dominant left-panel visual. Without it the video has no
-> contextual imagery.
+> **Cover-art behavior**: The CoverArtLayout uses the official movie/song poster from Step 7
+> when available and falls back gracefully to a placeholder if `cover-art.jpg` is missing.
 
 ---
 
@@ -77,7 +78,7 @@ configuration.
 ### 8.4 — Copy Assets to Video Project
 
 ```bash
-cp "${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3"   "${WORKSPACE_DIR}/video/public/audio.mp3"
+cp "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3"   "${WORKSPACE_DIR}/video/public/audio.mp3"
 cp "${WORKSPACE_DIR}/lyrics-timestamps.json" "${WORKSPACE_DIR}/video/public/"
 cp "${WORKSPACE_DIR}/design.json"            "${WORKSPACE_DIR}/video/public/"
 cp "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" "${WORKSPACE_DIR}/video/public/suno-lyrics.txt"
@@ -132,8 +133,8 @@ Video generation complete!
 
 Outputs in <workspaceRoot>/<slug>/:
    <slug>-video.mp4                  — Final music video (1920×1080) with audio-reactive visuals
-   <slug>-remix-v1.mp3               — Remix audio
-   <slug>-remix-v1-acapella.mp3      — Vocals extracted from remix
+   <slug>-remix-<selected-remix>.mp3               — Remix audio
+   <slug>-remix-<selected-remix>-acapella.mp3      — Vocals extracted from remix
    lyrics-timestamps.json            — Word+line timestamps (CTC aligned)
    design.json                       — LLM-generated visual design configuration
    <slug>-cover-art.jpg              — Anime-stylized cover art (Nano Banana Pro 2K)

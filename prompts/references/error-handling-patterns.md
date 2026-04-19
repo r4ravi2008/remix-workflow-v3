@@ -19,7 +19,7 @@ Common errors across the Indic Song Remixer pipeline and their fixes.
 
 **Fixes**:
 1. Check available space: `df -h`
-2. Clean old workspaces: `rm -rf workspaces/old-slug/`
+2. Clean old workspaces: `rm -rf "<workspaceRoot>/old-slug/"`
 3. Each workspace uses ~500MB (MP3s, video, images)
 
 ### File Not Found

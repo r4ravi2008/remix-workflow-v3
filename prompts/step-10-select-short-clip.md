@@ -8,7 +8,7 @@ during Step 0, present candidates for selection.
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` exists (or selected remix variant)
+- `${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3` exists (`SELECTED_REMIX` is `v1` or `v2` from the user's Step 5.5 choice)
 - `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
 - `${WORKSPACE_DIR}/meta.json` exists with `shorts_clip_mode` and `shorts_duration`
 
@@ -34,6 +34,8 @@ Read `meta.json` and extract:
 - `slug`
 - Selected remix file path
 
+Resolve `SELECTED_REMIX` as `v1` or `v2` from the user's Step 5.5 choice, then substitute it into remix file paths below.
+
 Read `lyrics-timestamps.json` and extract all sections with their start/end times.
 
 ---
@@ -43,7 +45,7 @@ Read `lyrics-timestamps.json` and extract all sections with their start/end time
 Run FFmpeg EBU R128 loudness analysis on the remix audio:
 
 ```bash
-ffmpeg -i "${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3" -af ebur128 -f null - 2>&1
+ffmpeg -i "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3" -af ebur128 -f null - 2>&1
 ```
 
 Parse the output to extract per-second loudness values. If `ffmpeg ebur128` fails, skip energy
