@@ -6,11 +6,21 @@ Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, pa
 
 ## Prerequisites
 
-- `workspaces/<slug>/<slug>-acapella.mp3` exists (from Step 2)
-- `workspaces/<slug>/<slug>-suno-lyrics.txt` exists (from Step 4)
-- `workspaces/<slug>/<slug>-suno-style.txt` exists (from Step 4)
-- `workspaces/<slug>/meta.json` exists with `genre`, `slug`
+- `${WORKSPACE_DIR}/${SLUG}-acapella.mp3` exists (from Step 2)
+- `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists (from Step 4)
+- `${WORKSPACE_DIR}/${SLUG}-suno-style.txt` exists (from Step 4)
+- `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`
 - Logged into Suno.ai (https://suno.com)
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 **See also:**
 - [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference
@@ -25,10 +35,10 @@ Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, pa
 If Suno detects copyrighted material, pitch-shift the acapella down by 2 semitones:
 
 ```bash
-ffmpeg -i "workspaces/<slug>/<slug>-acapella.mp3" \
+ffmpeg -i "${WORKSPACE_DIR}/${SLUG}-acapella.mp3" \
   -af "rubberband=pitch=0.8909" \
   -codec:a libmp3lame -b:a 192k \
-  "workspaces/<slug>/<slug>-acapella-pitched.mp3" -y
+  "${WORKSPACE_DIR}/${SLUG}-acapella-pitched.mp3" -y
 ```
 
 Then upload the pitched version instead.
@@ -169,7 +179,7 @@ When the file chooser dialog appears, upload the acapella:
 
 ```
 Element: file input element that appears after clicking Upload
-File path: workspaces/<slug>/<slug>-acapella.mp3
+File path: ${WORKSPACE_DIR}/${SLUG}-acapella.mp3
 ```
 
 Take a snapshot after uploading to confirm the audio waveform or file name appears in the audio section:
@@ -236,7 +246,7 @@ Optionally adjust the "Audio Influence" slider if visible. A value between 70–
 
 **Chrome DevTools MCP tool:** `click` then `fill`
 
-Read the content of `workspaces/<slug>/<slug>-suno-lyrics.txt` first.
+Read the content of `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` first.
 
 Click on the lyrics text area to focus it:
 ```
@@ -248,7 +258,7 @@ Clear any existing content, then fill with the full contents of `<slug>-suno-lyr
 ```
 Tool: fill
 Element: lyrics textbox
-Value: <full contents of workspaces/<slug>/<slug>-suno-lyrics.txt>
+Value: <full contents of ${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt>
 ```
 
 Take a snapshot to confirm the lyrics are entered correctly:
@@ -262,7 +272,7 @@ Tool: take_snapshot
 
 **Chrome DevTools MCP tool:** `click` then `fill`
 
-Read the content of `workspaces/<slug>/<slug>-suno-style.txt`.
+Read the content of `${WORKSPACE_DIR}/${SLUG}-suno-style.txt`.
 
 Click the Styles text area to focus it:
 ```
@@ -274,7 +284,7 @@ Clear any existing styles, then fill with the contents of `<slug>-suno-style.txt
 ```
 Tool: fill
 Element: styles textbox
-Value: <full contents of workspaces/<slug>/<slug>-suno-style.txt>
+Value: <full contents of ${WORKSPACE_DIR}/${SLUG}-suno-style.txt>
 ```
 
 **Important:** The style field has a 1000-character limit. Confirm the character counter below the field stays within limit. If it exceeds, trim the style block.
@@ -383,16 +393,16 @@ SONG_ID_V1="<song-id-1>"
 SONG_ID_V2="<song-id-2>"
 
 curl -L "https://cdn1.suno.ai/${SONG_ID_V1}.mp3" \
-  -o "workspaces/${SLUG}/${SLUG}-remix-v1.mp3"
+  -o "${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3"
 
 curl -L "https://cdn1.suno.ai/${SONG_ID_V2}.mp3" \
-  -o "workspaces/${SLUG}/${SLUG}-remix-v2.mp3"
+  -o "${WORKSPACE_DIR}/${SLUG}-remix-v2.mp3"
 ```
 
 **Verify both files downloaded correctly:**
 
 ```bash
-ls -lh workspaces/<slug>/<slug>-remix-*.mp3
+ls -lh "${WORKSPACE_DIR}/${SLUG}-remix-"*.mp3
 ```
 
 Expected: each file is 4–10MB for a typical 3–4 minute song.
@@ -404,7 +414,7 @@ Expected: each file is 4–10MB for a typical 3–4 minute song.
 **Bash tool:**
 
 ```bash
-ls -lh workspaces/<slug>/<slug>-remix-*.mp3
+ls -lh "${WORKSPACE_DIR}/${SLUG}-remix-"*.mp3
 ```
 
 ---
@@ -413,7 +423,7 @@ ls -lh workspaces/<slug>/<slug>-remix-*.mp3
 
 **Write tool** (filesystem):
 
-Update `workspaces/<slug>/meta.json`:
+Update `${WORKSPACE_DIR}/meta.json`:
 
 ```json
 {
@@ -443,8 +453,8 @@ Print the results and ask user to select which version to use:
 Remix generation complete! Two variations created:
 
 📁 Files downloaded to workspace:
-   workspaces/<slug>/<slug>-remix-v1.mp3
-   workspaces/<slug>/<slug>-remix-v2.mp3
+   <workspaceRoot>/<slug>/<slug>-remix-v1.mp3
+   <workspaceRoot>/<slug>/<slug>-remix-v2.mp3
 
 🔗 Suno song pages:
    Song 1: https://suno.com/song/<id-1>
@@ -463,9 +473,9 @@ Once you select, I'll proceed to Step 6: Extract Acapella & Align Lyrics.
 
 | File | Path |
 |---|---|
-| Remix Variation 1 | `workspaces/<slug>/<slug>-remix-v1.mp3` |
-| Remix Variation 2 | `workspaces/<slug>/<slug>-remix-v2.mp3` |
-| Updated metadata | `workspaces/<slug>/meta.json` |
+| Remix Variation 1 | `<workspaceRoot>/<slug>/<slug>-remix-v1.mp3` |
+| Remix Variation 2 | `<workspaceRoot>/<slug>/<slug>-remix-v2.mp3` |
+| Updated metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ---
 

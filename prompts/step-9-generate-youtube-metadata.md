@@ -15,9 +15,19 @@ Create optimized YouTube metadata (title, description, tags, thumbnail text) for
 
 ## Prerequisites
 
-- `workspaces/<slug>/meta.json` exists with `video_title`, `genre`, `language`, `youtube_url`
-- `workspaces/<slug>/<slug>-suno-style.txt` exists (for style descriptors)
-- `workspaces/<slug>/<slug>-video.mp4` exists (video is ready to upload)
+- `${WORKSPACE_DIR}/meta.json` exists with `video_title`, `genre`, `language`, `youtube_url`
+- `${WORKSPACE_DIR}/${SLUG}-suno-style.txt` exists (for style descriptors)
+- `${WORKSPACE_DIR}/${SLUG}-video.mp4` exists (video is ready to upload)
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 ---
 
@@ -26,8 +36,8 @@ Create optimized YouTube metadata (title, description, tags, thumbnail text) for
 ### 9.1 — Read Inputs
 
 Read the following files:
-- `workspaces/<slug>/meta.json` — original song info, genre, language
-- `workspaces/<slug>/<slug>-suno-style.txt` — style descriptors for keywords
+- `${WORKSPACE_DIR}/meta.json` — original song info, genre, language
+- `${WORKSPACE_DIR}/${SLUG}-suno-style.txt` — style descriptors for keywords
 
 Extract:
 - Original song title and movie/album
@@ -184,7 +194,7 @@ If creating Shorts versions:
 **Write files:**
 
 ```json
-File path: workspaces/<slug>/youtube-metadata.json
+File path: ${WORKSPACE_DIR}/youtube-metadata.json
 ```
 
 ```json
@@ -210,7 +220,7 @@ File path: workspaces/<slug>/youtube-metadata.json
 
 Also generate a markdown artifact for easy copy-paste:
 ```
-File path: workspaces/<slug>/youtube-metadata-artifact.md
+File path: ${WORKSPACE_DIR}/youtube-metadata-artifact.md
 ```
 
 The markdown artifact format should be:
@@ -266,7 +276,7 @@ tag1, tag2, tag3, tag4, tag5, tag6, tag7, tag8, tag9, tag10, tag11, tag12, tag13
 
 ### 9.8 — Update meta.json
 
-Update `workspaces/<slug>/meta.json`:
+Update `${WORKSPACE_DIR}/meta.json`:
 
 ```json
 "status": {
@@ -275,7 +285,7 @@ Update `workspaces/<slug>/meta.json`:
 },
 "files": {
   ...,
-  "youtube_metadata": "workspaces/<slug>/youtube-metadata.json"
+  "youtube_metadata": "<slug>/youtube-metadata.json"
 }
 ```
 
@@ -322,9 +332,9 @@ Files saved:
 
 | File | Path |
 |---|---|
-| Full metadata JSON | `workspaces/<slug>/youtube-metadata.json` |
-| **Markdown artifact (copy-paste)** | `workspaces/<slug>/youtube-metadata-artifact.md` |
-| Updated metadata | `workspaces/<slug>/meta.json` |
+| Full metadata JSON | `<workspaceRoot>/<slug>/youtube-metadata.json` |
+| **Markdown artifact (copy-paste)** | `<workspaceRoot>/<slug>/youtube-metadata-artifact.md` |
+| Updated metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ## Error Handling
 

@@ -6,9 +6,19 @@ Extract a clean vocals-only acapella track from the downloaded MP3 using the ope
 
 ## Prerequisites
 
-- `workspaces/<slug>/<slug>-original.mp3` exists (produced by Step 1)
-- `workspaces/<slug>/meta.json` exists with the slug
+- `${WORKSPACE_DIR}/${SLUG}-original.mp3` exists (produced by Step 1)
+- `${WORKSPACE_DIR}/meta.json` exists with the slug
 - Tool location: `tools/acapella-extractor/`
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 **See also**: [Acapella Extractor Usage](references/acapella-extractor-usage.md) for detailed setup and commands.
 
@@ -22,12 +32,12 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-workspaces/<slug>/<slug>-original.mp3 \
--o workspaces/<slug>/
+"${WORKSPACE_DIR}/${SLUG}-original.mp3" \
+-o "${WORKSPACE_DIR}"
 ```
 
 **Processing time:** 2-5 minutes  
-**Output:** `workspaces/<slug>/<slug>-acapella.mp3`
+**Output:** `${WORKSPACE_DIR}/${SLUG}-acapella.mp3`
 
 ---
 
@@ -57,8 +67,8 @@ Execute the extraction command from Quick Reference above.
 ```
 🎵 Acapella Extractor
    Model: Mel-Band RoFormer (SOTA)
-   Input: workspaces/<slug>/<slug>-original.mp3
-   Output: workspaces/<slug>/
+   Input: <workspaceRoot>/<slug>/<slug>-original.mp3
+   Output: <workspaceRoot>/<slug>/
 
 Loading Mel-Band RoFormer model...
 Separating vocals... (this may take a few minutes)
@@ -75,12 +85,12 @@ The tool outputs WAV format that needs conversion to MP3.
 
 **Bash tool:**
 ```bash
-cd workspaces/<slug>
+cd "${WORKSPACE_DIR}"
 for f in *.wav; do
   if [ -f "$f" ]; then
-    ffmpeg -i "$f" -codec:a libmp3lame -b:a 192k <slug>-acapella.mp3
+    ffmpeg -i "$f" -codec:a libmp3lame -b:a 192k "${SLUG}-acapella.mp3"
     rm "$f"
-    echo "✓ Converted $f to <slug>-acapella.mp3"
+    echo "✓ Converted $f to ${SLUG}-acapella.mp3"
     break
   fi
 done
@@ -93,8 +103,8 @@ done
 **Bash tool:** Confirm the file is valid:
 
 ```bash
-file workspaces/<slug>/<slug>-acapella.mp3
-ls -lh workspaces/<slug>/<slug>-acapella.mp3
+file "${WORKSPACE_DIR}/${SLUG}-acapella.mp3"
+ls -lh "${WORKSPACE_DIR}/${SLUG}-acapella.mp3"
 ```
 
 **Expected results:**
@@ -129,7 +139,7 @@ ls -lh workspaces/<slug>/<slug>-acapella.mp3
 ```
 ✅ Step 2 Complete: Acapella Extracted
 
-📁 Output: workspaces/<slug>/<slug>-acapella.mp3
+📁 Output: <workspaceRoot>/<slug>/<slug>-acapella.mp3
 📊 Size: <actual file size>
 🎵 Format: MP3, 192kbps, 44.1kHz
 🤖 Model: Mel-Band RoFormer (SOTA)
@@ -143,8 +153,8 @@ Proceeding to Step 3: Find Lyrics...
 
 | File | Path | Description |
 |---|---|---|
-| Acapella | `workspaces/<slug>/<slug>-acapella.mp3` | Clean vocals-only track |
-| Metadata | `workspaces/<slug>/meta.json` | Updated status |
+| Acapella | `<workspaceRoot>/<slug>/<slug>-acapella.mp3` | Clean vocals-only track |
+| Metadata | `<workspaceRoot>/<slug>/meta.json` | Updated status |
 
 ---
 

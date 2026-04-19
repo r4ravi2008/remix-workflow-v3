@@ -6,8 +6,18 @@ Search for the original song lyrics in native Indic script (Telugu, Hindi, Tamil
 
 ## Prerequisites
 
-- `workspaces/<slug>/meta.json` exists with `video_title` and `language` fields
+- `${WORKSPACE_DIR}/meta.json` exists with `video_title` and `language` fields
 - Chrome DevTools MCP available
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 **See also:**
 - [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference
@@ -118,7 +128,7 @@ Review the extracted text to confirm it contains the correct Indic script lyrics
 **Write tool:** Save the extracted lyrics:
 
 ```
-File path: workspaces/<slug>/<slug>-lyrics.txt
+File path: ${WORKSPACE_DIR}/${SLUG}-lyrics.txt
 ```
 
 Include a header with source metadata:
@@ -136,7 +146,7 @@ Include a header with source metadata:
 
 ### 3.9 — Update meta.json Status
 
-Update `workspaces/<slug>/meta.json` to mark this step complete:
+Update `${WORKSPACE_DIR}/meta.json` to mark this step complete:
 
 ```json
 "status": {
@@ -160,7 +170,7 @@ Also add the lyrics source URL to `meta.json`:
 Print a summary before proceeding:
 
 ```
-Lyrics saved: workspaces/<slug>/<slug>-lyrics.txt
+Lyrics saved: <workspaceRoot>/<slug>/<slug>-lyrics.txt
 Source: <lyrics URL>
 Language: <language>
 Lines: <count>
@@ -174,8 +184,8 @@ Proceeding to Step 4: Generate Suno Meta-Tag Lyrics...
 
 | File | Path |
 |---|---|
-| Raw lyrics (native script) | `workspaces/<slug>/<slug>-lyrics.txt` |
-| Updated metadata | `workspaces/<slug>/meta.json` |
+| Raw lyrics (native script) | `<workspaceRoot>/<slug>/<slug>-lyrics.txt` |
+| Updated metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ---
 
@@ -197,4 +207,3 @@ Proceeding to Step 4: Generate Suno Meta-Tag Lyrics...
 - [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation
 - [Workspace Conventions](references/workspace-conventions.md) — Native script rules
 - [Error Handling Patterns](references/error-handling-patterns.md) — Common errors
-

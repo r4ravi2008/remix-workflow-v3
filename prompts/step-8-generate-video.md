@@ -16,11 +16,21 @@ focuses on running the pipeline and wiring up the correct data.
 
 ## Prerequisites
 
-- `workspaces/<slug>/<slug>-remix-v1.mp3` exists
-- `workspaces/<slug>/<slug>-suno-lyrics.txt` exists
-- `workspaces/<slug>/lyrics-timestamps.json` exists (produced in Step 6)
-- `workspaces/<slug>/meta.json` exists with `genre`, `slug`, `language`
-- `workspaces/<slug>/<slug>-cover-art.jpg` exists (produced in Step 7, **required**)
+- `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` exists
+- `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists
+- `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
+- `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`, `language`
+- `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` exists (produced in Step 7, **required**)
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 **See also**: Load the `remotion-best-practices` skill when working on this step.
 
@@ -37,7 +47,7 @@ Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
 ### 8.2 — Verify Design Configuration
 
 `design.json` is generated in **Step 4** (section 4.11) based on the Suno style descriptors.
-Verify it exists at `workspaces/<slug>/design.json` before proceeding.
+Verify it exists at `${WORKSPACE_DIR}/design.json` before proceeding.
 
 **Hard requirement**: The `layout.variant` must be `"cover-art"`. If it's set to anything else,
 fix it before continuing.
@@ -56,10 +66,10 @@ the design.json automatically. No manual code editing needed.
 
 ```bash
 cd tools/video-generator
-node init-video.js <slug> --design=../../workspaces/<slug>/design.json
+node init-video.js <slug> --design="${WORKSPACE_DIR}/design.json"
 ```
 
-This creates `workspaces/<slug>/video/` with everything wired up, including the visual design
+This creates `<workspaceRoot>/<slug>/video/` with everything wired up, including the visual design
 configuration.
 
 ---
@@ -67,11 +77,11 @@ configuration.
 ### 8.4 — Copy Assets to Video Project
 
 ```bash
-cp workspaces/<slug>/<slug>-remix-v1.mp3          workspaces/<slug>/video/public/audio.mp3
-cp workspaces/<slug>/lyrics-timestamps.json        workspaces/<slug>/video/public/
-cp workspaces/<slug>/design.json                   workspaces/<slug>/video/public/
-cp workspaces/<slug>/<slug>-suno-lyrics.txt        workspaces/<slug>/video/public/suno-lyrics.txt
-cp workspaces/<slug>/<slug>-cover-art.jpg          workspaces/<slug>/video/public/cover-art.jpg
+cp "${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3"   "${WORKSPACE_DIR}/video/public/audio.mp3"
+cp "${WORKSPACE_DIR}/lyrics-timestamps.json" "${WORKSPACE_DIR}/video/public/"
+cp "${WORKSPACE_DIR}/design.json"            "${WORKSPACE_DIR}/video/public/"
+cp "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" "${WORKSPACE_DIR}/video/public/suno-lyrics.txt"
+cp "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg"   "${WORKSPACE_DIR}/video/public/cover-art.jpg"
 ```
 
 The file **must** be named `cover-art.jpg` — that is the exact filename the `CoverArtLayout`
@@ -82,7 +92,7 @@ template looks for via `staticFile('cover-art.jpg')`.
 ### 8.5 — Install Dependencies and Render
 
 ```bash
-cd workspaces/<slug>/video
+cd "${WORKSPACE_DIR}/video"
 npm install
 npx remotion render MusicVideo out/video.mp4
 ```
@@ -94,21 +104,21 @@ Rendering takes 1–2 minutes for a typical 3–4 minute song.
 ### 8.6 — Copy Output to Workspace
 
 ```bash
-cp workspaces/<slug>/video/out/video.mp4 workspaces/<slug>/<slug>-video.mp4
+cp "${WORKSPACE_DIR}/video/out/video.mp4" "${WORKSPACE_DIR}/${SLUG}-video.mp4"
 ```
 
 ---
 
 ### 8.7 — Update Metadata
 
-Update `workspaces/<slug>/meta.json` to record the video output:
+Update `${WORKSPACE_DIR}/meta.json` to record the video output:
 
 ```json
 {
   "status": { "video_generated": true },
   "files": {
-    "final_video": "workspaces/<slug>/<slug>-video.mp4",
-    "design_config": "workspaces/<slug>/design.json"
+    "final_video": "<slug>/<slug>-video.mp4",
+    "design_config": "<slug>/design.json"
   }
 }
 ```
@@ -120,7 +130,7 @@ Update `workspaces/<slug>/meta.json` to record the video output:
 ```
 Video generation complete!
 
-Outputs in workspaces/<slug>/:
+Outputs in <workspaceRoot>/<slug>/:
    <slug>-video.mp4                  — Final music video (1920×1080) with audio-reactive visuals
    <slug>-remix-v1.mp3               — Remix audio
    <slug>-remix-v1-acapella.mp3      — Vocals extracted from remix
@@ -171,9 +181,9 @@ the template if the project gets into a broken state.
 
 | Problem | Fix |
 |---|---|
-| Cover art not showing (left panel blank) | Ensure `cover-art.jpg` is in `video/public/` with that exact filename |
+| Cover art not showing (left panel blank) | Ensure `cover-art.jpg` is in `${WORKSPACE_DIR}/video/public/` with that exact filename |
 | Cover art distorted / wrong crop | Nano Banana Pro output is 2048×2048 — `objectFit: cover` handles any ratio |
-| Lyrics not syncing | Check `lyrics-timestamps.json` is in `video/public/` |
+| Lyrics not syncing | Check `lyrics-timestamps.json` is in `${WORKSPACE_DIR}/video/public/` |
 | No lyrics visible in rendered video | Missing `delayRender` — re-scaffold from template |
 | Telugu text garbled | Font issue — system-ui fallback handles it; no fix needed |
 | ffprobe not found | `brew install ffmpeg` |

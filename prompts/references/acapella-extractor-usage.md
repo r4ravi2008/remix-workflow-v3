@@ -43,8 +43,8 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-workspaces/<slug>/<slug>-original.mp3 \
--o workspaces/<slug>/
+"${WORKSPACE_DIR}/${SLUG}-original.mp3" \
+-o "${WORKSPACE_DIR}"
 ```
 
 ### What Happens
@@ -64,10 +64,10 @@ workspaces/<slug>/<slug>-original.mp3 \
 The tool outputs WAV that needs conversion:
 
 ```bash
-cd workspaces/<slug>
+cd "${WORKSPACE_DIR}"
 for f in *.wav; do
   if [ -f "$f" ]; then
-    ffmpeg -i "$f" -codec:a libmp3lame -b:a 192k <slug>-acapella.mp3
+    ffmpeg -i "$f" -codec:a libmp3lame -b:a 192k "${SLUG}-acapella.mp3"
     rm "$f"
     break
   fi
@@ -77,8 +77,8 @@ done
 ### Verify Output
 
 ```bash
-file workspaces/<slug>/<slug>-acapella.mp3
-ls -lh workspaces/<slug>/<slug>-acapella.mp3
+file "${WORKSPACE_DIR}/${SLUG}-acapella.mp3"
+ls -lh "${WORKSPACE_DIR}/${SLUG}-acapella.mp3"
 ```
 
 Expected: `Audio file with ID3... MPEG ADTS, layer III, v1, 192 kbps, 44.1 kHz, Stereo`
@@ -94,16 +94,16 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-workspaces/<slug>/<slug>-remix-v1.mp3 \
--o workspaces/<slug>/
+"${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3" \
+-o "${WORKSPACE_DIR}"
 ```
 
 ### Convert and Rename
 
 ```bash
-WAV=$(ls workspaces/<slug>/*remix-v1*vocals*.wav 2>/dev/null | head -1)
+WAV=$(ls "${WORKSPACE_DIR}"/*remix-v1*vocals*.wav 2>/dev/null | head -1)
 ffmpeg -i "$WAV" -codec:a libmp3lame -q:a 2 \
-  "workspaces/<slug>/<slug>-remix-v1-acapella.mp3"
+  "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3"
 rm "$WAV"
 ```
 
@@ -118,9 +118,9 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/align_lyrics.py \
---audio workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
---lyrics workspaces/<slug>/<slug>-suno-lyrics.txt \
---output workspaces/<slug>/lyrics-timestamps.json \
+--audio "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3" \
+--lyrics "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" \
+--output "${WORKSPACE_DIR}/lyrics-timestamps.json" \
 --language <iso-639-3-code>
 ```
 
@@ -169,7 +169,7 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/verify_lyrics.py \
-workspaces/<slug>/lyrics-timestamps.json
+"${WORKSPACE_DIR}/lyrics-timestamps.json"
 ```
 
 ### Quality Checks

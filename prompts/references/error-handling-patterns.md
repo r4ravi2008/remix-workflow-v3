@@ -6,12 +6,12 @@ Common errors across the Indic Song Remixer pipeline and their fixes.
 
 ### Permission Denied
 
-**Symptom**: `Permission denied: workspaces/<slug>/`
+**Symptom**: `Permission denied: <workspaceRoot>/<slug>/`
 
 **Fixes**:
-1. Check directory exists: `mkdir -p workspaces/`
-2. Check write permissions: `ls -ld workspaces/`
-3. Try with full paths: `mkdir -p /Users/aira/projects/remix-gpt-coding-agent.flow-improvements/workspaces/<slug>`
+1. Check that `.remix-workspace-root.json` exists and points to a valid directory.
+2. Check write permissions on the configured root: `ls -ld "<workspaceRoot>"`
+3. Create the resolved workspace directory explicitly: `mkdir -p "<workspaceRoot>/<slug>"`
 
 ### Disk Space
 
@@ -260,7 +260,7 @@ cd tools/video-generator/template && npm install
 
 **Fix**: Verify Step 7 completed and file exists:
 ```bash
-ls workspaces/<slug>/<slug>-cover-art.jpg
+ls "<workspaceRoot>/<slug>/<slug>-cover-art.jpg"
 ```
 
 ### Out of Memory
@@ -279,7 +279,7 @@ ls workspaces/<slug>/<slug>-cover-art.jpg
 If multiple steps have errors:
 ```bash
 # Remove workspace and restart
-rm -rf workspaces/<slug>/
+rm -rf "<workspaceRoot>/<slug>/"
 # Re-run from Step 0
 ```
 
@@ -287,7 +287,7 @@ rm -rf workspaces/<slug>/
 
 Always read the workspace status first:
 ```bash
-cat workspaces/<slug>/meta.json | jq .status
+jq .status "<workspaceRoot>/<slug>/meta.json"
 ```
 
 ### Resume from Failed Step

@@ -6,9 +6,19 @@ Download the YouTube video as an MP3 file directly into the workspace using yt-d
 
 ## Prerequisites
 
-- `workspaces/<slug>/` directory exists (created in Step 0)
-- `workspaces/<slug>/meta.json` exists with `youtube_url` and `slug`
+- `WORKSPACE_DIR` exists (created in Step 0)
+- `${WORKSPACE_DIR}/meta.json` exists with `youtube_url` and `slug`
 - `uv`/`uvx` available for running yt-dlp
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 ---
 
@@ -28,7 +38,7 @@ uvx yt-dlp \
   -x \
   --audio-format mp3 \
   --audio-quality 0 \
-  -o "workspaces/$SLUG/${SLUG}-original.%(ext)s" \
+  -o "${WORKSPACE_DIR}/${SLUG}-original.%(ext)s" \
   "$YOUTUBE_URL"
 ```
 
@@ -45,7 +55,7 @@ uvx yt-dlp \
 Verify the file was downloaded successfully:
 
 ```bash
-ls -lh "workspaces/$SLUG/${SLUG}-original.mp3"
+ls -lh "${WORKSPACE_DIR}/${SLUG}-original.mp3"
 ```
 
 Expected output: file exists with size > 1MB.
@@ -56,7 +66,7 @@ Expected output: file exists with size > 1MB.
 
 **Write tool:**
 
-Update `workspaces/<slug>/meta.json` to mark this step complete:
+Update `${WORKSPACE_DIR}/meta.json` to mark this step complete:
 
 Set `status.mp3_downloaded` to `true` in `meta.json`:
 
@@ -75,7 +85,7 @@ Set `status.mp3_downloaded` to `true` in `meta.json`:
 Print a summary before proceeding:
 
 ```
-MP3 downloaded: workspaces/<slug>/<slug>-original.mp3
+MP3 downloaded: <workspaceRoot>/<slug>/<slug>-original.mp3
 File size: <size>
 
 Proceeding to Step 2: Extract Acapella...
@@ -87,8 +97,8 @@ Proceeding to Step 2: Extract Acapella...
 
 | File | Path |
 |---|---|
-| Downloaded MP3 | `workspaces/<slug>/<slug>-original.mp3` |
-| Updated metadata | `workspaces/<slug>/meta.json` |
+| Downloaded MP3 | `<workspaceRoot>/<slug>/<slug>-original.mp3` |
+| Updated metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ---
 

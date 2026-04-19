@@ -8,9 +8,19 @@ during Step 0, present candidates for selection.
 
 ## Prerequisites
 
-- `workspaces/<slug>/<slug>-remix-v1.mp3` exists (or selected remix variant)
-- `workspaces/<slug>/lyrics-timestamps.json` exists (produced in Step 6)
-- `workspaces/<slug>/meta.json` exists with `shorts_clip_mode` and `shorts_duration`
+- `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` exists (or selected remix variant)
+- `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
+- `${WORKSPACE_DIR}/meta.json` exists with `shorts_clip_mode` and `shorts_duration`
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 ---
 
@@ -33,7 +43,7 @@ Read `lyrics-timestamps.json` and extract all sections with their start/end time
 Run FFmpeg EBU R128 loudness analysis on the remix audio:
 
 ```bash
-ffmpeg -i workspaces/<slug>/<slug>-remix-v1.mp3 -af ebur128 -f null - 2>&1
+ffmpeg -i "${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3" -af ebur128 -f null - 2>&1
 ```
 
 Parse the output to extract per-second loudness values. If `ffmpeg ebur128` fails, skip energy

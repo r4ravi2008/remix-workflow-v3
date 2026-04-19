@@ -6,9 +6,19 @@ Convert the raw Indic language lyrics from `lyrics.txt` into Suno.ai's meta-tag 
 
 ## Prerequisites
 
-- `workspaces/<slug>/<slug>-lyrics.txt` exists with lyrics in native Indic script
-- `workspaces/<slug>/meta.json` exists with `genre`, `language`, `tempo`, `song_length`
+- `${WORKSPACE_DIR}/${SLUG}-lyrics.txt` exists with lyrics in native Indic script
+- `${WORKSPACE_DIR}/meta.json` exists with `genre`, `language`, `tempo`, `song_length`
 - No browser interaction required for this step — this is a pure text transformation
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 ---
 
@@ -17,8 +27,8 @@ Convert the raw Indic language lyrics from `lyrics.txt` into Suno.ai's meta-tag 
 ### 4.1 — Read Inputs
 
 Read the following files:
-- `workspaces/<slug>/<slug>-lyrics.txt` — raw original lyrics
-- `workspaces/<slug>/meta.json` — genre, tempo, song_length, language
+- `${WORKSPACE_DIR}/${SLUG}-lyrics.txt` — raw original lyrics
+- `${WORKSPACE_DIR}/meta.json` — genre, tempo, song_length, language
 
 ---
 
@@ -118,19 +128,19 @@ If lyrics are too long for "shortened" version, trim to:
 
 Save the formatted Suno lyrics to:
 ```
-File path: workspaces/<slug>/<slug>-suno-lyrics.txt
+File path: ${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt
 ```
 
 Also save the style block separately for easy copy-paste in Step 5:
 ```
-File path: workspaces/<slug>/<slug>-suno-style.txt
+File path: ${WORKSPACE_DIR}/${SLUG}-suno-style.txt
 ```
 
 ---
 
 ### 4.9 — Update meta.json Status
 
-Update `workspaces/<slug>/meta.json`:
+Update `${WORKSPACE_DIR}/meta.json`:
 
 ```json
 "status": {
@@ -149,8 +159,8 @@ Update `workspaces/<slug>/meta.json`:
 Print a summary:
 
 ```
-Suno lyrics generated: workspaces/<slug>/<slug>-suno-lyrics.txt
-Style block: workspaces/<slug>/<slug>-suno-style.txt
+Suno lyrics generated: <workspaceRoot>/<slug>/<slug>-suno-lyrics.txt
+Style block: <workspaceRoot>/<slug>/<slug>-suno-style.txt
 Total lyrics length: <char count> characters
 Style block length: <char count>/1000 characters
 
@@ -242,14 +252,14 @@ Proceeding to Step 5: Upload to Suno.ai...
 
 **Save to:**
 ```
-File path: workspaces/<slug>/design.json
+File path: ${WORKSPACE_DIR}/design.json
 ```
 
 **Update meta.json files section:**
 ```json
 "files": {
   ...,
-  "design": "workspaces/<slug>/design.json"
+  "design": "<slug>/design.json"
 }
 ```
 
@@ -259,10 +269,10 @@ File path: workspaces/<slug>/design.json
 
 | File | Path |
 |---|---|
-| Suno meta-tag lyrics | `workspaces/<slug>/<slug>-suno-lyrics.txt` |
-| Style block only | `workspaces/<slug>/<slug>-suno-style.txt` |
-| Video design config | `workspaces/<slug>/design.json` |
-| Updated metadata | `workspaces/<slug>/meta.json` |
+| Suno meta-tag lyrics | `<workspaceRoot>/<slug>/<slug>-suno-lyrics.txt` |
+| Style block only | `<workspaceRoot>/<slug>/<slug>-suno-style.txt` |
+| Video design config | `<workspaceRoot>/<slug>/design.json` |
+| Updated metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ---
 
@@ -284,4 +294,3 @@ File path: workspaces/<slug>/design.json
 - [Suno Format Guide](references/suno-format-guide.md) — Complete format reference
 - [Workspace Conventions](references/workspace-conventions.md) — File naming
 - [Error Handling Patterns](references/error-handling-patterns.md) — Common errors
-

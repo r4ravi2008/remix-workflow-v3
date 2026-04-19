@@ -15,9 +15,19 @@ generation step.
 
 ## Prerequisites
 
-- `workspaces/<slug>/<slug>-remix-v1.mp3` exists (user-selected version from Step 5)
-- `workspaces/<slug>/<slug>-suno-lyrics.txt` exists
-- `workspaces/<slug>/meta.json` exists with `genre`, `slug`, `language`
+- `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` exists (user-selected version from Step 5)
+- `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists
+- `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`, `language`
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 **See also**: [Acapella Extractor Usage](references/acapella-extractor-usage.md) — Detailed tool documentation.
 
@@ -42,20 +52,20 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
-workspaces/<slug>/<slug>-remix-v1.mp3 \
--o workspaces/<slug>/
+"${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3" \
+-o "${WORKSPACE_DIR}"
 ```
 
 The extractor outputs WAV — convert to MP3:
 
 ```bash
-WAV=$(ls workspaces/<slug>/*remix-v1*vocals*.wav 2>/dev/null | head -1)
+WAV=$(ls "${WORKSPACE_DIR}"/*remix-v1*vocals*.wav 2>/dev/null | head -1)
 ffmpeg -i "$WAV" -codec:a libmp3lame -q:a 2 \
-  "workspaces/<slug>/<slug>-remix-v1-acapella.mp3"
+  "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3"
 rm "$WAV"
 ```
 
-Output: `workspaces/<slug>/<slug>-remix-v1-acapella.mp3`
+Output: `${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3`
 
 ---
 
@@ -70,9 +80,9 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/align_lyrics.py \
---audio workspaces/<slug>/<slug>-remix-v1-acapella.mp3 \
---lyrics workspaces/<slug>/<slug>-suno-lyrics.txt \
---output workspaces/<slug>/lyrics-timestamps.json \
+--audio "${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3" \
+--lyrics "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" \
+--output "${WORKSPACE_DIR}/lyrics-timestamps.json" \
 --language <iso-639-3-code>
 ```
 
@@ -93,7 +103,7 @@ cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/verify_lyrics.py \
-workspaces/<slug>/lyrics-timestamps.json
+"${WORKSPACE_DIR}/lyrics-timestamps.json"
 ```
 
 **Quality checks**:
@@ -108,14 +118,14 @@ workspaces/<slug>/lyrics-timestamps.json
 
 ### 6.5 — Update Metadata
 
-Update `workspaces/<slug>/meta.json` to record the alignment outputs:
+Update `${WORKSPACE_DIR}/meta.json` to record the alignment outputs:
 
 ```json
 {
   "status": { "acapella_aligned": true },
   "files": {
-    "remix_acapella": "workspaces/<slug>/<slug>-remix-v1-acapella.mp3",
-    "lyrics_timestamps": "workspaces/<slug>/lyrics-timestamps.json"
+    "remix_acapella": "<slug>/<slug>-remix-v1-acapella.mp3",
+    "lyrics_timestamps": "<slug>/lyrics-timestamps.json"
   }
 }
 ```
@@ -127,7 +137,7 @@ Update `workspaces/<slug>/meta.json` to record the alignment outputs:
 ```
 Acapella extraction and lyrics alignment complete!
 
-Outputs in workspaces/<slug>/:
+Outputs in <workspaceRoot>/<slug>/:
    <slug>-remix-v1-acapella.mp3   — Vocals extracted from remix (alignment source)
    lyrics-timestamps.json          — Word+line timestamps (CTC aligned)
 

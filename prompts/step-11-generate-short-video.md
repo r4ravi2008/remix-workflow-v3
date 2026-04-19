@@ -15,9 +15,19 @@ existing Remotion project.
 
 ## Prerequisites
 
-- `workspaces/<slug>/shorts-segments.json` exists
-- `workspaces/<slug>/video/` exists (Remotion project from Step 8)
-- `workspaces/<slug>/video/public/video-config.json` includes `short` config
+- `${WORKSPACE_DIR}/shorts-segments.json` exists
+- `${WORKSPACE_DIR}/video/` exists (Remotion project from Step 8)
+- `${WORKSPACE_DIR}/video/public/video-config.json` includes `short` config
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 ---
 
@@ -35,14 +45,14 @@ If missing, copy from `tools/video-generator/template/src/`.
 ### 11.3 — Render Short Video
 
 ```bash
-cd workspaces/<slug>/video
+cd "${WORKSPACE_DIR}/video"
 npx remotion render MusicVideoShort out/short.mp4
 ```
 
 ### 11.4 — Copy Output
 
 ```bash
-cp workspaces/<slug>/video/out/short.mp4 workspaces/<slug>/<slug>-short.mp4
+cp "${WORKSPACE_DIR}/video/out/short.mp4" "${WORKSPACE_DIR}/${SLUG}-short.mp4"
 ```
 
 ### 11.5 — Update meta.json
@@ -54,7 +64,7 @@ Set `status.short_video_generated: true` and `files.short_video`.
 ```
 Short video generation complete!
 
-Output: workspaces/<slug>/<slug>-short.mp4
+Output: <workspaceRoot>/<slug>/<slug>-short.mp4
   Format   : 1080x1920 (9:16 vertical)
   Duration : 30s
   Segment  : Chorus 1 (45.2s - 75.2s)

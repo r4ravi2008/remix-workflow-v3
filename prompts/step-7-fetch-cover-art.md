@@ -11,11 +11,21 @@ stylized image is used as the background asset in the Remotion video (Step 8).
 - **Source**: JioSaavn CDN (preferred) or Google Images — official album/single artwork only
 - **Stylization**: Japanese anime style via `fal-ai/nano-banana-pro/edit` at 2K resolution
 - **Text on image**: Song title only — no watermarks, logos, artist names, or other text
-- **Output format**: JPEG saved as `workspaces/<slug>/<slug>-cover-art.jpg`
+- **Output format**: JPEG saved as `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg`
 
 ## Prerequisites
 
-- `workspaces/<slug>/meta.json` exists with `video_title`, `language`, `slug`
+- `${WORKSPACE_DIR}/meta.json` exists with `video_title`, `language`, `slug`
+
+## Workspace Path Resolution
+
+Before using any filesystem path in this step:
+
+1. Read `.remix-workspace-root.json` from the repo root.
+2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
+3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
+4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
 
 **See also**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference.
 
@@ -100,13 +110,13 @@ The model returns a 2048×2048 stylized image URL.
 ### 7.6 — Download the Stylized Image
 
 ```bash
-curl -L "<output-image-url>" -o "workspaces/<slug>/<slug>-cover-art.jpg"
+curl -L "<output-image-url>" -o "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg"
 ```
 
 Verify:
 
 ```bash
-ls -lh "workspaces/<slug>/<slug>-cover-art.jpg"
+ls -lh "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg"
 ```
 
 Expected: 500KB–2MB, 2048×2048px.
@@ -115,13 +125,13 @@ Expected: 500KB–2MB, 2048×2048px.
 
 ### 7.7 — Update Metadata
 
-Update `workspaces/<slug>/meta.json`:
+Update `${WORKSPACE_DIR}/meta.json`:
 
 ```json
 {
   "status": { "cover_art_fetched": true },
   "files": {
-    "cover_art": "workspaces/<slug>/<slug>-cover-art.jpg"
+    "cover_art": "<slug>/<slug>-cover-art.jpg"
   }
 }
 ```
