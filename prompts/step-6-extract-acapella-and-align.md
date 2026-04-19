@@ -45,10 +45,9 @@ Read `meta.json` and extract: `video_title`, `genre`, `language`, `slug`.
 
 **See**: [Acapella Extractor Usage > Extraction from Remix](references/acapella-extractor-usage.md#extraction-from-remix-step-6)
 
-Run the acapella extractor on the remix (not the original) to get clean vocals for alignment. All commands run from the **project root**:
+Run the acapella extractor on the remix (not the original) to get clean vocals for alignment:
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
@@ -73,10 +72,9 @@ Output: `${WORKSPACE_DIR}/${SLUG}-remix-v1-acapella.mp3`
 
 **See**: [Acapella Extractor Usage > CTC Forced Alignment](references/acapella-extractor-usage.md#ctc-forced-alignment-step-6)
 
-Run the CTC forced aligner against the acapella. All commands run from the **project root**:
+Run the CTC forced aligner against the acapella:
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/align_lyrics.py \
@@ -99,7 +97,6 @@ The script strips section headers, aligns at ~20ms word-level resolution, and gr
 Print a terminal karaoke preview:
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/verify_lyrics.py \

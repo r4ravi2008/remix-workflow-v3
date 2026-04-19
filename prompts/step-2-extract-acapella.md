@@ -28,7 +28,6 @@ Before using any filesystem path in this step:
 
 **Command to execute:**
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \

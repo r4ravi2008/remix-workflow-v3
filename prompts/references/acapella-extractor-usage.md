@@ -39,7 +39,6 @@ Extract vocals from the original YouTube download.
 ### Command
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
@@ -90,7 +89,6 @@ Extract vocals from the Suno remix for CTC alignment.
 ### Command
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 python -m acapella_extractor.extract \
@@ -114,7 +112,6 @@ Generate precise word- and line-level timestamps using wav2vec 2.0/MMS CTC model
 ### Command
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/align_lyrics.py \
@@ -165,7 +162,6 @@ Verify timing quality before proceeding to video generation.
 ### Command
 
 ```bash
-cd /Users/aira/projects/remix-gpt-coding-agent.flow-improvements && \
 PYTHONPATH=tools/acapella-extractor/src \
 uv run --python tools/acapella-extractor/.venv/bin/python \
 tools/acapella-extractor/verify_lyrics.py \
