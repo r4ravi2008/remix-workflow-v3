@@ -1,130 +1,136 @@
 #!/usr/bin/env node
-/**
- * Initialize a Remotion video project in a workspace.
- *
- * Usage:
- *   node init-video.js <workspace-slug> [--design=<path>]
- *
- * Example:
- *   node init-video.js bella-bella-lofi --design=../../workspaces/bella-bella-lofi/design.json
- *
- * What it does:
- *   1. Copies the template into workspaces/<slug>/video/
- *   2. Detects audio duration from <slug>-remix-v1.mp3 via ffprobe
- *   3. Writes public/video-config.json with duration, title, and genre
- *   4. Copies design.json to public/ folder (if provided)
- *   5. Creates public/ folder ready for asset copy
- */
+const fs = require('node:fs');
+const path = require('node:path');
+const {execSync} = require('node:child_process');
 
-const fs = require('fs');
-const path = require('path');
-const { execSync } = require('child_process');
+const {resolveWorkspaceDir} = require('../shared/workspace-root');
 
-const workspaceSlug = process.argv[2];
-if (!workspaceSlug) {
-  console.error('Usage: node init-video.js <workspace-slug> [--design=<path>]');
-  process.exit(1);
-}
-
-// Parse optional flags
-let designPath = null;
-process.argv.slice(3).forEach(arg => {
-  if (arg.startsWith('--design=')) designPath = arg.replace('--design=', '');
-});
-
-const templateDir = path.join(__dirname, 'template');
-const workspaceDir = path.join(__dirname, '..', '..', 'workspaces', workspaceSlug);
-const videoDir = path.join(workspaceDir, 'video');
-
-if (!fs.existsSync(workspaceDir)) {
-  console.error(`Workspace "${workspaceSlug}" not found in workspaces/`);
-  process.exit(1);
-}
-if (fs.existsSync(videoDir)) {
-  console.error(`Video project already exists at ${videoDir}`);
-  console.error('Delete it first if you want to re-initialize.');
-  process.exit(1);
-}
-
-// ---------------------------------------------------------------------------
-// Read workspace metadata
-// ---------------------------------------------------------------------------
-const metadataPath = path.join(workspaceDir, 'meta.json');
-let songTitle = workspaceSlug;
-let genre = 'unknown';
-if (fs.existsSync(metadataPath)) {
-  const meta = JSON.parse(fs.readFileSync(metadataPath, 'utf-8'));
-  songTitle = meta.video_title || meta.title || workspaceSlug;
-  genre = meta.genre || 'unknown';
-}
-
-// ---------------------------------------------------------------------------
-// Detect audio duration via ffprobe
-// ---------------------------------------------------------------------------
-const audioFile = path.join(workspaceDir, `${workspaceSlug}-remix-v1.mp3`);
-let audioDuration = 180; // fallback: 3 minutes
-
-if (fs.existsSync(audioFile)) {
-  try {
-    const raw = execSync(
-      `ffprobe -i "${audioFile}" -show_entries format=duration -v quiet -of csv=p=0`,
-      { encoding: 'utf-8' }
-    ).trim();
-    const parsed = parseFloat(raw);
-    if (!isNaN(parsed)) audioDuration = parsed;
-    console.log(`Audio duration: ${audioDuration.toFixed(3)}s`);
-  } catch {
-    console.warn(`ffprobe failed — defaulting to ${audioDuration}s. Edit video-config.json to fix.`);
+function parseArgs(argv) {
+  const workspaceSlug = argv[0];
+  if (!workspaceSlug) {
+    throw new Error('Usage: node init-video.js <workspace-slug> [--design=<path>]');
   }
-} else {
-  console.warn(`Audio file not found: ${audioFile}`);
-  console.warn(`Defaulting to ${audioDuration}s. Edit video-config.json to fix.`);
+
+  let designPath = null;
+  argv.slice(1).forEach(arg => {
+    if (arg.startsWith('--design=')) {
+      designPath = arg.replace('--design=', '');
+    }
+  });
+
+  return {workspaceSlug, designPath};
 }
 
-// ---------------------------------------------------------------------------
-// Copy template and substitute placeholders
-// ---------------------------------------------------------------------------
-console.log(`Scaffolding video project for "${workspaceSlug}"...`);
-fs.cpSync(templateDir, videoDir, { recursive: true });
-fs.mkdirSync(path.join(videoDir, 'public'), { recursive: true });
+function initializeVideoProject(options) {
+  const {
+    workspaceSlug,
+    designPath = null,
+    repoRoot,
+    templateDir = path.join(__dirname, 'template'),
+    execSyncImpl = execSync,
+    logger = console,
+    processCwd = process.cwd(),
+  } = options;
 
-// Write video-config.json (read at runtime by Root.tsx)
-const videoConfigPath = path.join(videoDir, 'public', 'video-config.json');
-fs.writeFileSync(videoConfigPath, JSON.stringify({
-  audioDuration: parseFloat(audioDuration.toFixed(3)),
-  songTitle,
-  genre,
-}, null, 2));
-console.log(`Video config written: ${videoConfigPath}`);
+  const {workspaceDir, workspaceRoot} = resolveWorkspaceDir(workspaceSlug, {repoRoot});
+  const videoDir = path.join(workspaceDir, 'video');
 
-// ---------------------------------------------------------------------------
-// Copy design.json if provided
-// ---------------------------------------------------------------------------
-if (designPath) {
-  const designSourcePath = path.resolve(designPath);
-  if (fs.existsSync(designSourcePath)) {
-    const designDestPath = path.join(videoDir, 'public', 'design.json');
-    fs.copyFileSync(designSourcePath, designDestPath);
-    console.log(`Design config copied: ${designSourcePath} → ${designDestPath}`);
+  if (!fs.existsSync(workspaceDir)) {
+    throw new Error(`Workspace "${workspaceSlug}" not found at ${workspaceDir}`);
+  }
+
+  if (fs.existsSync(videoDir)) {
+    throw new Error(`Video project already exists at ${videoDir}`);
+  }
+
+  const metadataPath = path.join(workspaceDir, 'meta.json');
+  let songTitle = workspaceSlug;
+  let genre = 'unknown';
+
+  if (fs.existsSync(metadataPath)) {
+    const meta = JSON.parse(fs.readFileSync(metadataPath, 'utf8'));
+    songTitle = meta.video_title || meta.title || workspaceSlug;
+    genre = meta.genre || 'unknown';
+  }
+
+  const audioFile = path.join(workspaceDir, `${workspaceSlug}-remix-v1.mp3`);
+  let audioDuration = 180;
+
+  if (fs.existsSync(audioFile)) {
+    try {
+      const raw = execSyncImpl(
+        `ffprobe -i "${audioFile}" -show_entries format=duration -v quiet -of csv=p=0`,
+        {encoding: 'utf8'}
+      ).trim();
+      const parsed = Number.parseFloat(raw);
+      if (!Number.isNaN(parsed)) {
+        audioDuration = parsed;
+      }
+      logger.log(`Audio duration: ${audioDuration.toFixed(3)}s`);
+    } catch {
+      logger.warn(`ffprobe failed. Defaulting to ${audioDuration}s. Edit video-config.json to fix.`);
+    }
   } else {
-    console.warn(`Design file not found: ${designSourcePath}`);
-    console.warn('Video will use default design settings.');
+    logger.warn(`Audio file not found: ${audioFile}`);
+    logger.warn(`Defaulting to ${audioDuration}s. Edit video-config.json to fix.`);
   }
-} else {
-  console.log('No design.json provided — video will use default settings.');
+
+  logger.log(`Scaffolding video project for "${workspaceSlug}" in ${workspaceRoot}...`);
+  fs.cpSync(templateDir, videoDir, {recursive: true});
+  fs.mkdirSync(path.join(videoDir, 'public'), {recursive: true});
+
+  const videoConfigPath = path.join(videoDir, 'public', 'video-config.json');
+  fs.writeFileSync(
+    videoConfigPath,
+    JSON.stringify(
+      {
+        audioDuration: Number.parseFloat(audioDuration.toFixed(3)),
+        songTitle,
+        genre,
+      },
+      null,
+      2
+    )
+  );
+
+  if (designPath) {
+    const designSourcePath = path.resolve(designPath);
+    if (fs.existsSync(designSourcePath)) {
+      fs.copyFileSync(designSourcePath, path.join(videoDir, 'public', 'design.json'));
+    } else {
+      logger.warn(`Design file not found: ${designSourcePath}`);
+      logger.warn('Video will use default design settings.');
+    }
+  } else {
+    logger.log('No design.json provided. Video will use default settings.');
+  }
+
+  logger.log(`Video project created at: ${videoDir}`);
+  logger.log('Next steps:');
+  logger.log(`  cd ${path.relative(processCwd, videoDir)} && npm install`);
+  logger.log(`  cp "${path.join(workspaceDir, `${workspaceSlug}-remix-v1.mp3`)}" "${path.join(videoDir, 'public', 'audio.mp3')}"`);
+  logger.log(`  cp "${path.join(workspaceDir, 'lyrics-timestamps.json')}" "${path.join(videoDir, 'public')}"`);
+  logger.log('  npx remotion render MusicVideo out/video.mp4');
+
+  return {workspaceDir, videoDir, videoConfigPath};
 }
 
-// ---------------------------------------------------------------------------
-// Done
-// ---------------------------------------------------------------------------
-console.log(`Video project created at: ${videoDir}`);
-console.log('');
-console.log('Next steps:');
-console.log(`  cd ${path.relative(process.cwd(), videoDir)} && npm install`);
-console.log('');
-console.log('Copy assets to public/:');
-console.log(`  cp workspaces/${workspaceSlug}/${workspaceSlug}-remix-v1.mp3  workspaces/${workspaceSlug}/video/public/audio.mp3`);
-console.log(`  cp workspaces/${workspaceSlug}/lyrics-timestamps.json          workspaces/${workspaceSlug}/video/public/`);
-console.log('');
-console.log('Render:');
-console.log(`  npx remotion render MusicVideo out/video.mp4`);
+function main(argv = process.argv.slice(2)) {
+  const {workspaceSlug, designPath} = parseArgs(argv);
+  return initializeVideoProject({workspaceSlug, designPath});
+}
+
+if (require.main === module) {
+  try {
+    main();
+  } catch (error) {
+    console.error(error.message);
+    process.exit(1);
+  }
+}
+
+module.exports = {
+  parseArgs,
+  initializeVideoProject,
+  main,
+};
