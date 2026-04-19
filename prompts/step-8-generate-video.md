@@ -138,7 +138,7 @@ Outputs in <workspaceRoot>/<slug>/:
    <slug>-remix-<selected-remix>-acapella.mp3      — Vocals extracted from remix
    lyrics-timestamps.json            — Word+line timestamps (CTC aligned)
    design.json                       — LLM-generated visual design configuration
-   <slug>-cover-art.jpg              — Anime-stylized cover art (Nano Banana Pro 2K)
+   <slug>-cover-art.jpg              — Optional anime-stylized cover art (Nano Banana Pro 2K), if available
    video/                            — Remotion project
 
 Duration: <duration>s  |  Lyrics: <n> lines synced  |  Layout: <layout>  |  Motif: <motif>
