@@ -82,11 +82,12 @@ cp "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3"   "${WORKSPACE_DIR}/vi
 cp "${WORKSPACE_DIR}/lyrics-timestamps.json" "${WORKSPACE_DIR}/video/public/"
 cp "${WORKSPACE_DIR}/design.json"            "${WORKSPACE_DIR}/video/public/"
 cp "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" "${WORKSPACE_DIR}/video/public/suno-lyrics.txt"
-cp "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg"   "${WORKSPACE_DIR}/video/public/cover-art.jpg"
+[ -f "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg" ] && cp "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg" "${WORKSPACE_DIR}/video/public/cover-art.jpg"
 ```
 
-The file **must** be named `cover-art.jpg` — that is the exact filename the `CoverArtLayout`
-template looks for via `staticFile('cover-art.jpg')`.
+If cover art is available, the file **must** be named `cover-art.jpg` — that is the exact filename
+the `CoverArtLayout` template looks for via `staticFile('cover-art.jpg')`. If it is missing, the
+template falls back gracefully.
 
 ---
 

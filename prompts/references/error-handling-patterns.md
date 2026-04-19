@@ -256,9 +256,11 @@ cd tools/video-generator/template && npm install
 
 ### Cover Art Missing
 
-**Symptom**: Video generation fails without cover art
+**Symptom**: `cover-art.jpg` is missing from the workspace
 
-**Fix**: Verify Step 7 completed and file exists:
+**Fix**: This is allowed. If Step 7 could not find artwork, the Remotion cover-art layout falls
+back gracefully to its placeholder. If you do want artwork, verify Step 7 completed and file exists:
+
 ```bash
 ls "<workspaceRoot>/<slug>/<slug>-cover-art.jpg"
 ```
