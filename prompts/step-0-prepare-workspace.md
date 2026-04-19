@@ -7,7 +7,8 @@ Collect all user inputs for the remix session, create a dedicated workspace fold
 ## Prerequisites
 
 - Access to the local filesystem (Bash tool)
-- The `workspaces/` directory exists at the project root, or will be created now
+- `.remix-workspace-root.json` exists at the repo root and contains a valid `workspaceRoot`
+- The configured `workspaceRoot` directory already exists and is writable
 
 **See also**: [Workspace Conventions](references/workspace-conventions.md) for slug format, meta.json schema, and file naming rules.
 
@@ -63,19 +64,21 @@ Derive a short, filesystem-safe slug from the video title and genre.
 
 ---
 
-### 0.4 — Create Workspace Directory
+### 0.4 — Resolve Workspace Root And Create Workspace Directory
 
-Create the workspace folder at:
-```
-workspaces/<slug>/
+Read `.remix-workspace-root.json` from the repo root and extract `workspaceRoot`.
+
+- If the file is missing: stop and tell the user to copy `.remix-workspace-root.example.json` to `.remix-workspace-root.json`.
+- If the JSON is invalid: stop and tell the user to fix the file.
+- If the configured root does not exist: stop and tell the user to create that directory first.
+
+Resolve the workspace directory as:
+
+```text
+<workspaceRoot>/<slug>/
 ```
 
-**Bash command:**
-```bash
-mkdir -p workspaces/<slug>
-```
-
-Verify the directory was created successfully.
+Create that directory and verify it exists.
 
 ---
 
@@ -85,7 +88,7 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
 
 **See**: [Workspace Conventions > meta.json Schema](references/workspace-conventions.md#metajson-schema) for full schema reference.
 
-**File path:** `workspaces/<slug>/meta.json`
+**File path:** `<workspaceRoot>/<slug>/meta.json`
 
 **Template:**
 ```json
@@ -99,14 +102,14 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
   "song_length": "<song_length>",
   "shorts_clip_mode": "<auto or manual>",
   "shorts_duration": "<duration>",
-  "workspace": "workspaces/<slug>/",
+  "workspace": "<slug>/",
   "files": {
-    "original_mp3": "workspaces/<slug>/<slug>-original.mp3",
-    "acapella": "workspaces/<slug>/<slug>-acapella.mp3",
-    "lyrics": "workspaces/<slug>/<slug>-lyrics.txt",
-    "suno_lyrics": "workspaces/<slug>/<slug>-suno-lyrics.txt",
-    "suno_style": "workspaces/<slug>/<slug>-suno-style.txt",
-    "design": "workspaces/<slug>/design.json",
+    "original_mp3": "<slug>/<slug>-original.mp3",
+    "acapella": "<slug>/<slug>-acapella.mp3",
+    "lyrics": "<slug>/<slug>-lyrics.txt",
+    "suno_lyrics": "<slug>/<slug>-suno-lyrics.txt",
+    "suno_style": "<slug>/<slug>-suno-style.txt",
+    "design": "<slug>/design.json",
     "remix_acapella": null,
     "lyrics_timestamps": null,
     "cover_art": null,
@@ -147,7 +150,7 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
 Print a summary to the user before proceeding:
 
 ```
-Workspace ready: workspaces/<slug>/
+Workspace ready: <workspaceRoot>/<slug>/
   Video        : <video_title>
   Genre        : <genre>
   Language     : <language>
@@ -165,8 +168,8 @@ Proceeding to Step 1: Download MP3...
 
 | File | Path |
 |---|---|
-| Workspace folder | `workspaces/<slug>/` |
-| Session metadata | `workspaces/<slug>/meta.json` |
+| Workspace folder | `<workspaceRoot>/<slug>/` |
+| Session metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ---
 
@@ -179,7 +182,7 @@ Proceeding to Step 1: Download MP3...
 | YouTube page fails to load | Ask user to confirm URL is valid and publicly accessible |
 | Slug collision (folder exists) | Append timestamp suffix: `slug-20260327` |
 | User skips optional inputs | Use defaults silently, note in meta.json |
-| Permission denied on workspaces/ | Ensure directory exists with write permissions |
+| Permission denied on configured workspace root | Ensure `workspaceRoot` exists and is writable |
 
 ---
 
@@ -187,4 +190,3 @@ Proceeding to Step 1: Download MP3...
 
 - [Workspace Conventions](references/workspace-conventions.md) — Slug format, meta.json schema, file naming
 - [Error Handling Patterns](references/error-handling-patterns.md) — Common errors and recovery
-

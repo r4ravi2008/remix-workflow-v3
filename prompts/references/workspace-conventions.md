@@ -30,28 +30,43 @@ If a workspace folder already exists, append a timestamp suffix:
 meesaala-pilla-lofi-20260327
 ```
 
+## Workspace Root Configuration
+
+Each cloned repo uses a local, untracked config file at the repo root:
+
+```json
+{
+  "workspaceRoot": "/absolute/path/to/your/remix-workspaces"
+}
+```
+
+- The file name is `.remix-workspace-root.json`.
+- Copy it from `.remix-workspace-root.example.json` after cloning.
+- `workspaceRoot` is the parent directory that contains all slug folders.
+- If the file is missing, malformed, or points to a missing directory, stop and fix local setup before running any pipeline step.
+
 ## Directory Structure
 
-```
-workspaces/
+```text
+<workspaceRoot>/
 └── <slug>/
-    ├── meta.json                      ← Single source of truth
-    ├── <slug>-original.mp3            ← Downloaded from YouTube
-    ├── <slug>-acapella.mp3            ← Extracted from original
-    ├── <slug>-lyrics.txt              ← Native script lyrics
-    ├── <slug>-suno-lyrics.txt         ← Suno meta-tag format
-    ├── <slug>-suno-style.txt          ← Suno style block only
-    ├── <slug>-remix-v1.mp3            ← Suno variation 1
-    ├── <slug>-remix-v2.mp3            ← Suno variation 2
-    ├── <slug>-remix-v1-acapella.mp3   ← Extracted from v1 (for alignment)
-    ├── lyrics-timestamps.json         ← CTC forced alignment output
-    ├── <slug>-cover-art.jpg           ← AI-stylized cover art
-    ├── <slug>-video.mp4               ← Final rendered video
-    ├── design.json                    ← Video design configuration
-    ├── youtube-metadata.json          ← YouTube upload metadata
-    ├── youtube-metadata-artifact.md   ← Human-readable metadata
-    ├── shorts-segments.json            ← Clip segment candidates + selection
-    └── <slug>-short.mp4                ← Rendered vertical short video (1080x1920)
+    ├── meta.json
+    ├── <slug>-original.mp3
+    ├── <slug>-acapella.mp3
+    ├── <slug>-lyrics.txt
+    ├── <slug>-suno-lyrics.txt
+    ├── <slug>-suno-style.txt
+    ├── <slug>-remix-v1.mp3
+    ├── <slug>-remix-v2.mp3
+    ├── <slug>-remix-v1-acapella.mp3
+    ├── lyrics-timestamps.json
+    ├── <slug>-cover-art.jpg
+    ├── <slug>-video.mp4
+    ├── design.json
+    ├── youtube-metadata.json
+    ├── youtube-metadata-artifact.md
+    ├── shorts-segments.json
+    └── <slug>-short.mp4
 ```
 
 ## meta.json Schema
@@ -67,14 +82,14 @@ workspaces/
   "song_length": "full",
   "shorts_clip_mode": "auto",
   "shorts_duration": 30,
-  "workspace": "workspaces/song-name-genre/",
+  "workspace": "song-name-genre/",
   "files": {
-    "original_mp3": "workspaces/<slug>/<slug>-original.mp3",
-    "acapella": "workspaces/<slug>/<slug>-acapella.mp3",
-    "lyrics": "workspaces/<slug>/<slug>-lyrics.txt",
-    "suno_lyrics": "workspaces/<slug>/<slug>-suno-lyrics.txt",
-    "suno_style": "workspaces/<slug>/<slug>-suno-style.txt",
-    "design": "workspaces/<slug>/design.json",
+    "original_mp3": "<slug>/<slug>-original.mp3",
+    "acapella": "<slug>/<slug>-acapella.mp3",
+    "lyrics": "<slug>/<slug>-lyrics.txt",
+    "suno_lyrics": "<slug>/<slug>-suno-lyrics.txt",
+    "suno_style": "<slug>/<slug>-suno-style.txt",
+    "design": "<slug>/design.json",
     "remix_acapella": null,
     "lyrics_timestamps": null,
     "cover_art": null,

@@ -15,7 +15,7 @@ YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics 
 
 | Step | File | Purpose | Key Outputs | Prerequisites |
 |------|------|---------|-------------|---------------|
-| 0 | `step-0-prepare-workspace.md` | Collect inputs, create workspace, write meta.json | `workspaces/<slug>/`, `meta.json` | None |
+| 0 | `step-0-prepare-workspace.md` | Collect inputs, resolve configured workspace root, create workspace, write meta.json | `<workspaceRoot>/<slug>/`, `meta.json` | None |
 | 1 | `step-1-download-mp3.md` | Download YouTube audio as MP3 | `<slug>-original.mp3` | Step 0 |
 | 2 | `step-2-extract-acapella.md` | Extract vocals using Mel-Band RoFormer | `<slug>-acapella.mp3` | Step 1 |
 | 3 | `step-3-find-lyrics.md` | Find native-script lyrics via browser automation | `<slug>-lyrics.txt` | Step 0 |
@@ -52,7 +52,7 @@ Common patterns and conventions are extracted into the `references/` directory:
 ## Key Conventions
 
 - **Sequential execution**: Steps must run 0→1→2→3→4→5→6→7→8→9→10→11
-- **Workspace state**: `workspaces/<slug>/meta.json` is the single source of truth
+- **Workspace state**: `meta.json` inside `<workspaceRoot>/<slug>/` is the single source of truth
 - **Native script only**: Never romanize or transliterate Indic lyrics
 - **Browser automation**: Steps 3, 5, 7 use Chrome DevTools MCP
 - **User checkpoint**: Only Step 5.5 requires human input
