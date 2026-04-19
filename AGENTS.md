@@ -34,8 +34,7 @@ workspaces/                ← Runtime output (gitignored) — one folder per re
 
 ## Core Principles
 
-1. **Workspace is state.** Each remix lives in `workspaces/<slug>/`. The `meta.json` inside
-tracks all inputs, outputs, and step completion status. Always read it before acting.
+1. **Workspace is state.** Each remix lives in `<workspaceRoot>/<slug>/`, where `workspaceRoot` comes from the repo-local `.remix-workspace-root.json`. The `meta.json` inside tracks all inputs, outputs, and step completion status. Always read it before acting.
 
 2. **Native script only.** Lyrics are always in Indic script (Telugu, Hindi, Tamil).
 Never romanize or transliterate. See `prompts/references/workspace-conventions.md`.

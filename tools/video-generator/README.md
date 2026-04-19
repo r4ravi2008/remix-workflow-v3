@@ -65,33 +65,29 @@ tools/video-generator/
 
 design.json is now generated automatically by the sub-agent in Step 4 when generating Suno lyrics. The agent reads the Suno style block and creates appropriate colors, motifs, and typography based on descriptors like "dark", "warm", "dreamy", etc.
 
-**The design.json will be at:**
-```
-workspaces/<slug>/design.json
-```
+Before using this tool, configure `.remix-workspace-root.json` at the repo root so `init-video.js` can resolve `<workspaceRoot>/<slug>/`.
 
 ### Step 2: Scaffold Video Project
 
 ```bash
 cd tools/video-generator
-node init-video.js <workspace-slug> --design=../../workspaces/<slug>/design.json
-
-# Example:
-node init-video.js bella-bella-lofi --design=../../workspaces/bella-bella-lofi/design.json
+node init-video.js <workspace-slug> --design="/absolute/path/to/<workspaceRoot>/<slug>/design.json"
 ```
+
+The generated video project is created in `<workspaceRoot>/<slug>/video/`.
 
 ### Step 3: Copy Assets
 
 ```bash
-cp workspaces/<slug>/<slug>-remix-v1.mp3  workspaces/<slug>/video/public/audio.mp3
-cp workspaces/<slug>/lyrics-timestamps.json workspaces/<slug>/video/public/
+cp <workspaceRoot>/<slug>/<slug>-remix-v1.mp3  <workspaceRoot>/<slug>/video/public/audio.mp3
+cp <workspaceRoot>/<slug>/lyrics-timestamps.json <workspaceRoot>/<slug>/video/public/
 # design.json is automatically copied by init-video.js
 ```
 
 ### Step 4: Render
 
 ```bash
-cd workspaces/<slug>/video
+cd <workspaceRoot>/<slug>/video
 npm install
 npx remotion render MusicVideo out/video.mp4
 ```
@@ -202,16 +198,16 @@ design.json colors are generated based on Suno style descriptors:
 ### Preview Video
 
 ```bash
-cd workspaces/<slug>/video
+cd <workspaceRoot>/<slug>/video
 npm run dev      # Opens Remotion Studio at http://localhost:3000
 ```
 
 ### Customize Design
 
-Edit `workspaces/<slug>/design.json` and re-render:
+Edit `<workspaceRoot>/<slug>/design.json` and re-render:
 
 ```bash
-cd workspaces/<slug>/video
+cd <workspaceRoot>/<slug>/video
 npx remotion render MusicVideo out/video.mp4
 ```
 

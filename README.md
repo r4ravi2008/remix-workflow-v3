@@ -78,7 +78,7 @@ remix-gpt-coding-agent/
 
 ### Step 0: Prepare Workspace
 
-Creates `workspaces/<slug>/` with a `meta.json` tracking all inputs and pipeline state. The slug is derived from the video title + genre (e.g., `bella-bella-lofi`).
+Step 0 resolves a machine-local workspace root from `.remix-workspace-root.json`, then creates `<workspaceRoot>/<slug>/` with a `meta.json` tracking all inputs and pipeline state.
 
 ### Step 1: Download MP3
 
@@ -127,7 +127,7 @@ Produces a `youtube-metadata.json` with title, description, and tags ready for u
 Each remix session produces a complete workspace:
 
 ```
-workspaces/<slug>/
+<workspaceRoot>/<slug>/
 ├── meta.json                    # Session metadata and pipeline status
 ├── <slug>-original.mp3          # Downloaded from YouTube
 ├── <slug>-acapella.mp3          # Extracted vocals
@@ -157,14 +157,18 @@ workspaces/<slug>/
 ## Getting Started
 
 1. Clone the repository
-2. Install Python dependencies for the acapella extractor:
+2. Configure the repo-local workspace root:
+   ```bash
+   cp .remix-workspace-root.example.json .remix-workspace-root.json
+   ```
+3. Install Python dependencies for the acapella extractor:
    ```bash
    cd tools/acapella-extractor && uv sync
    ```
-3. Start a Claude Code session and provide:
+4. Start a Claude Code session and provide:
    - A YouTube URL of the song to remix
    - A target genre/style (e.g., "Lo-Fi", "EDM", "Hip-Hop", "Carnatic Fusion")
-4. The agent walks through each step sequentially, with a user checkpoint at Step 5.5 to select the preferred remix variation
+5. The agent walks through each step sequentially, with a user checkpoint at Step 5.5 to select the preferred remix variation
 
 ## Supported Languages
 
@@ -182,7 +186,7 @@ Additional Indic languages are supported — the CTC aligner uses the MMS multil
 - **CTC alignment**: Timestamps come from forced alignment, not heuristics
 - **Per-song design**: Every remix gets unique colors, fonts, and motifs based on its Suno style descriptors
 - **Audio-reactive only**: All visuals react to real frequency data from the audio
-- **Workspace isolation**: All files for a remix stay in `workspaces/<slug>/`
+- **Workspace isolation**: All files for a remix stay together in the configured external workspace root under `<workspaceRoot>/<slug>/`
 - **Sequential pipeline**: Each step depends on outputs from earlier steps
 
 ## License
