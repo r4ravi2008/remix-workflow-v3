@@ -69,3 +69,18 @@ test('resolves a workspace slug to an absolute workspace directory', () => {
 
   assert.equal(result.workspaceDir, path.join(workspaceRoot, 'bella-bella-lofi'));
 });
+
+test('rejects workspace slugs that are not lowercase hyphenated names', () => {
+  const repoRoot = makeRepoFixture();
+  const workspaceRoot = path.join(repoRoot, 'icloud-root');
+  fs.mkdirSync(workspaceRoot);
+  fs.writeFileSync(
+    path.join(repoRoot, '.remix-workspace-root.json'),
+    JSON.stringify({workspaceRoot}, null, 2)
+  );
+
+  assert.throws(
+    () => resolveWorkspaceDir('../other-dir', {repoRoot}),
+    /Workspace slug must be lowercase hyphenated/
+  );
+});

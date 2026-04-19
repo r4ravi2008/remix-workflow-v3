@@ -60,6 +60,10 @@ function resolveWorkspaceDir(workspaceSlug, options = {}) {
     throw new Error('Workspace slug is required.');
   }
 
+  if (!/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(workspaceSlug)) {
+    throw new Error('Workspace slug must be lowercase hyphenated.');
+  }
+
   const config = readWorkspaceRootConfig(options);
 
   return {
