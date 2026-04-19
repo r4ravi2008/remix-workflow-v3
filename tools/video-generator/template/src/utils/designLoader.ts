@@ -24,7 +24,7 @@ export interface DesignTypography {
 }
 
 export interface DesignLayout {
-  variant: 'cover-art' | 'cover-art-vertical' | 'center-stage' | 'full-bleed' | 'minimal' | 'sidebar' | 'stacked';
+  variant: 'cover-art' | 'center-stage' | 'full-bleed' | 'minimal' | 'sidebar' | 'stacked';
   showSectionBadge: boolean;
   showNextLyric: boolean;
   showProgressBar: boolean;
