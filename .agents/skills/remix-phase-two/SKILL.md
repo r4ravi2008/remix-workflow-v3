@@ -1,32 +1,33 @@
 ---
 name: remix-phase-two
-description: Use when remix audio already exists or can be detected in a workspace, and the goal is lyric alignment, optional cover-art handling, video rendering, and YouTube metadata generation with transliterated sync by default.
+description: Use when remix audio already exists or can be detected in a workspace, and the goal is lyric alignment, optional cover-art handling, full video rendering, YouTube metadata, and short-video generation with transliterated sync by default.
 ---
 
 # Remix Phase Two
 
 ## Overview
 
-This skill owns the post-production half of the remix workflow. Native-script lyrics stay canonical, but alignment uses a separate transliterated file by default after Suno metatags are stripped.
+This skill owns the post-production half of the remix workflow. Native-script lyrics stay canonical, but alignment uses a separate transliterated file by default after Suno metatags are stripped, and phase two runs through both long-form and short-form outputs.
 
 ## When to Use
 
 - Remix audio already exists from Step 5, or the user provides it directly
-- User wants synced lyrics, video render, and YouTube metadata
+- User wants synced lyrics, video render, YouTube metadata, and optional or default short-form output
 - Cover art may already exist, be provided, or be skipped
 
 Do not use this when the workspace still needs original download, native-lyrics discovery, or Suno prep. Use `remix-phase-one` instead.
 
 ## Quick Reference
 
-| Input resolution order | Default sync text | Optional step |
-|---|---|---|
-| user input -> `meta.json` -> workspace scan | transliterated alignment file | Step 7 |
+| Input resolution order | Default sync text | Optional steps | Phase-two completion |
+|---|---|---|---|
+| user input -> `meta.json` -> workspace scan | transliterated alignment file | Step 7, manual Step 10 selection | Steps 6 -> 11 |
 
 Auto-detect patterns:
 - remix audio: selected remix in `meta.json`, then likely `*remix*.mp3`, then likely non-original remix-like MP3s in the workspace
 - cover art: `meta.json.files.cover_art`, then `*cover-art*`
 - lyrics: native lyrics first, then Suno lyrics as fallback input for stripping/transliteration
+- short config: `meta.json.shorts_clip_mode`, `meta.json.shorts_duration`, then Step 10 defaults of `auto` and `30`
 
 ## Implementation
 
@@ -47,6 +48,15 @@ Auto-detect patterns:
    - fetch cover art only if needed
    - continue if cover art is intentionally skipped and the video path supports it
 9. Run Steps 8 and 9 and update `meta.json` after each completed step.
+10. Continue into short generation by default after Step 9:
+   - run Step 10 to select a short clip from the chosen remix and `lyrics-timestamps.json`
+   - default to `shorts_clip_mode: auto` unless `meta.json` explicitly requests manual selection
+   - if manual mode is enabled, present candidates and pause for the user's choice before Step 11
+   - write `shorts-segments.json`, merge short config into `video-config.json`, and persist `status.shorts_clip_selected`
+11. Run Step 11 after Step 10 selection completes:
+   - verify the existing Remotion project contains the short composition and required vertical layout components
+   - render the 9:16 short and copy it to `<slug>-short.mp4`
+   - update `meta.json` with `status.short_video_generated` and `files.short_video`
 
 ## Common Mistakes
 
@@ -54,6 +64,8 @@ Auto-detect patterns:
 |---|---|
 | Aligning directly from `suno-lyrics.txt` | Strip metatags and create a transliterated alignment file first |
 | Treating Step 7 as always required | Reuse or skip cover art when the workflow allows it |
+| Stopping after Step 9 | Continue through Step 10 clip selection and Step 11 short render unless the user explicitly narrows scope |
+| Asking the user to choose a short clip in auto mode | Auto-select the highest-scoring segment unless `shorts_clip_mode` is `manual` |
 | Ignoring user-supplied assets | Resolve files in the documented priority order |
 | Replacing canonical native lyrics | Keep native lyrics as source of truth and create a separate sync artifact |
 
@@ -64,15 +76,18 @@ Auto-detect patterns:
 | Align from `suno-lyrics.txt` as-is | Strip Suno metatags first |
 | Use native or Suno text directly for sync | Create a separate transliterated alignment file by default |
 | Assume cover art must be regenerated | Reuse provided or detected cover art and keep Step 7 optional |
+| Treat phase two as complete after metadata | Run the default post-production chain through Steps 10 and 11 |
 
 ## Red Flags
 
 - "The repo says native script only, so I should never transliterate"
 - "`suno-lyrics.txt` already has the right structure, so I can align it directly"
 - "Step 8 mentions cover art, so Step 7 must always run"
+- "Step 9 is the last deliverable, so short generation is out of scope"
+- "Shorts always need user input before continuing"
 - "The user did not pass file paths, so I cannot continue"
 
-If any of these appear, stop and re-apply the phase-two rules: native lyrics stay canonical, transliteration is an alignment artifact, metatags are stripped before sync, missing inputs are auto-detected when possible, and Step 7 stays optional.
+If any of these appear, stop and re-apply the phase-two rules: native lyrics stay canonical, transliteration is an alignment artifact, metatags are stripped before sync, missing inputs are auto-detected when possible, Step 7 stays optional, and the default autonomous path continues through Steps 10 and 11 unless `meta.json` or the user requires manual short selection.
 
 ## Performance Notes
 
