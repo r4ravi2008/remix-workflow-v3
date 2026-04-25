@@ -8,7 +8,7 @@ Each step file is self-contained and can be executed by an AI agent.
 The pipeline transforms a YouTube link + target genre into a fully rendered music video:
 
 ```
-YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics + Cover Art
+YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics + Visual Image Sequence (Cover-Art Fallback)
 ```
 
 ## Steps
@@ -23,8 +23,8 @@ YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics 
 | 5 | `step-5-upload-to-suno.md` | Upload to Suno.ai, generate 2 variations | `<slug>-remix-v1.mp3`, `<slug>-remix-v2.mp3` | Steps 2, 4 |
 | 5.5 | *User Decision* | User selects v1 or v2 | Selected remix file | Step 5 |
 | 6 | `step-6-extract-acapella-and-align.md` | Extract remix acapella + CTC forced alignment | `lyrics-timestamps.json` | Steps 5, 5.5 |
-| 7 | `step-7-fetch-cover-art.md` | Fetch original cover art + AI stylization | `<slug>-cover-art.jpg` | Step 0 |
-| 8 | `step-8-generate-video.md` | Generate music video with Remotion | `<slug>-video.mp4` | Steps 6, 7 |
+| 7 | `step-7-fetch-cover-art.md` | Prepare original-video visual image sequence | `<slug>-original-video.mp4`, `selected-visual-frames.json`, `stylized-frames/`, `image-sequence.json` | Step 0 for extraction; Step 5.5 selected remix for manifest |
+| 8 | `step-8-generate-video.md` | Generate music video with Remotion, using Step 7 visual assets when available | `<slug>-video.mp4` | Step 6; Step 7 optional visual assets |
 | 9 | `step-9-generate-youtube-metadata.md` | Generate title, description, tags, thumbnail text | `youtube-metadata.json` | Step 8 |
 | 10 | `step-10-select-short-clip.md` | Analyze audio + lyrics, select best clip segment | `shorts-segments.json` | Step 9 |
 | 11 | `step-11-generate-short-video.md` | Render 9:16 vertical short in existing Remotion project | `<slug>-short.mp4` | Step 10 |

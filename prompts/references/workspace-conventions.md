@@ -54,6 +54,7 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── <slug>-original.mp3
     ├── <slug>-acapella.mp3
     ├── <slug>-lyrics.txt
+    ├── <slug>-original-video.mp4
     ├── <slug>-suno-lyrics.txt
     ├── <slug>-suno-style.txt
     ├── <slug>-remix-v1.mp3
@@ -61,6 +62,11 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── <slug>-remix-${SELECTED_REMIX}-acapella.mp3
     ├── lyrics-timestamps.json
     ├── <slug>-cover-art.jpg
+    ├── source-frames/
+    ├── visual-frame-candidates.json
+    ├── selected-visual-frames.json
+    ├── stylized-frames/
+    ├── image-sequence.json
     ├── <slug>-video.mp4
     ├── design.json
     ├── youtube-metadata.json
@@ -82,9 +88,11 @@ Each cloned repo uses a local, untracked config file at the repo root:
   "song_length": "full",
   "shorts_clip_mode": "auto",
   "shorts_duration": 30,
+  "visual_frame_count": 20,
   "workspace": "song-name-genre/",
   "files": {
     "original_mp3": "<slug>/<slug>-original.mp3",
+    "original_video": null,
     "acapella": "<slug>/<slug>-acapella.mp3",
     "lyrics": "<slug>/<slug>-lyrics.txt",
     "suno_lyrics": "<slug>/<slug>-suno-lyrics.txt",
@@ -93,6 +101,9 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "remix_acapella": null,
     "lyrics_timestamps": null,
     "cover_art": null,
+    "visual_frame_candidates": null,
+    "selected_visual_frames": null,
+    "image_sequence": null,
     "final_video": null,
     "shorts_segments": null,
     "short_video": null
@@ -106,6 +117,10 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "remix_v1_downloaded": false,
     "remix_v2_downloaded": false,
     "acapella_aligned": false,
+    "original_video_downloaded": false,
+    "visual_frames_extracted": false,
+    "visual_frames_selected": false,
+    "visual_frames_stylized": false,
     "cover_art_fetched": false,
     "video_generated": false,
     "youtube_metadata_generated": false,
@@ -141,6 +156,7 @@ Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.
 | Suffix | Meaning |
 |--------|---------|
 | `original` | Original audio from YouTube |
+| `original-video` | Original YouTube video used for visual frame extraction |
 | `acapella` | Extracted vocals (from original) |
 | `lyrics` | Raw lyrics in native script |
 | `suno-lyrics` | Lyrics in Suno meta-tag format |

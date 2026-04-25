@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useCurrentFrame, interpolate, staticFile, Img } from 'remotion';
 import type { DesignConfig } from '../utils/designLoader';
+import type { ImageSequence, ImageSequenceFrame } from '../utils/imageSequence';
 import type { LyricsData, LyricLine, Section } from '../MusicVideo';
 import { FrequencyBarsVisualizer, WaveformRings } from '../components';
 
@@ -17,6 +18,7 @@ interface CoverArtLayoutProps {
   overallProgress: number;
   songTitle: string;
   genre: string;
+  imageSequence?: ImageSequence | null;
 }
 
 // ─── Layout constants ────────────────────────────────────────────────────────
@@ -56,9 +58,11 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
   overallProgress,
   songTitle,
   genre,
+  imageSequence,
 }) => {
-  useCurrentFrame();
+  const frame = useCurrentFrame();
   const [coverArtError, setCoverArtError] = useState(false);
+  const [failedSequenceImagePaths, setFailedSequenceImagePaths] = useState<string[]>([]);
 
   // ── Music-reactive values ─────────────────────────────────────────────────
   const bass = bandEnergies?.bass ?? 0;
@@ -175,6 +179,48 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
     });
   }, [bass, design.palette.accentColor, design.palette.highlightColor]);
 
+  const activeSequenceFrame: ImageSequenceFrame | null = useMemo(() => {
+    const frames = imageSequence?.frames ?? [];
+    const matchingFrame = frames.find((item) => currentTime >= item.start_time && currentTime < item.end_time);
+    if (matchingFrame) return matchingFrame;
+
+    return frames.reduce<ImageSequenceFrame | null>((latest, item) => {
+      if (currentTime < item.start_time) return latest;
+      if (!latest || item.start_time > latest.start_time) return item;
+      return latest;
+    }, null);
+  }, [imageSequence, currentTime]);
+
+  const previousSequenceFrame: ImageSequenceFrame | null = useMemo(() => {
+    const frames = imageSequence?.frames ?? [];
+    if (!activeSequenceFrame) return null;
+    const activeIndex = frames.indexOf(activeSequenceFrame);
+    return activeIndex > 0 ? frames[activeIndex - 1] : null;
+  }, [imageSequence, activeSequenceFrame]);
+
+  const transitionProgress = activeSequenceFrame
+    ? interpolate(currentTime, [activeSequenceFrame.start_time, activeSequenceFrame.start_time + 0.8], [0, 1], {
+        extrapolateLeft: 'clamp',
+        extrapolateRight: 'clamp',
+      })
+    : 1;
+
+  const activeImageSrc = activeSequenceFrame?.image_path ?? 'cover-art.jpg';
+  const previousImageSrc = previousSequenceFrame?.image_path ?? null;
+  const getSafeImageSrc = (imagePath: string) => (
+    failedSequenceImagePaths.includes(imagePath) ? 'cover-art.jpg' : imagePath
+  );
+  const handleImageError = (imagePath: string) => {
+    if (imagePath === 'cover-art.jpg') {
+      setCoverArtError(true);
+      return;
+    }
+
+    setFailedSequenceImagePaths((paths) => (
+      paths.includes(imagePath) ? paths : [...paths, imagePath]
+    ));
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
@@ -197,8 +243,8 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
           }}
         >
           <Img
-            src={staticFile('cover-art.jpg')}
-            onError={() => {}}
+            src={staticFile(getSafeImageSrc(activeImageSrc))}
+            onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
             style={{
               width: '100%',
               height: '100%',
@@ -314,16 +360,36 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
           }}
         >
           {!coverArtError ? (
-            <Img
-              src={staticFile('cover-art.jpg')}
-              onError={() => setCoverArtError(true)}
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'cover',
-                objectPosition: 'center',
-              }}
-            />
+            <>
+              {previousImageSrc && transitionProgress < 1 && (
+                <Img
+                  src={staticFile(getSafeImageSrc(previousImageSrc))}
+                  onError={() => handleImageError(getSafeImageSrc(previousImageSrc))}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    opacity: 1 - transitionProgress,
+                  }}
+                />
+              )}
+              <Img
+                src={staticFile(getSafeImageSrc(activeImageSrc))}
+                onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
+                style={{
+                  position: 'absolute',
+                  inset: 0,
+                  width: '100%',
+                  height: '100%',
+                  objectFit: 'cover',
+                  objectPosition: 'center',
+                  opacity: previousSequenceFrame ? transitionProgress : 1,
+                }}
+              />
+            </>
           ) : (
             /* Fallback placeholder if cover art fails */
             <div

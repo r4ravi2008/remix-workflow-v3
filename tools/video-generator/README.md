@@ -6,7 +6,7 @@ Remotion-based video generation for music remixes with **audio-reactive visuals*
 
 - **Audio-Reactive Visuals**: Real frequency analysis drives visualizer bars, background pulses, and animated motifs
 - **LLM-Generated Designs**: Each song gets a unique visual identity based on genre, mood, and tempo
-- **5 Layout Variants**: center-stage, full-bleed, minimal, sidebar, stacked
+- **6 Layout Variants**: cover-art, center-stage, full-bleed, minimal, sidebar, stacked
 - **6 Visual Motifs**: particles, geometric-burst, aurora, waveform-rings, noise-field, frequency-bars
 - **Dynamic Color Palette**: Colors are generated based on Suno style descriptors (dark, warm, dreamy, etc.)
 
@@ -47,6 +47,7 @@ tools/video-generator/
 │       │   ├── NoiseField.tsx
 │       │   └── FrequencyBarsVisualizer.tsx
 │       ├── layouts/           # Layout variants
+│       │   ├── CoverArtLayout.tsx
 │       │   ├── CenterStageLayout.tsx
 │       │   ├── FullBleedLayout.tsx
 │       │   ├── MinimalLayout.tsx
@@ -71,18 +72,27 @@ Before using this tool, configure `.remix-workspace-root.json` at the repo root 
 
 ```bash
 cd tools/video-generator
-node init-video.js <workspace-slug> --design="/absolute/path/to/<workspaceRoot>/<slug>/design.json"
+node init-video.js <workspace-slug> \
+  --design="/absolute/path/to/<workspaceRoot>/<slug>/design.json" \
+  --image-sequence="/absolute/path/to/<workspaceRoot>/<slug>/image-sequence.json" \
+  --stylized-frames="/absolute/path/to/<workspaceRoot>/<slug>/stylized-frames"
 ```
 
-The generated video project is created in `<workspaceRoot>/<slug>/video/`.
+The generated video project is created in `<workspaceRoot>/<slug>/video/`. `image-sequence.json` and `stylized-frames/` are copied when present; `cover-art.jpg` remains a fallback visual asset.
 
 ### Step 3: Copy Assets
 
 ```bash
-cp <workspaceRoot>/<slug>/<slug>-remix-${SELECTED_REMIX}.mp3  <workspaceRoot>/<slug>/video/public/audio.mp3
-cp <workspaceRoot>/<slug>/lyrics-timestamps.json <workspaceRoot>/<slug>/video/public/
+cp "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3" "${WORKSPACE_DIR}/video/public/audio.mp3"
+cp "${WORKSPACE_DIR}/lyrics-timestamps.json" "${WORKSPACE_DIR}/video/public/"
 # design.json is automatically copied by init-video.js
+# image-sequence.json and stylized-frames/ are automatically copied by init-video.js when provided
+[ -f "${WORKSPACE_DIR}/image-sequence.json" ] && cp "${WORKSPACE_DIR}/image-sequence.json" "${WORKSPACE_DIR}/video/public/image-sequence.json"
+[ -d "${WORKSPACE_DIR}/stylized-frames" ] && cp -R "${WORKSPACE_DIR}/stylized-frames" "${WORKSPACE_DIR}/video/public/stylized-frames"
+[ -f "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg" ] && cp "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg" "${WORKSPACE_DIR}/video/public/cover-art.jpg"
 ```
+
+The cover-art layout renders `image-sequence.json` with images from `stylized-frames/` when available. If the sequence is missing, it falls back to `cover-art.jpg`, then to the built-in placeholder.
 
 ### Step 4: Render
 
@@ -140,9 +150,12 @@ npx remotion render MusicVideo out/video.mp4
 
 ## Layout Variants
 
+Six layout variants are available. `cover-art` is the default compatibility layout and the primary layout for the visual image sequence flow.
+
 | Layout | Description | Best For |
 |--------|-------------|----------|
-| `center-stage` | Lyrics centered, visualizer at bottom | All genres (default) |
+| `cover-art` | Two-panel layout with visual image sequence, cover-art fallback, and lyrics sidebar | Default pipeline layout |
+| `center-stage` | Lyrics centered, visualizer at bottom | General-purpose lyric-first videos |
 | `full-bleed` | Motif fills background behind lyrics | EDM, pop, energetic |
 | `minimal` | Large lyrics, no visualizer, thin progress | Classical, ballads, carnatic |
 | `sidebar` | Lyrics left (55%), motif right (45%) | Hiphop, chill, lo-fi |
@@ -251,8 +264,8 @@ This is automatically called as part of Steps 4 and 8:
 4. Save files to workspace
 
 **Step 8 (Generate Video):**
-5. Scaffold video project with design.json
-6. Copy assets (audio, lyrics, cover art, design)
+5. Scaffold video project with design.json, image-sequence.json, and stylized-frames/
+6. Copy assets (audio, lyrics, image sequence, cover art fallback, design)
 7. Render video
 
 See `prompts/step-4-generate-suno-lyrics.md` and `prompts/step-8-generate-video.md` for full workflow.

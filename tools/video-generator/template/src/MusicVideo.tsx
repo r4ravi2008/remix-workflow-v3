@@ -10,6 +10,7 @@ import {
 } from 'remotion';
 import { useAudioData, visualizeAudio } from '@remotion/media-utils';
 import { loadDesign, getBackgroundStyle, getFontFamily, DesignConfig } from './utils/designLoader';
+import { loadImageSequence, ImageSequence } from './utils/imageSequence';
 import {
   computeVisualizerBars,
   attackReleaseSmooth,
@@ -56,7 +57,7 @@ export interface LyricsData {
   lyrics: LyricLine[];
 }
 
-interface MusicVideoProps {
+interface MusicVideoProps extends Record<string, unknown> {
   songTitle: string;
   audioSrc: string;
   lyricsDataSrc: string;
@@ -84,8 +85,10 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
   // Async loading handles
   const [lyricsHandle] = useState(() => delayRender('Loading lyrics'));
   const [designHandle] = useState(() => delayRender('Loading design'));
+  const [sequenceHandle] = useState(() => delayRender('Loading image sequence'));
   const [lyricsData, setLyricsData] = useState<LyricsData | null>(null);
   const [design, setDesign] = useState<DesignConfig | null>(null);
+  const [imageSequence, setImageSequence] = useState<ImageSequence | null>(null);
 
   // Audio data
   const audioData = useAudioData(staticFile(audioSrc));
@@ -159,11 +162,21 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
   }, [lyricsHandle, lyricsDataSrc]);
 
   const loadDesignConfig = useCallback(async () => {
-    setDesign(await loadDesign(staticFile));
-    continueRender(designHandle);
+    try {
+      setDesign(await loadDesign(staticFile));
+    } catch (e) {
+      console.error('Failed to load design config:', e);
+    } finally {
+      continueRender(designHandle);
+    }
   }, [designHandle]);
 
-  useEffect(() => { loadLyrics(); loadDesignConfig(); }, [loadLyrics, loadDesignConfig]);
+  const loadSequenceConfig = useCallback(async () => {
+    setImageSequence(await loadImageSequence(staticFile));
+    continueRender(sequenceHandle);
+  }, [sequenceHandle]);
+
+  useEffect(() => { loadLyrics(); loadDesignConfig(); loadSequenceConfig(); }, [loadLyrics, loadDesignConfig, loadSequenceConfig]);
 
   // ── Lyrics state ───────────────────────────────────────────────────────
   const currentLyric = useMemo(() => {
@@ -207,6 +220,7 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
       overallProgress,
       songTitle,
       genre,
+      imageSequence,
     };
 
     switch (design?.layout.variant || 'cover-art') {

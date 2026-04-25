@@ -4,7 +4,7 @@ const fs = require('node:fs');
 const os = require('node:os');
 const path = require('node:path');
 
-const {initializeVideoProject} = require('./init-video');
+const {initializeVideoProject, parseArgs} = require('./init-video');
 
 function makeFixture() {
   const repoRoot = fs.mkdtempSync(path.join(os.tmpdir(), 'init-video-repo-'));
@@ -112,4 +112,88 @@ test('throws a clear error when the slug workspace does not exist', () => {
     }),
     /Workspace "missing-slug" not found/
   );
+});
+
+test('copies image sequence manifest and stylized frames when provided', () => {
+  const fixture = makeFixture();
+  const imageSequencePath = path.join(fixture.workspaceDir, 'image-sequence.json');
+  const stylizedFramesDir = path.join(fixture.workspaceDir, 'stylized-frames');
+  const imageSequenceJson = JSON.stringify(
+    {version: 1, frames: [{id: 'frame-001', image_path: 'stylized-frames/bella-bella-lofi-frame-001.jpg'}]},
+    null,
+    2
+  );
+  fs.mkdirSync(stylizedFramesDir);
+  fs.writeFileSync(imageSequencePath, imageSequenceJson);
+  fs.writeFileSync(path.join(stylizedFramesDir, 'bella-bella-lofi-frame-001.jpg'), 'fake jpg');
+
+  const result = initializeVideoProject({
+    workspaceSlug: fixture.workspaceSlug,
+    designPath: path.join(fixture.workspaceDir, 'design.json'),
+    imageSequencePath,
+    stylizedFramesDir,
+    repoRoot: fixture.repoRoot,
+    templateDir: fixture.templateDir,
+    execSyncImpl: () => '180.25',
+    logger: {log() {}, warn() {}, error() {}},
+    processCwd: fixture.repoRoot,
+  });
+
+  assert.ok(fs.existsSync(path.join(result.videoDir, 'public', 'image-sequence.json')));
+  assert.equal(fs.readFileSync(path.join(result.videoDir, 'public', 'image-sequence.json'), 'utf8'), imageSequenceJson);
+  assert.equal(
+    fs.readFileSync(path.join(result.videoDir, 'public', 'stylized-frames', 'bella-bella-lofi-frame-001.jpg'), 'utf8'),
+    'fake jpg'
+  );
+});
+
+test('parses optional image sequence and stylized frames flags', () => {
+  assert.deepEqual(
+    parseArgs([
+      'slug',
+      '--design=/tmp/design.json',
+      '--image-sequence=/tmp/image-sequence.json',
+      '--stylized-frames=/tmp/stylized-frames',
+    ]),
+    {
+      workspaceSlug: 'slug',
+      designPath: '/tmp/design.json',
+      imageSequencePath: '/tmp/image-sequence.json',
+      stylizedFramesDir: '/tmp/stylized-frames',
+    }
+  );
+});
+
+test('warns and skips optional assets with wrong path types', () => {
+  const fixture = makeFixture();
+  const designPath = path.join(fixture.workspaceDir, 'design-dir');
+  const imageSequencePath = path.join(fixture.workspaceDir, 'image-sequence-dir');
+  const stylizedFramesDir = path.join(fixture.workspaceDir, 'stylized-frames-file');
+  const warnings = [];
+
+  fs.mkdirSync(designPath);
+  fs.mkdirSync(imageSequencePath);
+  fs.writeFileSync(stylizedFramesDir, 'not a directory');
+
+  assert.doesNotThrow(() => initializeVideoProject({
+    workspaceSlug: fixture.workspaceSlug,
+    designPath,
+    imageSequencePath,
+    stylizedFramesDir,
+    repoRoot: fixture.repoRoot,
+    templateDir: fixture.templateDir,
+    execSyncImpl: () => '180.25',
+    logger: {
+      log() {},
+      warn(message) {
+        warnings.push(message);
+      },
+      error() {},
+    },
+    processCwd: fixture.repoRoot,
+  }));
+
+  assert.ok(warnings.some(message => message.includes('Design file not found')));
+  assert.ok(warnings.some(message => message.includes('Image sequence file not found')));
+  assert.ok(warnings.some(message => message.includes('Stylized frames directory not found')));
 });

@@ -1,21 +1,24 @@
-# Step 7: Fetch & Stylize Cover Art
+# Step 7: Prepare Visual Image Sequence
 
 ## Objective
 
-Find the original song's cover art from JioSaavn (preferred) or Google Images, then
-stylize it into Japanese anime style using the Nano Banana Pro model on fal.ai. The
-stylized image is used as the background asset in the Remotion video (Step 8).
+Download the original YouTube video, extract a configurable number of evenly spaced source frames, stylize those frames with one shared prompt/settings set, and write `image-sequence.json` for Step 8. Existing cover art remains a fallback when sequence preparation is skipped or fails.
+
+> **Legacy filename**: This file remains named `step-7-fetch-cover-art.md` for compatibility with existing references. Step 7 now primarily prepares a visual image sequence; cover art is only a fallback path.
 
 ## Key Requirements
 
-- **Source**: JioSaavn CDN (preferred) or Google Images — official album/single artwork only
-- **Stylization**: Japanese anime style via `fal-ai/nano-banana-pro/edit` at 2K resolution
-- **Text on image**: Song title only — no watermarks, logos, artist names, or other text
-- **Output format**: JPEG saved as `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg`
+- **Source video**: Original YouTube video from `meta.json.youtube_url`
+- **Frame count**: Use `meta.json.visual_frame_count` when present; default to 20
+- **Frame selection**: Deterministically select up to `visual_frame_count` evenly spaced frames from the source video
+- **Stylization**: Stylize selected frames with one shared prompt/settings set for visual consistency
+- **Primary output**: `image-sequence.json` plus images in `${WORKSPACE_DIR}/stylized-frames/`
+- **Fallback output**: `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` may still be used by Step 8 if sequence preparation is skipped or fails
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/meta.json` exists with `video_title`, `language`, `slug`
+- Extraction, selection, and stylization can start after Step 0 when `${WORKSPACE_DIR}/meta.json` exists with `youtube_url`, `video_title`, `language`, `slug`
+- Manifest generation requires Step 5.5 selected remix state: `meta.json.status.selected_remix` is `v1` or `v2`, and the matching selected remix audio file exists as `${WORKSPACE_DIR}/${SLUG}-remix-v1.mp3` or `${WORKSPACE_DIR}/${SLUG}-remix-v2.mp3`
 
 ## Workspace Path Resolution
 
@@ -25,7 +28,7 @@ Before using any filesystem path in this step:
 2. Resolve `WORKSPACE_ROOT` from its `workspaceRoot` field.
 3. Resolve `WORKSPACE_DIR` as `<workspaceRoot>/<slug>/`.
 4. Use absolute paths under `WORKSPACE_DIR` for filesystem commands.
-5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/design.json`.
+5. Keep any stored `meta.json.files.*` values root-relative, for example `<slug>/image-sequence.json`.
 
 **See also**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md) — Browser automation reference.
 
@@ -35,97 +38,125 @@ Before using any filesystem path in this step:
 
 ### 7.1 — Read Workspace Files
 
-Read `meta.json` and extract: `video_title`, `language`, `slug`.
+Read `meta.json` and extract: `youtube_url`, `video_title`, `language`, `slug`, `visual_frame_count`.
+
+If `visual_frame_count` is missing, use 20.
 
 ---
 
-### 7.2 — Get Cover Art from JioSaavn (Preferred)
+### 7.2 — Extract Source Frames
 
-**See**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md)
-
-JioSaavn CDN hosts high-quality cover art for Indian film songs.
-
-**Steps:**
-1. Navigate to `https://www.jiosaavn.com`
-2. Search for: `<song name> <movie name>`
-3. Open the song page
-4. Extract the OG image URL:
-
-```javascript
-() => document.querySelector('meta[property="og:image"]')?.content
-```
-
-This returns the direct CDN URL. Use it as the source image.
-
-**If JioSaavn doesn't have the song**, fall back to Google Images (step 7.3).
-
----
-
-### 7.3 — Fallback: Find Cover Art via Google Images
-
-**See**: [Chrome DevTools Patterns](references/chrome-devtools-patterns.md)
-
-If JioSaavn doesn't have the song:
-
-1. Navigate to `https://images.google.com`
-2. Search: `<movie name> <song name> album cover site:saavn.com OR site:gaana.com`
-3. Look for official artwork from streaming platforms
-4. Avoid: YouTube thumbnails, fan edits, screenshots
-
-Right-click the best result to get the full-resolution image URL.
-
----
-
-### 7.4 — Upload Cover Art to fal.ai CDN
-
-Use the fal.ai MCP `upload_file` tool to upload the image by URL:
-
-```
-Tool: upload_file
-url: <jiosaavn-or-image-url>
-```
-
-Note the returned fal.ai CDN URL — this is `<fal-cdn-url>`.
-
----
-
-### 7.5 — Stylize with Nano Banana Pro
-
-Use the fal.ai MCP `run_model` tool to stylize the cover art:
-
-```
-Tool: run_model
-endpoint_id: fal-ai/nano-banana-pro/edit
-input:
-  image_urls: ["<fal-cdn-url>"]
-  resolution: "2K"
-  aspect_ratio: "1:1"
-  prompt: "Japanese anime style illustration, vibrant colors, cinematic lighting, include only the text '<songTitle>' in stylized anime lettering, no other text, no watermarks, no logos"
-```
-
-The model returns a 2048×2048 stylized image URL.
-
----
-
-### 7.6 — Download the Stylized Image
+Run the visual sequence extractor from the repo root:
 
 ```bash
-curl -L "<output-image-url>" -o "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg"
+node tools/visual-sequence/visual-sequence.js extract <slug>
 ```
 
-Verify:
+The extractor downloads the original YouTube video, saves it as `${WORKSPACE_DIR}/${SLUG}-original-video.mp4`, deterministically selects up to `visual_frame_count` evenly spaced frames, writes them into `${WORKSPACE_DIR}/source-frames/`, and writes frame metadata.
 
-```bash
-ls -lh "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg"
+Expected outputs after extraction:
+
+```text
+<slug>-original-video.mp4
+source-frames/
+visual-frame-candidates.json
+selected-visual-frames.json
 ```
 
-Expected: 500KB–2MB, 2048×2048px.
+Update `${WORKSPACE_DIR}/meta.json` as outputs become available:
+
+```json
+{
+  "files": {
+    "original_video": "<slug>/<slug>-original-video.mp4",
+    "visual_frame_candidates": "<slug>/visual-frame-candidates.json",
+    "selected_visual_frames": "<slug>/selected-visual-frames.json"
+  },
+  "status": {
+    "original_video_downloaded": true,
+    "visual_frames_extracted": true,
+    "visual_frames_selected": true
+  }
+}
+```
 
 ---
 
-### 7.7 — Update Metadata
+### 7.3 — Stylize Selected Frames
+
+Stylize the frames listed in `selected-visual-frames.json` with one shared prompt/settings set so the final sequence feels cohesive.
+
+Use the available image-generation workflow for the configured model. Keep the prompt focused on visual style only; do not add lyrics, romanized text, watermarks, logos, or captions.
+
+Save all stylized frame images in:
+
+```text
+${WORKSPACE_DIR}/stylized-frames/
+```
+
+Use the selected frame basename `${SLUG}-${frame.id}` and preserve the image generator's output extension. Supported stylized frame extensions for manifest generation are `.jpg`, `.jpeg`, `.png`, and `.webp`.
+
+You may complete extraction, selection, and stylization before the user chooses the selected remix. Wait until Step 5.5 has set the selected remix before writing the sequence manifest, because the manifest is timed against the selected remix audio duration.
+
+When the stylized images exist in `${WORKSPACE_DIR}/stylized-frames/`, write the sequence manifest:
+
+```bash
+node tools/visual-sequence/visual-sequence.js manifest <slug>
+```
+
+Expected outputs after stylization and manifest creation:
+
+```text
+stylized-frames/
+image-sequence.json
+```
 
 Update `${WORKSPACE_DIR}/meta.json`:
+
+```json
+{
+  "files": {
+    "image_sequence": "<slug>/image-sequence.json"
+  },
+  "status": {
+    "visual_frames_stylized": true
+  }
+}
+```
+
+---
+
+### 7.4 — Verify Sequence Outputs
+
+Confirm these files and directories exist:
+
+```text
+<slug>-original-video.mp4
+source-frames/
+visual-frame-candidates.json
+selected-visual-frames.json
+stylized-frames/
+image-sequence.json
+```
+
+`image-sequence.json` is the primary Step 8 visual input.
+
+---
+
+### 7.5 — Optional Fallback: Cover Art
+
+If visual sequence preparation is skipped or fails, Step 8 can still use the existing cover-art fallback path.
+
+To prepare fallback cover art, find the original song's cover art from JioSaavn (preferred) or Google Images, then stylize it into Japanese anime style using the Nano Banana Pro model on fal.ai.
+
+Requirements for fallback cover art:
+
+- **Source**: JioSaavn CDN (preferred) or Google Images — official album/single artwork only
+- **Stylization**: Japanese anime style via `fal-ai/nano-banana-pro/edit` at 2K resolution
+- **Text on image**: Song title only — no watermarks, logos, artist names, or other text
+- **Output format**: JPEG saved as `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg`
+
+Update `${WORKSPACE_DIR}/meta.json` if fallback cover art is created:
 
 ```json
 {
@@ -138,28 +169,32 @@ Update `${WORKSPACE_DIR}/meta.json`:
 
 ---
 
-### 7.8 — Confirm Ready for Video
+### 7.6 — Confirm Ready for Video
 
 ```
-Cover art ready!
+Visual image sequence ready!
 
-   <slug>-cover-art.jpg   — Anime-stylized via Nano Banana Pro (2048×2048)
+   <slug>-original-video.mp4       — Original video used for frame extraction
+   selected-visual-frames.json     — Selected source frame metadata
+   stylized-frames/                — Stylized frame images
+   image-sequence.json             — Sequence manifest for Step 8
+   <slug>-cover-art.jpg            — Optional fallback cover art, if available
 
 Proceeding to Step 8: Generate Video with Remotion.
 ```
 
 ---
 
-## Fallback: No Cover Art Found
+## Fallback: No Visual Sequence Available
 
-If no suitable source image can be found:
+If the original video cannot be downloaded, no usable frames can be selected, or stylization fails:
 
-1. Try alternative searches: `<songTitle> <artist> cover site:open.spotify.com`
-2. If still nothing, skip this step and note it in meta.json:
+1. Try fallback cover art using JioSaavn or Google Images.
+2. If no suitable fallback cover art can be found, skip visual preparation and note it in meta.json:
    ```json
    { "status": { "cover_art_fetched": false, "cover_art_skipped": true } }
    ```
-3. The Remotion cover-art layout falls back gracefully to its placeholder if `cover-art.jpg` is unavailable.
+3. The Remotion cover-art layout renders `image-sequence.json` when present, then falls back to `cover-art.jpg`, then to its placeholder.
 
 ---
 
@@ -169,11 +204,11 @@ If no suitable source image can be found:
 
 | Problem | Fix |
 |---|---|
-| JioSaavn search returns no result | Fall back to Google Images (step 7.3) |
-| fal.ai upload_file rejects URL | Download image locally with curl, then base64-encode |
-| Nano Banana Pro returns unwanted text | Add `"no text, no captions"` to prompt |
-| Output image has wrong aspect ratio | Pass `aspect_ratio: "1:1"` explicitly |
-| curl download fails | Try `wget -O` as alternative |
+| Original video download fails | Confirm `meta.json.youtube_url`; retry with the video URL directly if the tool supports it |
+| Extracted frames are too dark or repetitive | Increase `visual_frame_count` in `meta.json` and rerun extraction |
+| Stylized frames are inconsistent | Reuse one shared prompt/settings set for all selected frames |
+| `image-sequence.json` missing | Confirm stylized images and the selected remix audio exist, then rerun `node tools/visual-sequence/visual-sequence.js manifest <slug>` |
+| Cover art fallback not showing | Ensure `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` exists before Step 8 copies assets |
 
 ---
 

@@ -29,6 +29,7 @@ interface StackedLayoutProps {
 export const StackedLayout: React.FC<StackedLayoutProps> = ({
   design,
   frequencyData,
+  barHeights = Array(24).fill(0),
   lyricsData,
   currentLyric,
   nextLyric,
@@ -236,8 +237,7 @@ export const StackedLayout: React.FC<StackedLayoutProps> = ({
         {design.layout.visualizerPosition === 'bottom' && (
           <FrequencyBarsVisualizer
             design={design}
-            frequencyData={frequencyData}
-            numBars={24}
+            barHeights={barHeights}
             width={600}
             height={50}
           />

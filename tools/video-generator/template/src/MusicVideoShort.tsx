@@ -23,7 +23,7 @@ import type { LyricsData, LyricLine, Section } from './MusicVideo';
 
 // ─── Data types ──────────────────────────────────────────────────────────────
 
-interface MusicVideoShortProps {
+interface MusicVideoShortProps extends Record<string, unknown> {
   songTitle: string;
   audioSrc: string;
   lyricsDataSrc: string;

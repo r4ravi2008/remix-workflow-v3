@@ -10,7 +10,7 @@ focuses on running the pipeline and wiring up the correct data.
 
 - **Full audio duration**: Video must match the complete audio length (not hardcoded)
 - **Lyrics synchronization**: Uses the `lyrics-timestamps.json` produced in Step 6
-- **Cover art background**: Uses `<slug>-cover-art.jpg` from Step 7 when available; the template falls back gracefully if it is missing
+- **Visual image sequence**: Uses `image-sequence.json` and `stylized-frames/` from Step 7 when available; the template falls back to cover art, then to a placeholder
 - **Section display**: Show current section (Verse, Chorus, etc.) prominently
 - **Indic script support**: Telugu/Hindi/Tamil text renders correctly via system fonts
 
@@ -20,7 +20,8 @@ focuses on running the pipeline and wiring up the correct data.
 - `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists
 - `${WORKSPACE_DIR}/lyrics-timestamps.json` exists (produced in Step 6)
 - `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`, `language`
-- `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` may exist if Step 7 found artwork
+- `${WORKSPACE_DIR}/image-sequence.json` and `${WORKSPACE_DIR}/stylized-frames/` may exist if Step 7 prepared a visual sequence
+- `${WORKSPACE_DIR}/${SLUG}-cover-art.jpg` may exist as a fallback if Step 7 found artwork
 
 ## Workspace Path Resolution
 
@@ -51,43 +52,54 @@ Resolve `SELECTED_REMIX` from `meta.json.status.selected_remix` first. It must b
 `design.json` is generated in **Step 4** (section 4.11) based on the Suno style descriptors.
 Verify it exists at `${WORKSPACE_DIR}/design.json` before proceeding.
 
-**Hard requirement**: The `layout.variant` must be `"cover-art"`. If it's set to anything else,
-fix it before continuing.
-
-> **Cover-art behavior**: The CoverArtLayout uses the official movie/song poster from Step 7
-> when available and falls back gracefully to a placeholder if `cover-art.jpg` is missing.
+> **Cover-art behavior**: The CoverArtLayout renders `image-sequence.json` when present,
+> then falls back to `cover-art.jpg`, then falls back gracefully to a placeholder.
 
 ---
 
 ### 8.3 — Scaffold Remotion Project
 
 The `init-video.js` scaffolder copies the template, detects the audio duration from the remix
-file via ffprobe, writes a `video-config.json` with song title, genre, and duration, and copies
-the design.json automatically. No manual code editing needed.
+file via ffprobe, writes a `video-config.json` with song title, genre, and duration, copies
+`design.json`, and copies optional image sequence assets when the sequence flags point to
+existing files/directories. No manual code editing needed.
 
 ```bash
 cd tools/video-generator
-node init-video.js <slug> --design="${WORKSPACE_DIR}/design.json"
+node init-video.js <slug> \
+  --design="${WORKSPACE_DIR}/design.json" \
+  --image-sequence="${WORKSPACE_DIR}/image-sequence.json" \
+  --stylized-frames="${WORKSPACE_DIR}/stylized-frames"
 ```
 
 This creates `<workspaceRoot>/<slug>/video/` with everything wired up, including the visual design
-configuration.
+configuration and image sequence assets when they exist.
 
 ---
 
 ### 8.4 — Copy Assets to Video Project
+
+Always copy the required runtime assets after scaffolding: `audio.mp3`, `lyrics-timestamps.json`,
+and `suno-lyrics.txt`. `init-video.js` does not copy these files.
+
+Fresh scaffolds normally already have `design.json`, `image-sequence.json`, and `stylized-frames/`
+copied when the flags in step 8.3 were provided and the source paths existed. Use the manual
+commands for those optional assets only for existing scaffolds, recovery, or if assets were created
+after running `init-video.js`.
 
 ```bash
 cp "${WORKSPACE_DIR}/${SLUG}-remix-${SELECTED_REMIX}.mp3"   "${WORKSPACE_DIR}/video/public/audio.mp3"
 cp "${WORKSPACE_DIR}/lyrics-timestamps.json" "${WORKSPACE_DIR}/video/public/"
 cp "${WORKSPACE_DIR}/design.json"            "${WORKSPACE_DIR}/video/public/"
 cp "${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt" "${WORKSPACE_DIR}/video/public/suno-lyrics.txt"
+[ -f "${WORKSPACE_DIR}/image-sequence.json" ] && cp "${WORKSPACE_DIR}/image-sequence.json" "${WORKSPACE_DIR}/video/public/image-sequence.json"
+[ -d "${WORKSPACE_DIR}/stylized-frames" ] && cp -R "${WORKSPACE_DIR}/stylized-frames" "${WORKSPACE_DIR}/video/public/stylized-frames"
 [ -f "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg" ] && cp "${WORKSPACE_DIR}/${SLUG}-cover-art.jpg" "${WORKSPACE_DIR}/video/public/cover-art.jpg"
 ```
 
-If cover art is available, the file **must** be named `cover-art.jpg` — that is the exact filename
-the `CoverArtLayout` template looks for via `staticFile('cover-art.jpg')`. If it is missing, the
-template falls back gracefully.
+If `image-sequence.json` and `stylized-frames/` are available, they are the primary visual input.
+If cover art is available as a fallback, copy it as `cover-art.jpg`. If both are missing, the
+template falls back gracefully to its placeholder.
 
 ---
 
@@ -138,7 +150,9 @@ Outputs in <workspaceRoot>/<slug>/:
    <slug>-remix-${SELECTED_REMIX}-acapella.mp3      — Vocals extracted from remix
    lyrics-timestamps.json            — Word+line timestamps (CTC aligned)
    design.json                       — LLM-generated visual design configuration
-   <slug>-cover-art.jpg              — Optional anime-stylized cover art (Nano Banana Pro 2K), if available
+   image-sequence.json               — Optional visual sequence manifest, if available
+   stylized-frames/                  — Optional stylized frame sequence, if available
+   <slug>-cover-art.jpg              — Optional fallback cover art, if available
    video/                            — Remotion project
 
 Duration: <duration>s  |  Lyrics: <n> lines synced  |  Layout: <layout>  |  Motif: <motif>
@@ -164,10 +178,12 @@ The video template in `tools/video-generator/template/` is self-contained:
   - Finds the active lyric line and section for the current timestamp
 
 - **`CoverArtLayout.tsx`** (default layout) — two-panel layout: 75% / 25%:
-  - **Left 75%**: renders `public/cover-art.jpg` full-bleed via Remotion's `<Img>` component,
-    with a right-edge dark gradient overlay and song title + genre badge overlaid at bottom-left
+  - **Left 75%**: renders `public/image-sequence.json` when present, using images from
+    `public/stylized-frames/`; otherwise renders `public/cover-art.jpg`; otherwise shows a
+    placeholder. The visual area uses a right-edge dark gradient overlay and song title + genre
+    badge overlaid at bottom-left
   - **Right 25%**: scrolling karaoke lyrics + frequency bars visualizer + progress bar
-  - Falls back gracefully to a ♪ placeholder if `cover-art.jpg` fails to load
+  - Falls back gracefully to a ♪ placeholder if neither `image-sequence.json` nor `cover-art.jpg` can load
 
 - **`design.json`** — LLM-generated design configuration with palette, typography, layout,
   animation personality, and visual motif selection. Generated in Step 4 (section 4.11).
@@ -183,7 +199,8 @@ the template if the project gets into a broken state.
 
 | Problem | Fix |
 |---|---|
-| Cover art not showing (left panel blank) | Ensure `cover-art.jpg` is in `${WORKSPACE_DIR}/video/public/` with that exact filename |
+| Image sequence not showing | Ensure `image-sequence.json` and `stylized-frames/` are in `${WORKSPACE_DIR}/video/public/` |
+| Cover art fallback not showing | Ensure `cover-art.jpg` is in `${WORKSPACE_DIR}/video/public/` with that exact filename |
 | Cover art distorted / wrong crop | Nano Banana Pro output is 2048×2048 — `objectFit: cover` handles any ratio |
 | Lyrics not syncing | Check `lyrics-timestamps.json` is in `${WORKSPACE_DIR}/video/public/` |
 | No lyrics visible in rendered video | Missing `delayRender` — re-scaffold from template |
