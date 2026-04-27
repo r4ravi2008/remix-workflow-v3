@@ -16,6 +16,7 @@ __pycache__/
 
 # Workspace outputs (remix session artifacts)
 workspaces/
+.worktrees/
 .remix-workspace-root.json
 
 # Workspace model caches

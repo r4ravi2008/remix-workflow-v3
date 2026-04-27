@@ -36,7 +36,7 @@ digraph remix_full_pipeline {
 | Responsibility | Owner |
 |---|---|
 | Steps 0-4 and optional 5 | `remix-phase-one` |
-| Steps 6-9 and optional 7 | `remix-phase-two` |
+| Steps 6-11, including composable Step 7 visual prep | `remix-phase-two` |
 | checkpoint / delegation / resume logic | this skill |
 
 ## Implementation
