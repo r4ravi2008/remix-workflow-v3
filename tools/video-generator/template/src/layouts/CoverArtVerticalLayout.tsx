@@ -1,6 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useCurrentFrame, interpolate, staticFile, Img } from 'remotion';
 import type { DesignConfig } from '../utils/designLoader';
+import type { ImageSequence, ImageSequenceFrame } from '../utils/imageSequence';
 import type { LyricsData, LyricLine, Section } from '../MusicVideo';
 import { FrequencyBarsVisualizer, WaveformRings } from '../components';
 
@@ -17,6 +18,7 @@ interface CoverArtVerticalLayoutProps {
   overallProgress: number;
   songTitle: string;
   genre: string;
+  imageSequence?: ImageSequence | null;
 }
 
 // ─── Layout constants ────────────────────────────────────────────────────────
@@ -66,9 +68,11 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
   overallProgress,
   songTitle,
   genre,
+  imageSequence,
 }) => {
   useCurrentFrame();
   const [coverArtError, setCoverArtError] = useState(false);
+  const [failedSequenceImagePaths, setFailedSequenceImagePaths] = useState<string[]>([]);
 
   // ── Music-reactive values ─────────────────────────────────────────────────
   const bass = bandEnergies?.bass ?? 0;
@@ -185,6 +189,33 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
     });
   }, [bass, design.palette.accentColor, design.palette.highlightColor]);
 
+  const activeSequenceFrame: ImageSequenceFrame | null = useMemo(() => {
+    const frames = imageSequence?.frames ?? [];
+    const matchingFrame = frames.find((item) => currentTime >= item.start_time && currentTime < item.end_time);
+    if (matchingFrame) return matchingFrame;
+
+    return frames.reduce<ImageSequenceFrame | null>((latest, item) => {
+      if (currentTime < item.start_time) return latest;
+      if (!latest || item.start_time > latest.start_time) return item;
+      return latest;
+    }, null);
+  }, [imageSequence, currentTime]);
+
+  const activeImageSrc = activeSequenceFrame?.image_path ?? 'cover-art.jpg';
+  const getSafeImageSrc = (imagePath: string) => (
+    failedSequenceImagePaths.includes(imagePath) ? 'cover-art.jpg' : imagePath
+  );
+  const handleImageError = (imagePath: string) => {
+    if (imagePath === 'cover-art.jpg') {
+      setCoverArtError(true);
+      return;
+    }
+
+    setFailedSequenceImagePaths((paths) => (
+      paths.includes(imagePath) ? paths : [...paths, imagePath]
+    ));
+  };
+
   // ── Render ────────────────────────────────────────────────────────────────
   return (
     <div
@@ -207,8 +238,8 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
           }}
         >
           <Img
-            src={staticFile('cover-art.jpg')}
-            onError={() => {}}
+            src={staticFile(getSafeImageSrc(activeImageSrc))}
+            onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
             style={{
               width: '100%',
               height: '100%',
@@ -326,8 +357,8 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
             >
               {!coverArtError ? (
                 <Img
-                  src={staticFile('cover-art.jpg')}
-                  onError={() => setCoverArtError(true)}
+                  src={staticFile(getSafeImageSrc(activeImageSrc))}
+                  onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
                   style={{
                     width: '100%',
                     height: '100%',

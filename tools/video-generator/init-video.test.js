@@ -197,3 +197,15 @@ test('warns and skips optional assets with wrong path types', () => {
   assert.ok(warnings.some(message => message.includes('Image sequence file not found')));
   assert.ok(warnings.some(message => message.includes('Stylized frames directory not found')));
 });
+
+test('short template loads and passes image sequence to vertical layout', () => {
+  const templateRoot = path.join(__dirname, 'template', 'src');
+  const shortSource = fs.readFileSync(path.join(templateRoot, 'MusicVideoShort.tsx'), 'utf8');
+  const verticalSource = fs.readFileSync(path.join(templateRoot, 'layouts', 'CoverArtVerticalLayout.tsx'), 'utf8');
+
+  assert.match(shortSource, /loadImageSequence/);
+  assert.match(shortSource, /imageSequence=\{imageSequence\}/);
+  assert.match(verticalSource, /imageSequence\?: ImageSequence \| null/);
+  assert.match(verticalSource, /activeSequenceFrame/);
+  assert.match(verticalSource, /staticFile\(getSafeImageSrc\(activeImageSrc\)\)/);
+});

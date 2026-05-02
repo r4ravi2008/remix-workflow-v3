@@ -10,6 +10,8 @@ import {
 } from 'remotion';
 import { useAudioData, visualizeAudio } from '@remotion/media-utils';
 import { loadDesign, getBackgroundStyle, getFontFamily, DesignConfig } from './utils/designLoader';
+import { loadImageSequence } from './utils/imageSequence';
+import type { ImageSequence } from './utils/imageSequence';
 import {
   computeVisualizerBars,
   attackReleaseSmooth,
@@ -62,6 +64,7 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
   const [designHandle] = useState(() => delayRender('Loading design'));
   const [lyricsData, setLyricsData] = useState<LyricsData | null>(null);
   const [design, setDesign] = useState<DesignConfig | null>(null);
+  const [imageSequence, setImageSequence] = useState<ImageSequence | null>(null);
 
   // Audio data (uses full audio - trim is applied at render time)
   const audioData = useAudioData(staticFile(audioSrc));
@@ -164,7 +167,23 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
     continueRender(designHandle);
   }, [designHandle]);
 
-  useEffect(() => { loadLyrics(); loadDesignConfig(); }, [loadLyrics, loadDesignConfig]);
+  const loadSequence = useCallback(async () => {
+    const rawSequence = await loadImageSequence(staticFile);
+    if (rawSequence) {
+      setImageSequence({
+        ...rawSequence,
+        frames: rawSequence.frames
+          .filter((item) => item.end_time > clipStartTime && item.start_time < clipEndTime)
+          .map((item) => ({
+            ...item,
+            start_time: Math.max(0, item.start_time - clipStartTime),
+            end_time: Math.min(clipDuration, item.end_time - clipStartTime),
+          })),
+      });
+    }
+  }, [clipStartTime, clipEndTime, clipDuration]);
+
+  useEffect(() => { loadLyrics(); loadDesignConfig(); loadSequence(); }, [loadLyrics, loadDesignConfig, loadSequence]);
 
   // ── Lyrics state ───────────────────────────────────────────────────────
   const currentLyric = useMemo(() => {
@@ -235,6 +254,7 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
           overallProgress={overallProgress}
           songTitle={songTitle}
           genre={genre}
+          imageSequence={imageSequence}
         />
       )}
     </AbsoluteFill>
