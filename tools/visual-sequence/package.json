@@ -1,0 +1,13 @@
+{
+  "type": "commonjs",
+  "private": true,
+  "scripts": {
+    "test": "node --test *.test.js",
+    "stylize:fal": "tsx stylize-fal.ts"
+  },
+  "dependencies": {
+    "@fal-ai/client": "^1.10.0",
+    "effect": "beta",
+    "tsx": "latest"
+  }
+}
