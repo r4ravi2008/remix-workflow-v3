@@ -5,7 +5,7 @@ const {fal} = require('@fal-ai/client');
 
 const {resolveWorkspaceDir} = require('../shared/workspace-root');
 
-const MODEL_ID = 'fal-ai/nano-banana-pro/edit';
+const DEFAULT_MODEL_ID = 'fal-ai/nano-banana-pro/edit';
 const DEFAULT_CONCURRENCY = 2;
 const OUTPUT_EXTENSION = '.jpg';
 const MANIFEST_FILE = 'fal-stylized-frames.json';
@@ -20,11 +20,12 @@ function parsePositiveInteger(value, name) {
 function parseStylizeArgs(argv) {
   const [slug, ...rest] = argv;
   if (!slug) {
-    throw new Error('Usage: tsx stylize-fal.ts <slug> --prompt-file=<path> [--limit=N] [--frame=frame-001] [--concurrency=N] [--overwrite] [--dry-run]');
+    throw new Error('Usage: tsx stylize-fal.ts <slug> --prompt-file=<path> [--model=<fal-model-id>] [--limit=N] [--frame=frame-001] [--concurrency=N] [--overwrite] [--dry-run]');
   }
   const options = {
     slug,
     promptFile: null,
+    model: DEFAULT_MODEL_ID,
     limit: null,
     frame: null,
     concurrency: DEFAULT_CONCURRENCY,
@@ -34,6 +35,8 @@ function parseStylizeArgs(argv) {
   for (const arg of rest) {
     if (arg.startsWith('--prompt-file=')) {
       options.promptFile = arg.replace('--prompt-file=', '');
+    } else if (arg.startsWith('--model=')) {
+      options.model = arg.replace('--model=', '');
     } else if (arg.startsWith('--limit=')) {
       options.limit = parsePositiveInteger(arg.replace('--limit=', ''), 'limit');
     } else if (arg.startsWith('--frame=')) {
@@ -50,6 +53,9 @@ function parseStylizeArgs(argv) {
   }
   if (!options.promptFile) {
     throw new Error('--prompt-file is required.');
+  }
+  if (!options.model) {
+    throw new Error('--model must not be empty.');
   }
   if (options.limit && options.frame) {
     throw new Error('Use either --limit or --frame, not both.');
@@ -101,7 +107,7 @@ function extractImageUrl(response) {
   throw new Error('fal.ai response did not include an image URL.');
 }
 
-function createFalClient({apiKey, fetchImpl = fetch}) {
+function createFalClient({apiKey, model = DEFAULT_MODEL_ID, fetchImpl = fetch}) {
   if (!apiKey) {
     throw new Error('FAL_API_KEY is required.');
   }
@@ -112,16 +118,22 @@ function createFalClient({apiKey, fetchImpl = fetch}) {
       return fal.storage.upload(blob);
     },
     async editImage({imageUrl, prompt}) {
-      const result = await fal.subscribe(MODEL_ID, {
-        input: {
-          prompt,
-          image_urls: [imageUrl],
-          output_format: 'jpeg',
-          aspect_ratio: '16:9',
-          num_images: 1,
-          resolution: '1K',
-          limit_generations: true,
-        },
+      const input = model === 'fal-ai/reve/edit' ? {
+        prompt,
+        image_url: imageUrl,
+        output_format: 'jpeg',
+        num_images: 1,
+      } : {
+        prompt,
+        image_urls: [imageUrl],
+        output_format: 'jpeg',
+        aspect_ratio: '16:9',
+        num_images: 1,
+        resolution: '1K',
+        limit_generations: true,
+      };
+      const result = await fal.subscribe(model, {
+        input,
         logs: true,
       });
       return result.data;
@@ -163,15 +175,15 @@ function updateMetaAfterStylize(metaPath, slug) {
   });
 }
 
-function updateStylizedManifest({workspaceDir, slug, results}) {
+function updateStylizedManifest({workspaceDir, slug, model, results}) {
   const stylizedDir = path.join(workspaceDir, 'stylized-frames');
   fs.mkdirSync(stylizedDir, {recursive: true});
   const manifestPath = path.join(stylizedDir, MANIFEST_FILE);
-  const current = fs.existsSync(manifestPath) ? readJson(manifestPath) : {version: 1, generator: 'fal-ai/nano-banana-pro/edit', frames: {}};
+  const current = fs.existsSync(manifestPath) ? readJson(manifestPath) : {version: 1, generator: model, frames: {}};
   const next = {
     ...current,
     version: 1,
-    generator: 'fal-ai/nano-banana-pro/edit',
+    generator: model,
     updated_at: new Date().toISOString(),
     frames: {...current.frames},
   };
@@ -249,7 +261,7 @@ function runCli(argv = process.argv.slice(2)) {
     if (!apiKey) {
       throw new Error('FAL_API_KEY is required.');
     }
-    const client = createFalClient({apiKey});
+    const client = createFalClient({apiKey, model: options.model});
     const results = yield* Effect.promise(() => processWithConcurrency(toProcess, options.concurrency, async plan => {
       await Effect.runPromise(
         retryPromise(() => stylizeFrameWithClient({client, prompt, sourcePath: plan.sourcePath, outputPath: plan.outputPath}))
@@ -271,6 +283,7 @@ function runCli(argv = process.argv.slice(2)) {
     updateStylizedManifest({
       workspaceDir,
       slug: options.slug,
+      model: options.model,
       results: results
         .map((result, index) => ({result, plan: toProcess[index]}))
         .filter(item => item.result.ok)
