@@ -74,6 +74,34 @@ Operational mistakes and practical fixes discovered while running the full remix
 - `<slug>-lyrics.txt` = native script (canonical, preserved)
 - `<slug>-lyrics-romanized.txt` or `lyrics-timestamps-romanized.json` = alignment artifact
 
+## 9. Latest User Instruction Overrides Earlier Step Skips
+
+**What happened:** User said to skip Step 7, then later clarified that frames should be stylized. Treating the earlier skip as permanent caused the visual sequence to be under-handled.
+
+**Fix:** Reconcile each new user correction against earlier session state. If the user re-opens a previously skipped step, resume from existing artifacts instead of defending the stale skip.
+
+**State rule:** Record the resolved decision in `meta.json` or a workspace note so the retired instruction does not keep influencing later steps.
+
+## 10. Lossless User Audio Stays Canonical
+
+**What happened:** A user-provided WAV was converted to MP3 for pipeline compatibility. That derived MP3 risked becoming the selected remix by accident.
+
+**Fix:** Store the explicitly confirmed WAV/FLAC as `files.selected_remix`. MP3 copies are compatibility artifacts only, and every duration probe, alignment path, render asset, and metadata field must be checked for audio consistency.
+
+## 11. Copied Visual Assets Do Not Prove They Render
+
+**What happened:** `image-sequence.json` and `stylized-frames/` were copied into Remotion, but the active design used `center-stage`, which ignores the sequence. The video rendered without the intended frames.
+
+**Fix:** Pre-render review must include the active Remotion layout. For the current template, sequence visuals require `cover-art` or another sequence-aware layout. Render a still/preview to verify frames are visible before a full render.
+
+**Verification rule:** A successful still render is not enough. Inspect the still/preview and confirm it contains the intended frame imagery.
+
+## 12. Deleted Frames May Be User Curation
+
+**What happened:** Missing source frames were title cards intentionally deleted by the user. Regenerating them fought the user's curation.
+
+**Fix:** Ask whether missing curated assets should be excluded or regenerated if intent is unclear. When the user says continue without them, remove those frames from `selected-visual-frames.json` and regenerate `image-sequence.json` with the remaining frames.
+
 ## Checklist for Future Runs
 
 Before starting phase two:
@@ -88,5 +116,10 @@ Before rendering video:
 - [ ] Check `video-config.json` has correct duration
 - [ ] Confirm `lyrics-timestamps.json` is romanized version
 - [ ] Verify `image-sequence.json` and `stylized-frames/` are in `video/public/` when using sequence visuals
+- [ ] Verify active `design.json` layout renders visual sequence assets (`cover-art` in the current template)
+- [ ] Verify the selected Remotion composition and props reference the intended audio and lyrics assets
+- [ ] Render a still/preview and inspect it to confirm the intended frame sequence appears
+- [ ] Confirm user-confirmed WAV/FLAC remains canonical if MP3 compatibility copies exist
+- [ ] Exclude user-deleted title cards/bad frames from `selected-visual-frames.json` and `image-sequence.json`
 - [ ] Verify `cover-art.jpg` is in `video/public/cover-art.jpg` only when using cover-art fallback
 - [ ] Consider preview render for long songs (>5 min)
