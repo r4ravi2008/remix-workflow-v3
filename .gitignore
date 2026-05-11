@@ -7,6 +7,7 @@ __pycache__/
 *.pyc
 *.pyo
 .ruff_cache/
+.pytest_cache/
 
 # ML model weights (large binary files)
 *.ckpt
@@ -21,6 +22,9 @@ workspaces/
 
 # Workspace model caches
 .models/
+.cache/
+.ace-step/
+.ace-step-raw/
 
 # Node.js
 node_modules/
