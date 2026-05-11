@@ -32,7 +32,7 @@ Required outputs:
 - Suno style
 - `design.json`
 
-If Step 5 runs, also leave behind remix variants and any recorded Suno URLs.
+If Step 5 runs, also leave behind remix variants and any recorded Suno URLs or ACE-Step generation report.
 
 ## Implementation
 
@@ -48,7 +48,9 @@ If Step 5 runs, also leave behind remix variants and any recorded Suno URLs.
 5. Treat Step 5 as optional:
    - run it if the user wants remix generation now
    - skip it if the user only wants preparation artifacts or will supply remix audio later
-6. Stop at the checkpoint and summarize exactly what phase two can consume next.
+6. For ACE-Step Step 5, prefer `uv sync` in `tools/ace-step-generator` and the installed package. Use optional `ace-step-config.json` plus CLI overrides when the user wants generation controls; verify the dry-run report's `effective_request` before real generation.
+7. After ACE-Step or Suno creates two candidates, stop and ask the user to choose `v1` or `v2`. Do not continue into phase two until `meta.json.status.selected_remix` is set from that explicit choice.
+8. Stop at the checkpoint and summarize exactly what phase two can consume next.
 
 ## Common Mistakes
 
@@ -60,6 +62,8 @@ If Step 5 runs, also leave behind remix variants and any recorded Suno URLs.
 | Treating URL + genre as every required input | Gate each step and clarify missing generation choices before running it |
 | Sending visual prompts straight to generation | Present the prompt and wait for user confirmation first |
 | Following step-doc handoff text past the phase boundary | Obey this skill's checkpoint: Step 5 runs only when remix generation was explicitly requested |
+| Continuing after ACE-Step generation without a choice | Pause for explicit `v1` or `v2` and persist `status.selected_remix` first |
+| Losing ACE-Step config details | Check `<slug>-ace-step-generation.json.effective_request` before handoff |
 
 ## Red Flags
 
@@ -69,5 +73,7 @@ If Step 5 runs, also leave behind remix variants and any recorded Suno URLs.
 - "The user gave URL + genre, so I can infer the remaining generation choices"
 - "I can generate now and adjust the prompt later if needed"
 - "The next step file says proceed, so I should keep going without explicit Step 5 approval"
+- "ACE-Step finished, so phase two can start without user selection"
+- "The config file is enough; I do not need to inspect the effective request"
 
 If any of these appear, stop and restore the phase-one boundary: native-script preparation first, optional remix generation second, clean checkpoint last.

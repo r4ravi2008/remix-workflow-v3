@@ -25,6 +25,7 @@ Do not use this when the workspace still needs original download, native-lyrics 
 
 Auto-detect patterns:
 - remix audio: selected remix in `meta.json`, then likely `*remix*.mp3`, then likely non-original remix-like MP3s in the workspace
+- ACE-Step context: `meta.json.files.ace_step_generation`, then `<slug>-ace-step-generation.json`; inspect `effective_request` when generation settings matter
 - visual sequence: `meta.json.files.image_sequence`, then `image-sequence.json` plus `stylized-frames/`
 - cover art fallback: `meta.json.files.cover_art`, then `*cover-art*`
 - lyrics: native lyrics first, then Suno lyrics as fallback input for stripping/transliteration
@@ -35,41 +36,42 @@ Auto-detect patterns:
 1. Read `meta.json` first.
 2. Before each step, verify that step's required inputs exist, are readable, and still match the user's latest instructions. If user-provided files or newer obvious workspace candidates disagree with `meta.json`, pause long enough to reconcile them, prefer the latest explicit user intent, update state after verification, and do not render stale assets. Newer user corrections override earlier instructions from the same session; record the resolved decision in `meta.json` or a workspace note so the stale instruction is visibly retired.
 3. Resolve remix audio, visual sequence assets, cover art fallback, and lyrics in this order: user-provided, `meta.json`, workspace scan.
-4. Canonicalize audio ownership before alignment or rendering:
+4. If ACE-Step generated candidates exist but `meta.json.status.selected_remix` is missing, stop and ask the user to choose `v1` or `v2` before alignment or rendering.
+5. Canonicalize audio ownership before alignment or rendering:
    - if the user explicitly provides or later confirms a WAV/FLAC as the correct remix, keep that lossless file as canonical in `meta.json.files.selected_remix`
    - create MP3 copies only as compatibility artifacts for tools that require MP3, and label them as derived assets
    - ensure alignment audio, render audio, duration probes, `video-config.json`, and metadata all point to the intended canonical or declared derivative; never let WAV and MP3 coexist ambiguously
-5. Validate assets semantically, not just by filename or dimensions:
+6. Validate assets semantically, not just by filename or dimensions:
    - confirm selected remix audio is the intended final mix when multiple remix-like MP3/WAV files exist, especially if a newer explicit user-provided file appears after the stored selection
    - inspect visual sequence frames for internal letterboxing, black padding, watermarks, captions, or unwanted prompt text before rendering
    - if the user intentionally deleted bad/title-card frames, exclude those frames from `selected-visual-frames.json` and `image-sequence.json`; do not regenerate them unless explicitly asked
    - verify the active Remotion layout consumes the detected `image-sequence.json` and `stylized-frames/`; `cover-art` layout renders the visual sequence, while layouts such as `center-stage` may ignore it
    - verify Telugu-capable fonts are installed or bundled before headless render when native-script lyrics are displayed
-6. Run a pre-render manifest review before Step 8/9/11 renders: selected audio path, lyrics/timestamps path, visual manifest, copied public assets, active Remotion layout, selected Remotion composition, composition props such as `audioSrc`/`lyricsDataSrc`, font dependency/imports, and whether any source asset changed after the previous output timestamp.
-7. Render a cheap still or short preview after wiring visual assets and before committing to a full long render. Inspect the preview content and verify the expected frame imagery is visible, not merely that the still command succeeded or files were copied to `public/`.
-8. Keep native lyrics canonical.
-9. Before alignment:
+7. Run a pre-render manifest review before Step 8/9/11 renders: selected audio path, lyrics/timestamps path, visual manifest, copied public assets, active Remotion layout, selected Remotion composition, composition props such as `audioSrc`/`lyricsDataSrc`, font dependency/imports, and whether any source asset changed after the previous output timestamp.
+8. Render a cheap still or short preview after wiring visual assets and before committing to a full long render. Inspect the preview content and verify the expected frame imagery is visible, not merely that the still command succeeded or files were copied to `public/`.
+9. Keep native lyrics canonical.
+10. Before alignment:
    - strip Suno metatags such as `[Verse]`, `[Chorus]`, and similar section markers
    - detect lyric language from the canonical lyrics or workspace metadata
    - create a separate English transliterated alignment file
-10. Run Step 6 using the transliterated file by default.
-11. Verify alignment quality:
+11. Run Step 6 using the transliterated file by default.
+12. Verify alignment quality:
    - check for gaps >30 seconds between consecutive lines
    - if found, review whether the gap represents instrumental sections or alignment errors
-12. Use native-script syncing only if the user explicitly requests it.
-13. Treat Step 7 visual preparation as composable and optional for rendering:
+13. Use native-script syncing only if the user explicitly requests it.
+14. Treat Step 7 visual preparation as composable and optional for rendering:
    - extraction/selection/stylization can start from Step 0 using the original video and `visual_frame_count`
    - `image-sequence.json` manifest generation requires `status.selected_remix` and the selected remix audio after Step 5.5
    - reuse provided or detected `image-sequence.json` plus `stylized-frames/` when available
    - if the user first skips visual prep but later asks for stylized frames, resume Step 7 from the latest instruction rather than treating the earlier skip as permanent
    - fall back to detected `cover-art.jpg`, then the template placeholder, when visual sequence assets are absent or intentionally skipped
-14. Run Steps 8 and 9 and update `meta.json` after each completed step.
-15. Continue into short generation by default after Step 9:
+15. Run Steps 8 and 9 and update `meta.json` after each completed step.
+16. Continue into short generation by default after Step 9:
    - run Step 10 to select a short clip from the chosen remix and `lyrics-timestamps.json`
    - default to `shorts_clip_mode: auto` unless `meta.json` explicitly requests manual selection
    - if manual mode is enabled, present candidates and pause for the user's choice before Step 11
    - write `shorts-segments.json`, merge short config into `video-config.json`, and persist `status.shorts_clip_selected`
-16. Run Step 11 after Step 10 selection completes:
+17. Run Step 11 after Step 10 selection completes:
    - verify the existing Remotion project contains the short composition and required vertical layout components
    - render the 9:16 short and copy it to `<slug>-short.mp4`
    - update `meta.json` with `status.short_video_generated` and `files.short_video`
@@ -96,6 +98,7 @@ Auto-detect patterns:
 | Treating a successful still render as visual verification | Inspect the still/preview content and confirm expected frame imagery appears |
 | Updating behavior but not state after a user correction | Record superseded instructions and resolved decisions in workspace state |
 | Rendering over outputs after inputs changed | Compare output timestamps to selected audio, timestamps, visual assets, and template files; regenerate stale outputs |
+| Starting phase two from ACE-Step candidates without selection | Ask for `v1` or `v2`, then persist `status.selected_remix` before Step 6 |
 
 ## Failure Patterns
 
@@ -130,6 +133,7 @@ Auto-detect patterns:
 - "`center-stage` looks better, so it is fine even when the user asked for video frames"
 - "The video rendered once, so font/template changes do not need re-verification"
 - "A newer `final-v1.mp3` is only a workspace scan result, so stale `meta.json` still wins"
+- "Both ACE-Step candidates exist, so I can pick one automatically"
 
 If any of these appear, stop and re-apply the phase-two rules: native lyrics stay canonical, transliteration is an alignment artifact, metatags are stripped before sync, missing inputs are auto-detected when possible, Step 7 visual sequence prep stays composable with cover-art fallback, and the default autonomous path continues through Steps 10 and 11 unless `meta.json` or the user requires manual short selection.
 
