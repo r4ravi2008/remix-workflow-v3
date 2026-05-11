@@ -164,7 +164,7 @@ Style block: <workspaceRoot>/<slug>/<slug>-suno-style.txt
 Total lyrics length: <char count> characters
 Style block length: <char count>/1000 characters
 
-Proceeding to Step 5: Upload to Suno.ai...
+Proceeding to Step 5: Generate remix candidates...
 ```
 
 ---

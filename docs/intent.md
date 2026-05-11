@@ -2,7 +2,7 @@
 
 ## Overview
 
-This project automates the end-to-end process of remixing Telugu and other Indic language songs using AI tools. The user provides a YouTube video link and a target genre or style, and the system produces a remixed song on Suno.ai — all orchestrated through Chrome DevTools MCP.
+This project automates the end-to-end process of remixing Telugu and other Indic language songs using AI tools. The user provides a YouTube video link and a target genre or style, and the system produces remix candidates through Suno.ai via Chrome DevTools MCP or local ACE-Step generation.
 
 ## Target Use Case
 
@@ -31,7 +31,7 @@ YouTube URL + Genre/Style (user input)
 [Step 4] Generate Suno Meta-Tag Lyrics  →  saved to workspace/suno-lyrics.txt
         |
         v
-[Step 5] Generate & Download Remix from Suno.ai  →  2 variations downloaded
+[Step 5] Generate Remix Candidates  →  Suno or local ACE-Step creates 2 variations
         |
         v
 [Step 5.5] Select Remix Version  →  User chooses v1 or v2
@@ -78,8 +78,8 @@ workspaces/
     <slug>-lyrics.txt         # Raw Indic lyrics (Step 3)
     <slug>-suno-lyrics.txt    # Suno meta-tag formatted lyrics (Step 4)
     <slug>-suno-style.txt    # Style block for Suno (Step 4)
-    <slug>-remix-v1.mp3      # Suno remix variation 1 (Step 5)
-    <slug>-remix-v2.mp3      # Suno remix variation 2 (Step 5)
+    <slug>-remix-v1.mp3      # Remix variation 1 (Step 5)
+    <slug>-remix-v2.mp3      # Remix variation 2 (Step 5)
     <slug>-remix-v1-acapella.mp3  # Vocals from remix, for alignment (Step 6)
     lyrics-timestamps.json    # CTC-aligned word/line timestamps (Step 6)
     <slug>-cover-art.jpg     # Enhanced cover art via SeedVR2 (Step 7)
@@ -147,7 +147,7 @@ workspaces/
 
 ### Step 4: Generate Suno Meta-Tag Lyrics
 
-- Read `workspaces/<slug>/lyrics.txt`
+- Read `workspaces/<slug>/<slug>-lyrics.txt`
 - Convert the lyrics into Suno.ai's metatag format using the genre/style from `meta.json`
 - Structure includes metatags such as:
   - `[Verse]`, `[Chorus]`, `[Bridge]`, `[Outro]`, etc.
@@ -158,26 +158,24 @@ workspaces/
 
 ---
 
-### Step 5: Generate & Download Remix from Suno.ai
+### Step 5: Generate Remix Candidates
 
-- Navigate to https://suno.com using Chrome DevTools MCP
-- Upload `workspaces/<slug>/<slug>-acapella.mp3`
-- Paste the contents of `workspaces/<slug>/<slug>-suno-lyrics.txt` into the lyrics field
-- Fill in the Style field with the genre/style from `meta.json`
-- Submit and wait for Suno.ai to generate 2 remix variations
-- Download both variations as `<slug>-remix-v1.mp3` and `<slug>-remix-v2.mp3`
-- Save Suno URLs to `meta.json`
+- Use either Suno.ai through Chrome DevTools MCP or local ACE-Step generation
+- For Suno, upload `workspaces/<slug>/<slug>-acapella.mp3`, paste `workspaces/<slug>/<slug>-suno-lyrics.txt`, fill the Style field, and generate 2 variations
+- For ACE-Step, run the local generation tool against the same workspace inputs
+- Save both variations as `<slug>-remix-v1.mp3` and `<slug>-remix-v2.mp3`
+- Save backend metadata to `meta.json`
 
 ### Step 5.5: Select Remix Version
 
 - User listens to both variations (v1 and v2)
 - User selects which version to use for video generation
-- Selection stored in conversation context for Step 6
+- Selection stored in `meta.json.status.selected_remix` for Step 6
 
 ### Step 6: Extract Acapella & Align Lyrics
 
-- Extract vocals from the Suno remix using the Mel-Band RoFormer acapella extractor
-- Run CTC forced alignment against the Suno lyrics to produce word- and line-level timestamps
+- Extract vocals from the selected remix using the Mel-Band RoFormer acapella extractor
+- Run CTC forced alignment against the formatted lyrics to produce word- and line-level timestamps
 - Verify alignment quality via terminal karaoke preview (±500ms first line, <3s end drift)
 - Save `lyrics-timestamps.json` and update `meta.json` with `acapella_aligned: true`
 
@@ -223,10 +221,10 @@ workspaces/
 
 ## Key Constraints
 
-- All browser interactions must use Chrome DevTools MCP
+- All browser interactions must use Chrome DevTools MCP; local ACE-Step generation does not require browser automation
 - All files for a remix must be stored inside `workspaces/<slug>/` — nothing outside it
 - Lyrics must remain in native Indic script (Telugu, Hindi, Tamil, etc.) — no romanization
-- Only free-tier features of Suno.ai should be used unless otherwise specified
+- Only free-tier features of Suno.ai should be used when using the Suno backend unless otherwise specified
 - Each step is sequential; later steps depend on outputs from earlier ones
 - The workspace slug must be unique per remix session — append genre suffix to avoid collisions
 
@@ -254,6 +252,7 @@ Step-by-step execution prompts for each stage are maintained in `/prompts/`:
 - `step-3-find-lyrics.md` — Find and save Indic language lyrics to workspace
 - `step-4-generate-suno-lyrics.md` — Convert lyrics to Suno meta-tag format, save to workspace
 - `step-5-upload-to-suno.md` — Generate and download both remix variations from Suno.ai
+- `step-5-generate-with-ace-step.md` — Generate both remix variations with local ACE-Step
 - `step-6-extract-acapella-and-align.md` — Extract remix acapella and generate CTC-aligned lyrics timestamps
 - `step-7-fetch-cover-art.md` — Fetch song cover art via Google Images and enhance to 1080p with SeedVR2
 - `step-8-generate-video.md` — Scaffold Remotion project and render final music video

@@ -59,6 +59,8 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── <slug>-suno-style.txt
     ├── <slug>-remix-v1.mp3
     ├── <slug>-remix-v2.mp3
+    ├── ace-step-config.json (optional)
+    ├── <slug>-ace-step-generation.json (optional)
     ├── <slug>-remix-${SELECTED_REMIX}-acapella.mp3
     ├── lyrics-timestamps.json
     ├── <slug>-cover-art.jpg
@@ -86,6 +88,7 @@ Each cloned repo uses a local, untracked config file at the repo root:
   "language": "Telugu",
   "tempo": "medium",
   "song_length": "full",
+  "generation_backend": "suno",
   "shorts_clip_mode": "auto",
   "shorts_duration": 30,
   "visual_frame_count": 20,
@@ -98,6 +101,9 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "suno_lyrics": "<slug>/<slug>-suno-lyrics.txt",
     "suno_style": "<slug>/<slug>-suno-style.txt",
     "design": "<slug>/design.json",
+    "remix_v1": null,
+    "remix_v2": null,
+    "ace_step_generation": null,
     "remix_acapella": null,
     "lyrics_timestamps": null,
     "cover_art": null,
@@ -113,6 +119,7 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "acapella_extracted": false,
     "lyrics_saved": false,
     "suno_lyrics_generated": false,
+    "ace_step_generated": false,
     "remix_uploaded": false,
     "remix_v1_downloaded": false,
     "remix_v2_downloaded": false,
@@ -161,8 +168,10 @@ Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.
 | `lyrics` | Raw lyrics in native script |
 | `suno-lyrics` | Lyrics in Suno meta-tag format |
 | `suno-style` | Style block for Suno.ai |
-| `remix-v1` | First Suno variation |
-| `remix-v2` | Second Suno variation |
+| `remix-v1` | First remix variation |
+| `remix-v2` | Second remix variation |
+| `ace-step-config` | Optional local ACE-Step JSON generation config |
+| `ace-step-generation` | Local ACE-Step generation report |
 | `remix-${SELECTED_REMIX}-acapella` | Vocals extracted from the selected remix |
 | `cover-art` | AI-stylized cover image |
 | `video` | Final rendered music video |
@@ -190,3 +199,21 @@ This applies to:
 - Suno meta-tag lyrics
 - Video subtitle text
 - Any display text in the pipeline
+
+## ACE-Step Config And Reports
+
+When using local ACE-Step generation, optional JSON config belongs in the workspace, usually as `ace-step-config.json`. Apply generation settings in this order:
+
+1. workspace defaults from `meta.json`, `<slug>-lyrics.txt`, and `<slug>-suno-style.txt`
+2. JSON config passed with `--config`
+3. CLI flags
+
+The ACE-Step report `<slug>-ace-step-generation.json` must include `effective_request` so generation can be reproduced. Store report and output paths in `meta.json.files` as workspace-root-relative values.
+
+Lyrics modes:
+
+| Mode | Behavior |
+|---|---|
+| `clean-native` | Default; strips blank lines and `#` metadata headers while preserving native script |
+| `suno-stripped` | Also removes bracketed Suno section tags such as `[Verse]` and `[Chorus]` |
+| `raw` | Sends the lyrics file contents unchanged except outer whitespace |

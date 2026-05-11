@@ -54,7 +54,7 @@ tool when working on the relevant step.
 - **Slug format:** lowercase, hyphenated, derived from song title + genre (see `prompts/references/workspace-conventions.md`)
 - **File naming:** `<slug>-<purpose>.<ext>` (e.g., `meesaala-pilla-lofi-acapella.mp3`)
 - **meta.json:** Single source of truth per workspace — always update status after each step
-- **Browser automation:** Steps 3, 5, 7 use Chrome DevTools MCP (see `prompts/references/chrome-devtools-patterns.md`)
+- **Browser automation:** Steps 3 and 7 use Chrome DevTools MCP; Step 5 uses Chrome only for Suno, while ACE-Step runs locally (see `prompts/references/chrome-devtools-patterns.md`)
 - **Error recovery:** Common errors and fixes are in `prompts/references/error-handling-patterns.md`
 
 ## How to Run a Remix
@@ -62,7 +62,7 @@ tool when working on the relevant step.
 1. Read `prompts/README.md` for the pipeline overview
 2. Start at Step 0 — it collects user inputs and creates the workspace
 3. Follow each step sequentially; each file has prerequisites, instructions, and verification
-4. The user makes one decision at Step 5.5 (choosing between 2 Suno variations)
+4. The user makes one decision at Step 5.5 (choosing between two remix candidates)
 5. Steps 6–9 complete autonomously after user selection
 
 ## When You're Stuck

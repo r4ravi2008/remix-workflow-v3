@@ -13,7 +13,7 @@ YouTube URL + Genre (user input)
 [Step 2] Extract Acapella           → Mel-Band RoFormer vocal isolation
 [Step 3] Find Lyrics                → Browser automation finds native-script lyrics
 [Step 4] Generate Suno Lyrics       → Converts to Suno meta-tag format + generates design.json
-[Step 5] Upload to Suno             → Creates 2 remix variations on Suno.ai
+[Step 5] Generate Remix             → Suno upload or local ACE-Step creates 2 variations
 [Step 5.5] User Selection           → User picks preferred version
 [Step 6] Extract & Align Lyrics     → CTC forced alignment for word-level timestamps
 [Step 7] Fetch Cover Art            → Stylized with fal.ai (anime aesthetic, 2048x2048)
@@ -28,7 +28,7 @@ YouTube URL + Genre (user input)
 | **Orchestration** | Claude Code multi-step agent workflow |
 | **Audio Separation** | Mel-Band RoFormer (ONNX, SOTA source separation) |
 | **Lyrics Alignment** | CTC Forced Aligner (WAV2Vec2, MMS multilingual) |
-| **Music Generation** | Suno.ai (via Chrome DevTools MCP automation) |
+| **Music Generation** | Suno.ai via Chrome DevTools MCP, or local ACE-Step 1.5 direct Python generation |
 | **Image Stylization** | fal.ai Nano Banana Pro |
 | **Video Rendering** | Remotion (React-based programmatic video) |
 | **Audio Tools** | FFmpeg, yt-dlp, PyTorch, TorchAudio |
@@ -49,6 +49,7 @@ remix-gpt-coding-agent/
 │   ├── step-3-find-lyrics.md
 │   ├── step-4-generate-suno-lyrics.md
 │   ├── step-5-upload-to-suno.md
+│   ├── step-5-generate-with-ace-step.md
 │   ├── step-6-extract-acapella-and-align.md
 │   ├── step-7-fetch-cover-art.md
 │   ├── step-8-generate-video.md
@@ -58,6 +59,9 @@ remix-gpt-coding-agent/
 │   │   ├── extract.py                 # Mel-Band RoFormer extraction
 │   │   ├── align_lyrics.py            # CTC forced alignment
 │   │   ├── verify_lyrics.py           # Alignment quality checks
+│   │   └── pyproject.toml             # UV dependencies
+│   ├── ace-step-generator/            # Python: local ACE-Step remix generation
+│   │   ├── ace_step_generator/         # CLI and generation orchestration
 │   │   └── pyproject.toml             # UV dependencies
 │   └── video-generator/               # Remotion video template system
 │       ├── init-video.js              # Scaffolds video project from template
@@ -96,9 +100,39 @@ Searches for lyrics in native Indic script using browser automation (Chrome DevT
 
 Converts raw lyrics to Suno's meta-tag format with section tags (`[Verse]`, `[Chorus]`, `[Bridge]`, etc.). Also generates a `design.json` with visual configuration based on the song's genre and mood — colors, fonts, motifs, and animation personality.
 
-### Step 5: Upload to Suno
+### Step 5: Generate Remix
 
-Automates Suno.ai through Chrome DevTools MCP: uploads acapella, pastes formatted lyrics and style block, triggers generation, and downloads 2 remix variations. User picks the best one.
+Generates 2 remix variations using one of two backends: Suno.ai through Chrome DevTools MCP, or local ACE-Step 1.5 direct Python generation. Both backends write `<slug>-remix-v1.mp3` and `<slug>-remix-v2.mp3`, so downstream selection, alignment, and video generation remain unchanged. User picks the best one.
+
+ACE-Step can be configured through workspace defaults, a JSON config file, and CLI flags. Merge order is workspace defaults, then JSON config, then CLI flags. The generated `<slug>-ace-step-generation.json` records the full `effective_request` for reproducibility.
+
+Example ACE-Step config:
+
+```json
+{
+  "caption": "deep house, romantic nocturnal, Hindi, intimate male vocal, 122 bpm",
+  "audio_cover_strength": 0.6,
+  "bpm": 122,
+  "duration": 183,
+  "guidance_scale": 8.5,
+  "omega_scale": 10.0,
+  "lyrics_mode": "clean-native",
+  "manual_seeds": [111, 222],
+  "use_random_seed": false
+}
+```
+
+Example command:
+
+```bash
+cd tools/ace-step-generator
+uv run python -m ace_step_generator.generate \
+  --workspace-dir "/path/to/workspaces/song-deep-house" \
+  --slug "song-deep-house" \
+  --config "/path/to/workspaces/song-deep-house/ace-step-config.json" \
+  --caption "deep house, romantic nocturnal, Hindi, intimate male vocal, 122 bpm" \
+  --guidance-scale 8.5
+```
 
 ### Step 6: Extract & Align Lyrics
 
@@ -135,8 +169,8 @@ Each remix session produces a complete workspace:
 ├── <slug>-suno-lyrics.txt       # Suno-formatted lyrics
 ├── <slug>-suno-style.txt        # Style block for Suno
 ├── design.json                  # AI-generated visual design config
-├── <slug>-remix-<candidate-a>.mp3 # First generated Suno remix candidate
-├── <slug>-remix-<candidate-b>.mp3 # Second generated Suno remix candidate
+├── <slug>-remix-v1.mp3            # First generated remix candidate
+├── <slug>-remix-v2.mp3            # Second generated remix candidate
 ├── <slug>-remix-${SELECTED_REMIX}-acapella.mp3 # Vocals from the chosen remix (for alignment)
 ├── lyrics-timestamps.json       # CTC-aligned word/line timestamps
 ├── <slug>-cover-art.jpg         # Stylized album art
@@ -162,10 +196,11 @@ Each remix session produces a complete workspace:
    cp .remix-workspace-root.example.json .remix-workspace-root.json
    ```
 3. Edit `.remix-workspace-root.json` and set `workspaceRoot` to a real existing machine-local directory.
-4. Install Python dependencies for the acapella extractor:
-   ```bash
-   cd tools/acapella-extractor && uv sync
-   ```
+4. Install Python dependencies for the acapella extractor and ACE-Step generator:
+    ```bash
+    cd tools/acapella-extractor && uv sync
+    cd ../ace-step-generator && uv sync
+    ```
 5. Start a Claude Code session and provide:
    - A YouTube URL of the song to remix
    - A target genre/style (e.g., "Lo-Fi", "EDM", "Hip-Hop", "Carnatic Fusion")

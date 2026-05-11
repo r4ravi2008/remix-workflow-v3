@@ -20,7 +20,7 @@ YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics 
 | 2 | `step-2-extract-acapella.md` | Extract vocals using Mel-Band RoFormer | `<slug>-acapella.mp3` | Step 1 |
 | 3 | `step-3-find-lyrics.md` | Find native-script lyrics via browser automation | `<slug>-lyrics.txt` | Step 0 |
 | 4 | `step-4-generate-suno-lyrics.md` | Convert to Suno meta-tag format | `<slug>-suno-lyrics.txt`, `<slug>-suno-style.txt`, `design.json` | Steps 0, 3 |
-| 5 | `step-5-upload-to-suno.md` | Upload to Suno.ai, generate 2 variations | `<slug>-remix-v1.mp3`, `<slug>-remix-v2.mp3` | Steps 2, 4 |
+| 5 | `step-5-upload-to-suno.md` or `step-5-generate-with-ace-step.md` | Generate 2 remix variations via Suno upload or local ACE-Step | `<slug>-remix-v1.mp3`, `<slug>-remix-v2.mp3`, optional `<slug>-ace-step-generation.json` | Steps 2, 4 |
 | 5.5 | *User Decision* | User selects v1 or v2 | Selected remix file | Step 5 |
 | 6 | `step-6-extract-acapella-and-align.md` | Extract remix acapella + CTC forced alignment | `lyrics-timestamps.json` | Steps 5, 5.5 |
 | 7 | `step-7-fetch-cover-art.md` | Prepare original-video visual image sequence | `<slug>-original-video.mp4`, `selected-visual-frames.json`, `stylized-frames/`, `image-sequence.json` | Step 0 for extraction; Step 5.5 selected remix for manifest |
@@ -54,5 +54,6 @@ Common patterns and conventions are extracted into the `references/` directory:
 - **Sequential execution**: Steps must run 0→1→2→3→4→5→6→7→8→9→10→11
 - **Workspace state**: `meta.json` inside `<workspaceRoot>/<slug>/` is the single source of truth
 - **Native script only**: Never romanize or transliterate Indic lyrics
-- **Browser automation**: Steps 3, 5, 7 use Chrome DevTools MCP
+- **Generation backend**: Step 5 can use Suno (`step-5-upload-to-suno.md`) or local ACE-Step (`step-5-generate-with-ace-step.md`); both produce the same remix candidate filenames.
+- **Browser automation**: Steps 3 and 7 use Chrome DevTools MCP; Step 5 uses Chrome only for the Suno backend, while ACE-Step runs locally
 - **User checkpoint**: Only Step 5.5 requires human input
