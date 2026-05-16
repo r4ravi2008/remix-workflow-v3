@@ -142,34 +142,38 @@ pub fn run_live(config: LiveConfig) -> Result<(), String> {
 
     let mut tuner =
         crate::dsp::StreamingTuner::new(input_config.stream.sample_rate.0, config.tuner.clone());
+    let block_size = live_block_size(input_config.stream.sample_rate.0, &config.tuner);
     input_stream
         .play()
         .map_err(|err| format!("failed to start input stream: {err}"))?;
+    prime_output_queue(
+        &input_queue,
+        &output_queue,
+        &recorder,
+        &mut tuner,
+        &config,
+        input_config.stream.sample_rate.0,
+        block_size,
+    );
     output_stream
         .play()
         .map_err(|err| format!("failed to start output stream: {err}"))?;
     eprintln!("live vocal tuner running; press Ctrl-C to stop");
 
-    let block_size = live_block_size(input_config.stream.sample_rate.0, &config.tuner);
     while running.load(Ordering::SeqCst) {
         let block = pop_block(&input_queue, block_size);
         if block.is_empty() {
             thread::sleep(Duration::from_millis(2));
             continue;
         }
-
-        let wet = tuner.process_block(&block);
-        if let Ok(mut recorder) = recorder.lock() {
-            recorder.push_dry(&block);
-            recorder.push_wet(&wet);
-        }
-        let monitor = mix_monitor(config.monitor, &block, &wet);
-        if let Ok(mut queue) = output_queue.lock() {
-            queue.extend(monitor);
-            while queue.len() > config.sample_rate as usize {
-                queue.pop_front();
-            }
-        }
+        process_live_block(
+            &block,
+            &output_queue,
+            &recorder,
+            &mut tuner,
+            &config,
+            input_config.stream.sample_rate.0 as usize,
+        );
     }
 
     drop(input_stream);
@@ -321,6 +325,66 @@ fn live_block_size(sample_rate: u32, config: &TunerConfig) -> usize {
     let frame_len = ((sample_rate as f32 * config.frame_ms / 1000.0).round() as usize).max(512);
     let min_pitch_len = (sample_rate as f32 / config.min_frequency).ceil() as usize + 3;
     frame_len.max(min_pitch_len)
+}
+
+fn live_prefill_samples(sample_rate: u32) -> usize {
+    (sample_rate as usize / 4).max(1024)
+}
+
+fn prime_output_queue(
+    input_queue: &Arc<Mutex<VecDeque<f32>>>,
+    output_queue: &Arc<Mutex<VecDeque<f32>>>,
+    recorder: &Arc<Mutex<crate::recorder::LiveRecorder>>,
+    tuner: &mut crate::dsp::StreamingTuner,
+    config: &LiveConfig,
+    sample_rate: u32,
+    block_size: usize,
+) {
+    let target_samples = live_prefill_samples(sample_rate);
+    let deadline = std::time::Instant::now() + Duration::from_secs(2);
+
+    while output_queue
+        .lock()
+        .map(|queue| queue.len() < target_samples)
+        .unwrap_or(false)
+        && std::time::Instant::now() < deadline
+    {
+        let block = pop_block(input_queue, block_size);
+        if block.is_empty() {
+            thread::sleep(Duration::from_millis(2));
+            continue;
+        }
+        process_live_block(
+            &block,
+            output_queue,
+            recorder,
+            tuner,
+            config,
+            sample_rate as usize,
+        );
+    }
+}
+
+fn process_live_block(
+    block: &[f32],
+    output_queue: &Arc<Mutex<VecDeque<f32>>>,
+    recorder: &Arc<Mutex<crate::recorder::LiveRecorder>>,
+    tuner: &mut crate::dsp::StreamingTuner,
+    config: &LiveConfig,
+    max_output_samples: usize,
+) {
+    let wet = tuner.process_block(block);
+    if let Ok(mut recorder) = recorder.lock() {
+        recorder.push_dry(block);
+        recorder.push_wet(&wet);
+    }
+    let monitor = mix_monitor(config.monitor, block, &wet);
+    if let Ok(mut queue) = output_queue.lock() {
+        queue.extend(monitor);
+        while queue.len() > max_output_samples {
+            queue.pop_front();
+        }
+    }
 }
 
 fn is_supported_sample_format(format: SampleFormat) -> bool {
@@ -637,6 +701,12 @@ mod tests {
         let block_size = live_block_size(48_000, &config);
 
         assert!(block_size > (48_000.0 / config.min_frequency).ceil() as usize + 2);
+    }
+
+    #[test]
+    fn live_prefill_uses_quarter_second_latency_floor() {
+        assert_eq!(live_prefill_samples(48_000), 12_000);
+        assert_eq!(live_prefill_samples(2_000), 1024);
     }
 
     #[test]
