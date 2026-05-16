@@ -1,0 +1,12 @@
+[package]
+name = "vocal-tuner"
+version = "0.1.0"
+edition = "2021"
+description = "Offline key-aware vocal pitch correction for acapella recordings"
+license = "MIT"
+
+[dependencies]
+cpal = "0.15"
+ctrlc = "3"
+
+[dev-dependencies]

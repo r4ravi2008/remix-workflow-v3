@@ -63,6 +63,9 @@ remix-gpt-coding-agent/
 │   ├── ace-step-generator/            # Python: local ACE-Step remix generation
 │   │   ├── ace_step_generator/         # CLI and generation orchestration
 │   │   └── pyproject.toml             # UV dependencies
+│   ├── vocal-tuner/                   # Rust: key-aware acapella pitch correction
+│   │   ├── src/                        # CLI, WAV I/O, music theory, and DSP engine
+│   │   └── Cargo.toml                  # Rust crate configuration
 │   └── video-generator/               # Remotion video template system
 │       ├── init-video.js              # Scaffolds video project from template
 │       └── template/                  # Remotion project template
