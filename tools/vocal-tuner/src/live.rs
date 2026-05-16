@@ -269,17 +269,7 @@ fn resolve_device_config(
     let formats = describe_formats(&ranges);
     let requested_rate = cpal::SampleRate(config.sample_rate);
 
-    let resolved = ranges
-        .iter()
-        .find(|range| {
-            is_supported_sample_format(range.sample_format())
-                &&
-            range.channels() == config.channels
-                && range.min_sample_rate() <= requested_rate
-                && requested_rate <= range.max_sample_rate()
-        })
-        .cloned()
-        .map(|range| range.with_sample_rate(requested_rate))
+    let resolved = best_supported_config(&ranges, config.channels, requested_rate)
         .ok_or_else(|| {
             let kind = if input { "input" } else { "output" };
             format!(
@@ -299,6 +289,24 @@ fn resolve_device_config(
         sample_format,
         formats,
     })
+}
+
+fn best_supported_config(
+    ranges: &[cpal::SupportedStreamConfigRange],
+    channels: u16,
+    sample_rate: cpal::SampleRate,
+) -> Option<cpal::SupportedStreamConfig> {
+    ranges
+        .iter()
+        .filter(|range| {
+            is_supported_sample_format(range.sample_format())
+                && range.channels() == channels
+                && range.min_sample_rate() <= sample_rate
+                && sample_rate <= range.max_sample_rate()
+        })
+        .min_by_key(|range| sample_format_rank(range.sample_format()))
+        .cloned()
+        .map(|range| range.with_sample_rate(sample_rate))
 }
 
 fn wsl_audio_hint() -> &'static str {
@@ -327,6 +335,20 @@ fn is_supported_sample_format(format: SampleFormat) -> bool {
             | SampleFormat::U16
             | SampleFormat::U32
     )
+}
+
+fn sample_format_rank(format: SampleFormat) -> u8 {
+    match format {
+        SampleFormat::F32 => 0,
+        SampleFormat::I16 => 1,
+        SampleFormat::F64 => 2,
+        SampleFormat::I32 => 3,
+        SampleFormat::U16 => 4,
+        SampleFormat::U32 => 5,
+        SampleFormat::I8 => 6,
+        SampleFormat::U8 => 7,
+        _ => 8,
+    }
 }
 
 fn describe_formats(ranges: &[cpal::SupportedStreamConfigRange]) -> String {
@@ -615,6 +637,30 @@ mod tests {
         let block_size = live_block_size(48_000, &config);
 
         assert!(block_size > (48_000.0 / config.min_frequency).ceil() as usize + 2);
+    }
+
+    #[test]
+    fn best_supported_config_prefers_sixteen_bit_over_u8() {
+        let ranges = vec![
+            cpal::SupportedStreamConfigRange::new(
+                1,
+                cpal::SampleRate(48_000),
+                cpal::SampleRate(48_000),
+                cpal::SupportedBufferSize::Unknown,
+                SampleFormat::U8,
+            ),
+            cpal::SupportedStreamConfigRange::new(
+                1,
+                cpal::SampleRate(48_000),
+                cpal::SampleRate(48_000),
+                cpal::SupportedBufferSize::Unknown,
+                SampleFormat::I16,
+            ),
+        ];
+
+        let config = best_supported_config(&ranges, 1, cpal::SampleRate(48_000)).unwrap();
+
+        assert_eq!(config.sample_format(), SampleFormat::I16);
     }
 
     #[test]
