@@ -6,7 +6,7 @@ Generate two remix candidates locally with ACE-Step 1.5 instead of uploading the
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-acapella.mp3` exists from Step 2.
+- `${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3` exists from Step 2.5.
 - `${WORKSPACE_DIR}/${SLUG}-lyrics.txt` exists from Step 3.
 - `${WORKSPACE_DIR}/${SLUG}-suno-style.txt` exists from Step 4.
 - `${WORKSPACE_DIR}/meta.json` exists with `slug`, `genre`, `language`, `tempo`, and `song_length`.
@@ -46,9 +46,9 @@ Check that these files exist:
 - `${WORKSPACE_DIR}/meta.json`
 - `${WORKSPACE_DIR}/${SLUG}-lyrics.txt`
 - `${WORKSPACE_DIR}/${SLUG}-suno-style.txt`
-- `${WORKSPACE_DIR}/${SLUG}-acapella.mp3`
+- `${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3`
 
-If the acapella is missing but `${WORKSPACE_DIR}/${SLUG}-original.mp3` exists, ask before using `--allow-original-fallback` because the full mix may preserve less vocal control than the acapella.
+If the prepped acapella is missing but `${WORKSPACE_DIR}/${SLUG}-acapella.mp3` exists, stop and ask before passing `--allow-raw-acapella-fallback` because Step 2.5 should normally prepare the Step-5 input. If both acapella files are missing but `${WORKSPACE_DIR}/${SLUG}-original.mp3` exists, ask before using `--allow-original-fallback` because the full mix may preserve less vocal control than the acapella.
 
 ### 5.3 - Optional JSON Config
 
@@ -77,6 +77,8 @@ Example config at `${WORKSPACE_DIR}/ace-step-config.json`:
 ```
 
 Supported CLI overrides include `--caption`, `--lyrics-file`, `--lyrics-mode`, `--guidance-scale`, `--omega-scale`, `--seeds`, `--use-random-seed` / `--no-use-random-seed`, `--bpm`, and `--duration`.
+
+Use `--allow-raw-acapella-fallback` only after the user explicitly approves using `${SLUG}-acapella.mp3` because `${SLUG}-acapella-prepped.mp3` is missing.
 
 ### 5.4 - Dry Run The ACE-Step Tool
 

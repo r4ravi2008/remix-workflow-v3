@@ -6,7 +6,7 @@ Navigate to Suno.ai using Chrome DevTools MCP, upload the extracted acapella, pa
 
 ## Prerequisites
 
-- `${WORKSPACE_DIR}/${SLUG}-acapella.mp3` exists (from Step 2)
+- `${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3` exists (from Step 2.5)
 - `${WORKSPACE_DIR}/${SLUG}-suno-lyrics.txt` exists (from Step 4)
 - `${WORKSPACE_DIR}/${SLUG}-suno-style.txt` exists (from Step 4)
 - `${WORKSPACE_DIR}/meta.json` exists with `genre`, `slug`
@@ -32,10 +32,10 @@ Before using any filesystem path in this step:
 
 **See**: [Error Handling Patterns > Copyright Detection](references/error-handling-patterns.md#copyright-detection-step-5)
 
-If Suno detects copyrighted material, pitch-shift the acapella down by 2 semitones:
+If Suno detects copyrighted material, pitch-shift the prepped acapella down by 2 semitones:
 
 ```bash
-ffmpeg -i "${WORKSPACE_DIR}/${SLUG}-acapella.mp3" \
+ffmpeg -i "${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3" \
   -af "rubberband=pitch=0.8909" \
   -codec:a libmp3lame -b:a 192k \
   "${WORKSPACE_DIR}/${SLUG}-acapella-pitched.mp3" -y
@@ -46,6 +46,16 @@ Then upload the pitched version instead.
 ---
 
 ## Instructions
+
+### 5.0 — Verify Prepped Acapella Input
+
+Step 5 should upload:
+
+```text
+${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3
+```
+
+If the prepped acapella is missing but `${WORKSPACE_DIR}/${SLUG}-acapella.mp3` exists, stop and ask before using the raw acapella. The raw acapella should only be a user-approved fallback because Step 2.5 normally records BPM/key analysis and creates the deterministic Step-5 input.
 
 ### 5.1 — Create a New Suno Workspace
 
@@ -175,11 +185,11 @@ Element: button labeled "Sample" or "Upload"
 
 **Chrome DevTools MCP tool:** `upload_file`
 
-When the file chooser dialog appears, upload the acapella:
+When the file chooser dialog appears, upload the prepped acapella:
 
 ```
 Element: file input element that appears after clicking Upload
-File path: ${WORKSPACE_DIR}/${SLUG}-acapella.mp3
+File path: ${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3
 ```
 
 Take a snapshot after uploading to confirm the audio waveform or file name appears in the audio section:
@@ -211,7 +221,7 @@ Wait for the library to load and look for the recently uploaded acapella file. T
 
 ```
 Tool: wait_for
-Text to watch for: ["<slug>-acapella" or waveform preview or "Library"]
+Text to watch for: ["<slug>-acapella-prepped" or waveform preview or "Library"]
 Timeout: 30000 (30 seconds)
 ```
 
@@ -219,7 +229,7 @@ Once the file appears in the library, click on it to select it for remixing:
 
 ```
 Tool: click
-Element: library item containing "<slug>-acapella" or the uploaded acapella file
+Element: library item containing "<slug>-acapella-prepped" or the uploaded acapella file
 ```
 
 The selected acapella should now appear in the audio section of the creation interface.
@@ -318,7 +328,7 @@ Tool: take_snapshot
 ```
 
 Confirm:
-- Audio section shows the uploaded acapella file
+- Audio section shows the uploaded prepped acapella file
 - Lyrics text area contains the full Suno meta-tag formatted lyrics in Indic script
 - Style field contains the genre/style block
 - Song title is set to the workspace slug
