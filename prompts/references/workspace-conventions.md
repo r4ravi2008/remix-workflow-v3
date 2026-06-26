@@ -53,6 +53,8 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── meta.json
     ├── <slug>-original.mp3
     ├── <slug>-acapella.mp3
+    ├── <slug>-acapella-prepped.mp3
+    ├── <slug>-acapella-prep.json
     ├── <slug>-lyrics.txt
     ├── <slug>-original-video.mp4
     ├── <slug>-suno-lyrics.txt
@@ -97,6 +99,8 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "original_mp3": "<slug>/<slug>-original.mp3",
     "original_video": null,
     "acapella": "<slug>/<slug>-acapella.mp3",
+    "acapella_prepped": "<slug>/<slug>-acapella-prepped.mp3",
+    "acapella_prep_report": "<slug>/<slug>-acapella-prep.json",
     "lyrics": "<slug>/<slug>-lyrics.txt",
     "suno_lyrics": "<slug>/<slug>-suno-lyrics.txt",
     "suno_style": "<slug>/<slug>-suno-style.txt",
@@ -117,6 +121,7 @@ Each cloned repo uses a local, untracked config file at the repo root:
   "status": {
     "mp3_downloaded": false,
     "acapella_extracted": false,
+    "acapella_prepped": false,
     "lyrics_saved": false,
     "suno_lyrics_generated": false,
     "ace_step_generated": false,
@@ -140,6 +145,12 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "selected_remix": null,
     "lyrics_source_url": null,
     "cover_art_skipped": false
+  },
+  "audio_analysis": {
+    "detected_bpm": null,
+    "target_bpm": null,
+    "detected_key": null,
+    "pitch_semitones": 0
   },
   "created_at": "2026-03-27T12:00:00Z"
 }
@@ -165,6 +176,8 @@ Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.
 | `original` | Original audio from YouTube |
 | `original-video` | Original YouTube video used for visual frame extraction |
 | `acapella` | Extracted vocals (from original) |
+| `acapella-prepped` | Tempo/pitch-prepped vocals for Step 5 |
+| `acapella-prep` | BPM/key/pitch preparation report |
 | `lyrics` | Raw lyrics in native script |
 | `suno-lyrics` | Lyrics in Suno meta-tag format |
 | `suno-style` | Style block for Suno.ai |

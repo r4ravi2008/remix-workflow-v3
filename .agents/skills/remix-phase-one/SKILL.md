@@ -27,6 +27,7 @@ Required outputs:
 - `meta.json`
 - original MP3
 - original acapella
+- prepped acapella
 - native-script lyrics
 - Suno lyrics
 - Suno style
@@ -38,7 +39,7 @@ If Step 5 runs, also leave behind remix variants and any recorded Suno URLs or A
 
 1. Read project prompts and workspace conventions first.
 2. Before each step, verify that step's required inputs exist and still match the user's latest instructions. If a required input is missing or ambiguous, ask one focused clarification before executing that step.
-3. Run Steps 0-4 in order.
+3. Run Steps 0, 1, 2, 2.5, 3, and 4 in order.
 4. Confirm generation inputs before any paid or external generation call:
    - target genre and whether Step 5 remix generation should run now
    - lyric source when native lyrics were not explicitly provided
@@ -59,6 +60,7 @@ If Step 5 runs, also leave behind remix variants and any recorded Suno URLs or A
 | Forcing Step 5 every time | Stop after Step 4 unless remix generation is requested |
 | Using transliterated lyrics here | Keep native script canonical in phase one |
 | Handing off without `design.json` or Suno files | Verify all Step 4 outputs before stopping |
+| Skipping Step 2.5 | Always create the prepped acapella before Step 3/4 handoff |
 | Treating URL + genre as every required input | Gate each step and clarify missing generation choices before running it |
 | Sending visual prompts straight to generation | Present the prompt and wait for user confirmation first |
 | Following step-doc handoff text past the phase boundary | Obey this skill's checkpoint: Step 5 runs only when remix generation was explicitly requested |
@@ -69,6 +71,7 @@ If Step 5 runs, also leave behind remix variants and any recorded Suno URLs or A
 
 - "Phase one is incomplete unless Step 5 ran"
 - "I can skip Step 4 outputs because phase two will recover them later"
+- "The raw acapella is enough for Step 5, so I can skip the prepped acapella"
 - "I should transliterate now so alignment is easier later"
 - "The user gave URL + genre, so I can infer the remaining generation choices"
 - "I can generate now and adjust the prompt later if needed"

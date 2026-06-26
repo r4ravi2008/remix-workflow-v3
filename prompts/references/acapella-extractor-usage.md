@@ -82,6 +82,29 @@ ls -lh "${WORKSPACE_DIR}/${SLUG}-acapella.mp3"
 
 Expected: `Audio file with ID3... MPEG ADTS, layer III, v1, 192 kbps, 44.1 kHz, Stereo`
 
+## Acapella Preparation (Step 2.5)
+
+Analyze the original full mix for BPM/key metadata and render a standardized Step-5 input from the extracted acapella.
+
+### Command
+
+```bash
+PYTHONPATH=tools/acapella-extractor/src \
+uv run --python tools/acapella-extractor/.venv/bin/python \
+python -m acapella_extractor.prepare \
+--workspace-dir "${WORKSPACE_DIR}" \
+--slug "${SLUG}"
+```
+
+Use `--target-bpm <BPM>` only when the user explicitly requests a target tempo. Use `--pitch-semitones <N>` only when the user explicitly requests a pitch shift or a copyright fallback requires one.
+
+### Outputs
+
+- `${WORKSPACE_DIR}/${SLUG}-acapella-prepped.mp3`
+- `${WORKSPACE_DIR}/${SLUG}-acapella-prep.json`
+
+The report records detected BPM, target BPM, detected key candidates, tempo ratio, pitch semitones, pitch ratio, and the FFmpeg command summary. Step 5 should use the prepped acapella by default.
+
 ## Extraction from Remix (Step 6)
 
 Extract vocals from the Suno remix for CTC alignment.

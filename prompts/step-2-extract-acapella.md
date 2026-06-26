@@ -143,7 +143,7 @@ ls -lh "${WORKSPACE_DIR}/${SLUG}-acapella.mp3"
 🎵 Format: MP3, 192kbps, 44.1kHz
 🤖 Model: Mel-Band RoFormer (SOTA)
 
-Proceeding to Step 3: Find Lyrics...
+Proceeding to Step 2.5: Prepare Acapella BPM/Pitch...
 ```
 
 ---

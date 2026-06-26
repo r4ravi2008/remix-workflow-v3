@@ -106,6 +106,8 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
   "files": {
     "original_mp3": "<slug>/<slug>-original.mp3",
     "acapella": "<slug>/<slug>-acapella.mp3",
+    "acapella_prepped": "<slug>/<slug>-acapella-prepped.mp3",
+    "acapella_prep_report": "<slug>/<slug>-acapella-prep.json",
     "lyrics": "<slug>/<slug>-lyrics.txt",
     "suno_lyrics": "<slug>/<slug>-suno-lyrics.txt",
     "suno_style": "<slug>/<slug>-suno-style.txt",
@@ -120,6 +122,7 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
   "status": {
     "mp3_downloaded": false,
     "acapella_extracted": false,
+    "acapella_prepped": false,
     "lyrics_saved": false,
     "suno_lyrics_generated": false,
     "remix_uploaded": false,
@@ -138,6 +141,12 @@ Write a `meta.json` file inside the workspace with all collected and derived inf
     "selected_remix": null,
     "lyrics_source_url": null,
     "cover_art_skipped": false
+  },
+  "audio_analysis": {
+    "detected_bpm": null,
+    "target_bpm": null,
+    "detected_key": null,
+    "pitch_semitones": 0
   },
   "created_at": "<ISO timestamp>"
 }
