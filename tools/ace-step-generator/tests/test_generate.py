@@ -14,7 +14,9 @@ def test_pyproject_installs_ace_step_as_required_dependency():
 
     assert pyproject["project"]["requires-python"] == ">=3.12,<3.13"
     assert any(
-        dependency.startswith("ace-step @ git+https://github.com/ACE-Step/ACE-Step-1.5.git")
+        dependency.startswith(
+            "ace-step @ git+https://github.com/ACE-Step/ACE-Step-1.5.git"
+        )
         for dependency in pyproject["project"]["dependencies"]
     )
 
@@ -43,10 +45,11 @@ def make_workspace(tmp_path: Path, slug: str = "bella-bella-lofi") -> Path:
         encoding="utf-8",
     )
     (workspace / f"{slug}-acapella.mp3").write_bytes(b"fake audio")
+    (workspace / f"{slug}-acapella-prepped.mp3").write_bytes(b"prepped audio")
     return workspace
 
 
-def test_load_workspace_inputs_prefers_acapella(tmp_path):
+def test_load_workspace_inputs_prefers_prepped_acapella(tmp_path):
     workspace = make_workspace(tmp_path)
 
     inputs = generate.load_workspace_inputs(workspace, "bella-bella-lofi")
@@ -55,11 +58,28 @@ def test_load_workspace_inputs_prefers_acapella(tmp_path):
     assert inputs.language == "Telugu"
     assert inputs.caption == "lo-fi hip hop, nostalgic, Telugu, soft male vocal, 75 bpm"
     assert inputs.lyrics == "పల్లవి\nచరణం"
+    assert inputs.source_audio == workspace / "bella-bella-lofi-acapella-prepped.mp3"
+
+
+def test_load_workspace_inputs_requires_approval_for_raw_acapella_fallback(tmp_path):
+    workspace = make_workspace(tmp_path)
+    (workspace / "bella-bella-lofi-acapella-prepped.mp3").unlink()
+
+    with pytest.raises(generate.GenerationError, match="Prepped acapella is missing"):
+        generate.load_workspace_inputs(workspace, "bella-bella-lofi")
+
+    inputs = generate.load_workspace_inputs(
+        workspace,
+        "bella-bella-lofi",
+        allow_raw_acapella_fallback=True,
+    )
+
     assert inputs.source_audio == workspace / "bella-bella-lofi-acapella.mp3"
 
 
 def test_load_workspace_inputs_requires_original_approval_for_fallback(tmp_path):
     workspace = make_workspace(tmp_path)
+    (workspace / "bella-bella-lofi-acapella-prepped.mp3").unlink()
     (workspace / "bella-bella-lofi-acapella.mp3").unlink()
     (workspace / "bella-bella-lofi-original.mp3").write_bytes(b"full mix")
 
@@ -109,8 +129,13 @@ def test_build_generation_request_defaults_to_cover(tmp_path):
     )
 
     assert request["task_type"] == "cover"
-    assert request["src_audio"] == str(workspace / "bella-bella-lofi-acapella.mp3")
-    assert request["caption"] == "lo-fi hip hop, nostalgic, Telugu, soft male vocal, 75 bpm"
+    assert request["src_audio"] == str(
+        workspace / "bella-bella-lofi-acapella-prepped.mp3"
+    )
+    assert (
+        request["caption"]
+        == "lo-fi hip hop, nostalgic, Telugu, soft male vocal, 75 bpm"
+    )
     assert request["lyrics"] == "పల్లవి\nచరణం"
     assert request["vocal_language"] == "te"
     assert request["batch_size"] == 2
@@ -158,7 +183,10 @@ def test_build_generation_request_applies_config_and_cli_overrides(tmp_path):
 def test_write_generation_report_uses_workspace_relative_paths(tmp_path):
     workspace = make_workspace(tmp_path)
     inputs = generate.load_workspace_inputs(workspace, "bella-bella-lofi")
-    outputs = [workspace / "bella-bella-lofi-remix-v1.mp3", workspace / "bella-bella-lofi-remix-v2.mp3"]
+    outputs = [
+        workspace / "bella-bella-lofi-remix-v1.mp3",
+        workspace / "bella-bella-lofi-remix-v2.mp3",
+    ]
     for output in outputs:
         output.write_bytes(b"audio")
 
@@ -177,7 +205,10 @@ def test_write_generation_report_uses_workspace_relative_paths(tmp_path):
         "bella-bella-lofi/bella-bella-lofi-remix-v1.mp3",
         "bella-bella-lofi/bella-bella-lofi-remix-v2.mp3",
     ]
-    assert report["source_audio"] == "bella-bella-lofi/bella-bella-lofi-acapella.mp3"
+    assert (
+        report["source_audio"]
+        == "bella-bella-lofi/bella-bella-lofi-acapella-prepped.mp3"
+    )
     assert report["seeds"] == [123, 456]
     assert report["effective_request"]["task_type"] == "cover"
 
@@ -199,15 +230,21 @@ def test_load_generation_config_reads_json(tmp_path):
 def test_dry_run_writes_report_without_audio_outputs(tmp_path):
     workspace = make_workspace(tmp_path)
 
-    exit_code = generate.main([
-        "--workspace-dir",
-        str(workspace),
-        "--slug",
-        "bella-bella-lofi",
-        "--dry-run",
-    ])
+    exit_code = generate.main(
+        [
+            "--workspace-dir",
+            str(workspace),
+            "--slug",
+            "bella-bella-lofi",
+            "--dry-run",
+        ]
+    )
 
-    report = json.loads((workspace / "bella-bella-lofi-ace-step-generation.json").read_text(encoding="utf-8"))
+    report = json.loads(
+        (workspace / "bella-bella-lofi-ace-step-generation.json").read_text(
+            encoding="utf-8"
+        )
+    )
     assert exit_code == 0
     assert report["dry_run"] is True
     assert report["outputs"] == []
@@ -217,25 +254,33 @@ def test_main_merges_config_and_cli_flags_into_dry_run_report(tmp_path):
     workspace = make_workspace(tmp_path)
     config_path = workspace / "ace-step-config.json"
     config_path.write_text(
-        json.dumps({"caption": "config caption", "audio_cover_strength": 0.6, "bpm": 122}),
+        json.dumps(
+            {"caption": "config caption", "audio_cover_strength": 0.6, "bpm": 122}
+        ),
         encoding="utf-8",
     )
 
-    exit_code = generate.main([
-        "--workspace-dir",
-        str(workspace),
-        "--slug",
-        "bella-bella-lofi",
-        "--config",
-        str(config_path),
-        "--caption",
-        "cli caption",
-        "--guidance-scale",
-        "8.5",
-        "--dry-run",
-    ])
+    exit_code = generate.main(
+        [
+            "--workspace-dir",
+            str(workspace),
+            "--slug",
+            "bella-bella-lofi",
+            "--config",
+            str(config_path),
+            "--caption",
+            "cli caption",
+            "--guidance-scale",
+            "8.5",
+            "--dry-run",
+        ]
+    )
 
-    report = json.loads((workspace / "bella-bella-lofi-ace-step-generation.json").read_text(encoding="utf-8"))
+    report = json.loads(
+        (workspace / "bella-bella-lofi-ace-step-generation.json").read_text(
+            encoding="utf-8"
+        )
+    )
     assert exit_code == 0
     assert report["effective_request"]["caption"] == "cli caption"
     assert report["effective_request"]["audio_cover_strength"] == 0.6
@@ -246,15 +291,17 @@ def test_main_merges_config_and_cli_flags_into_dry_run_report(tmp_path):
 def test_main_reports_generation_errors_without_traceback(tmp_path, capsys):
     workspace = make_workspace(tmp_path)
 
-    exit_code = generate.main([
-        "--workspace-dir",
-        str(workspace),
-        "--slug",
-        "bella-bella-lofi",
-        "--batch-size",
-        "0",
-        "--dry-run",
-    ])
+    exit_code = generate.main(
+        [
+            "--workspace-dir",
+            str(workspace),
+            "--slug",
+            "bella-bella-lofi",
+            "--batch-size",
+            "0",
+            "--dry-run",
+        ]
+    )
 
     captured = capsys.readouterr()
     assert exit_code == 1
@@ -299,7 +346,9 @@ def test_normalize_outputs_requires_two_generated_files(tmp_path):
         )
 
 
-def test_transcode_to_mp3_converts_ffmpeg_failures_to_generation_error(tmp_path, monkeypatch):
+def test_transcode_to_mp3_converts_ffmpeg_failures_to_generation_error(
+    tmp_path, monkeypatch
+):
     source = tmp_path / "raw.flac"
     destination = tmp_path / "normalized.mp3"
     source.write_bytes(b"flac audio")
@@ -340,7 +389,10 @@ def test_run_generation_uses_injected_backend(tmp_path):
         backend=fake_backend,
     )
 
-    assert [path.name for path in result.paths] == ["candidate-a.mp3", "candidate-b.mp3"]
+    assert [path.name for path in result.paths] == [
+        "candidate-a.mp3",
+        "candidate-b.mp3",
+    ]
     assert result.seeds == [11, 22]
 
 
@@ -378,7 +430,9 @@ def test_run_generation_keeps_duplicate_basenames_distinct(tmp_path):
     assert result.paths[1].read_bytes() == b"two"
 
 
-def test_default_ace_step_backend_rejects_missing_source_root_without_sys_path_change(tmp_path):
+def test_default_ace_step_backend_rejects_missing_source_root_without_sys_path_change(
+    tmp_path,
+):
     workspace = make_workspace(tmp_path)
     inputs = generate.load_workspace_inputs(workspace, "bella-bella-lofi")
     request = generate.build_generation_request(
@@ -448,7 +502,7 @@ class GenerationParams:
         assert kwargs['caption'] == 'lo-fi hip hop, nostalgic, Telugu, soft male vocal, 75 bpm'
         assert kwargs['lyrics'] == 'పల్లవి\\nచరణం'
         assert kwargs['vocal_language'] == 'te'
-        assert kwargs['src_audio'].endswith('bella-bella-lofi-acapella.mp3')
+        assert kwargs['src_audio'].endswith('bella-bella-lofi-acapella-prepped.mp3')
         assert kwargs['audio_cover_strength'] == 0.7
         assert kwargs['thinking'] is False
 
@@ -486,7 +540,10 @@ def generate_music(dit_handler, llm_handler, params, config, save_dir):
         output_dir=tmp_path / "outputs",
     )
 
-    assert [path.name for path in result.paths] == ["candidate-a.mp3", "candidate-b.mp3"]
+    assert [path.name for path in result.paths] == [
+        "candidate-a.mp3",
+        "candidate-b.mp3",
+    ]
     assert result.seeds == [101, 202]
 
 

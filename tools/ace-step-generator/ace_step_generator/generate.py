@@ -68,6 +68,7 @@ def load_workspace_inputs(
     workspace_dir: Path,
     slug: str,
     *,
+    allow_raw_acapella_fallback: bool = False,
     allow_original_fallback: bool = False,
 ) -> WorkspaceInputs:
     workspace_dir = workspace_dir.resolve()
@@ -80,16 +81,26 @@ def load_workspace_inputs(
 
     meta_slug = meta.get("slug")
     if meta_slug != slug:
-        raise GenerationError(f"meta.json slug {meta_slug!r} does not match --slug {slug!r}")
+        raise GenerationError(
+            f"meta.json slug {meta_slug!r} does not match --slug {slug!r}"
+        )
     if workspace_dir.name != slug:
         raise GenerationError(
             f"Workspace directory name {workspace_dir.name!r} does not match --slug {slug!r}"
         )
 
+    prepped_acapella = workspace_dir / f"{slug}-acapella-prepped.mp3"
     acapella = workspace_dir / f"{slug}-acapella.mp3"
     original = workspace_dir / f"{slug}-original.mp3"
-    if acapella.exists():
+    if prepped_acapella.exists():
+        source_audio = prepped_acapella
+    elif acapella.exists() and allow_raw_acapella_fallback:
         source_audio = acapella
+    elif acapella.exists():
+        raise GenerationError(
+            "Prepped acapella is missing. Re-run Step 2.5 or pass "
+            "--allow-raw-acapella-fallback to use the raw extracted acapella."
+        )
     elif original.exists() and allow_original_fallback:
         source_audio = original
     elif original.exists():
@@ -98,7 +109,7 @@ def load_workspace_inputs(
             "to use the full original mix."
         )
     else:
-        raise GenerationError(f"Missing required file: {acapella}")
+        raise GenerationError(f"Missing required file: {prepped_acapella}")
 
     caption = strip_style_brackets(style_file.read_text(encoding="utf-8"))
     lyrics = lyrics_file.read_text(encoding="utf-8").strip()
@@ -139,7 +150,11 @@ def clean_lyrics(lyrics: str, mode: str) -> str:
         stripped = line.strip()
         if not stripped or stripped.startswith("#"):
             continue
-        if mode == "suno-stripped" and stripped.startswith("[") and stripped.endswith("]"):
+        if (
+            mode == "suno-stripped"
+            and stripped.startswith("[")
+            and stripped.endswith("]")
+        ):
             continue
         lines.append(stripped)
     return "\n".join(lines)
@@ -229,14 +244,18 @@ def write_generation_report(
         "lyrics_file": workspace_relative(inputs.lyrics_file, inputs.workspace_dir),
         "batch_size": request["batch_size"],
         "audio_cover_strength": request.get("audio_cover_strength"),
-        "outputs": [workspace_relative(output, inputs.workspace_dir) for output in outputs],
+        "outputs": [
+            workspace_relative(output, inputs.workspace_dir) for output in outputs
+        ],
         "seeds": seeds or [],
         "effective_request": request,
         "dry_run": dry_run,
         "created_at": datetime.now(UTC).isoformat(),
     }
     report_path = inputs.workspace_dir / f"{inputs.slug}-ace-step-generation.json"
-    report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8")
+    report_path.write_text(
+        json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     return report_path
 
 
@@ -257,7 +276,9 @@ def transcode_to_mp3(source: Path, destination: Path) -> None:
             check=True,
         )
     except (FileNotFoundError, subprocess.CalledProcessError) as error:
-        raise GenerationError(f"ffmpeg failed while transcoding {source} to MP3") from error
+        raise GenerationError(
+            f"ffmpeg failed while transcoding {source} to MP3"
+        ) from error
 
 
 def normalize_outputs(
@@ -339,18 +360,26 @@ def default_ace_step_backend(
 
         config_kwargs = {
             "batch_size": request["batch_size"],
-            "audio_format": "wav" if request["audio_format"] == "mp3" else request["audio_format"],
+            "audio_format": (
+                "wav" if request["audio_format"] == "mp3" else request["audio_format"]
+            ),
         }
         for key in CONFIG_REQUEST_KEYS:
             if key in request:
                 config_kwargs[key] = request[key]
         config = GenerationConfig(**config_kwargs)
-        result = generate_music(dit_handler, llm_handler, params, config, save_dir=str(output_dir))
+        result = generate_music(
+            dit_handler, llm_handler, params, config, save_dir=str(output_dir)
+        )
         if not result.success:
-            raise GenerationError(result.error or result.status_message or "ACE-Step generation failed")
+            raise GenerationError(
+                result.error or result.status_message or "ACE-Step generation failed"
+            )
 
         paths = [Path(audio["path"]) for audio in result.audios]
-        seeds = [int(audio.get("params", {}).get("seed", -1)) for audio in result.audios]
+        seeds = [
+            int(audio.get("params", {}).get("seed", -1)) for audio in result.audios
+        ]
         return GenerationResult(paths=paths, seeds=seeds)
     except ImportError as error:
         raise GenerationError(
@@ -396,7 +425,9 @@ def run_generation(
 
 
 def build_parser() -> argparse.ArgumentParser:
-    parser = argparse.ArgumentParser(description="Generate remix candidates with ACE-Step")
+    parser = argparse.ArgumentParser(
+        description="Generate remix candidates with ACE-Step"
+    )
     parser.add_argument("--workspace-dir", required=True, type=Path)
     parser.add_argument("--slug", required=True)
     parser.add_argument("--ace-step-root", type=Path, default=None)
@@ -409,13 +440,18 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--config", type=Path, default=None)
     parser.add_argument("--caption", default=None)
     parser.add_argument("--lyrics-file", type=Path, default=None)
-    parser.add_argument("--lyrics-mode", choices=["clean-native", "raw", "suno-stripped"], default=None)
+    parser.add_argument(
+        "--lyrics-mode", choices=["clean-native", "raw", "suno-stripped"], default=None
+    )
     parser.add_argument("--guidance-scale", type=float, default=None)
     parser.add_argument("--omega-scale", type=float, default=None)
     parser.add_argument("--seeds", default=None, help="Comma-separated manual seeds")
-    parser.add_argument("--use-random-seed", action=argparse.BooleanOptionalAction, default=None)
+    parser.add_argument(
+        "--use-random-seed", action=argparse.BooleanOptionalAction, default=None
+    )
     parser.add_argument("--bpm", type=int, default=None)
     parser.add_argument("--duration", type=float, default=None)
+    parser.add_argument("--allow-raw-acapella-fallback", action="store_true")
     parser.add_argument("--allow-original-fallback", action="store_true")
     parser.add_argument("--dry-run", action="store_true")
     return parser
@@ -427,6 +463,7 @@ def main(argv: list[str] | None = None) -> int:
         inputs = load_workspace_inputs(
             args.workspace_dir,
             args.slug,
+            allow_raw_acapella_fallback=args.allow_raw_acapella_fallback,
             allow_original_fallback=args.allow_original_fallback,
         )
         request = build_generation_request(
@@ -463,7 +500,9 @@ def main(argv: list[str] | None = None) -> int:
             )
             return 0
 
-        result = run_generation(inputs, request=request, ace_step_root=args.ace_step_root)
+        result = run_generation(
+            inputs, request=request, ace_step_root=args.ace_step_root
+        )
         outputs = normalize_outputs(
             result.paths,
             workspace_dir=inputs.workspace_dir,
