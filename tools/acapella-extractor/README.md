@@ -53,6 +53,31 @@ PYTHONPATH=tools/acapella-extractor/src \
 acapella-extract input.mp3 --output-dir ./output --model mel_band_roformer_kim_ft_unwa.ckpt
 ```
 
+### Prepare Acapella for Remix Generation
+
+After extracting vocals, prepare the Step-5 upload/cover input by detecting BPM/key from the original full mix and rendering a deterministic prepped acapella:
+
+```bash
+PYTHONPATH=tools/acapella-extractor/src \
+  uv run --python tools/acapella-extractor/.venv/bin/python \
+  python -m acapella_extractor.prepare \
+  --workspace-dir /path/to/workspace/slug \
+  --slug slug
+```
+
+Optional controls:
+
+```bash
+--target-bpm 92
+--pitch-semitones -2
+```
+
+Outputs:
+- `<slug>-acapella-prepped.mp3`
+- `<slug>-acapella-prep.json`
+
+If no target BPM is supplied, the detected original BPM is used and pitch is preserved.
+
 ### Python API
 
 ```python
@@ -88,6 +113,8 @@ extract_vocals(
 
 The tool produces:
 - `acapella.mp3` - Clean vocals-only track (192kbps, 44.1kHz, Stereo)
+- `<slug>-acapella-prepped.mp3` - Step-5-ready tempo/pitch-prepped vocal reference
+- `<slug>-acapella-prep.json` - BPM/key/pitch preparation report
 - Temporary model files cached in `.models/` directory
 
 ## Project Structure
@@ -127,6 +154,8 @@ This tool is Step 2 in the remix pipeline:
 Step 1: Download MP3 from YouTube
     ↓
 Step 2: Extract Acapella (THIS TOOL) → acapella.mp3
+    ↓
+Step 2.5: Prepare Acapella BPM/Pitch → <slug>-acapella-prepped.mp3
     ↓
 Step 3: Find Lyrics
     ↓

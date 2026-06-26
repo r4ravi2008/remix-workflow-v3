@@ -8,6 +8,7 @@ dependencies = [
     "audio-separator>=0.44.1",
     "ctc-forced-aligner>=0.2",
     "demucs>=4.0.1",
+    "librosa>=0.11.0",
     "onnxruntime>=1.24.4",
     "torch>=2.11.0",
     "torchaudio>=2.11.0",
@@ -16,6 +17,7 @@ dependencies = [
 
 [project.scripts]
 acapella-extract = "acapella_extractor.extract:main"
+acapella-prepare = "acapella_extractor.prepare:main"
 
 [project.optional-dependencies]
 dev = [
