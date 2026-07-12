@@ -5,9 +5,9 @@ const {fal} = require('@fal-ai/client');
 
 const {resolveWorkspaceDir} = require('../shared/workspace-root');
 
-const DEFAULT_MODEL_ID = 'fal-ai/nano-banana-pro/edit';
+const DEFAULT_MODEL_ID = 'fal-ai/flux-kontext-lora';
 const DEFAULT_CONCURRENCY = 2;
-const OUTPUT_EXTENSION = '.jpg';
+const OUTPUT_EXTENSION = '.png';
 const MANIFEST_FILE = 'fal-stylized-frames.json';
 
 function parsePositiveInteger(value, name) {
@@ -107,6 +107,13 @@ function extractImageUrl(response) {
   throw new Error('fal.ai response did not include an image URL.');
 }
 
+function buildEditInput({imageUrl, prompt}) {
+  return {
+    prompt,
+    image_url: imageUrl,
+  };
+}
+
 function createFalClient({apiKey, model = DEFAULT_MODEL_ID, fetchImpl = fetch}) {
   if (!apiKey) {
     throw new Error('FAL_API_KEY is required.');
@@ -118,20 +125,7 @@ function createFalClient({apiKey, model = DEFAULT_MODEL_ID, fetchImpl = fetch}) 
       return fal.storage.upload(blob);
     },
     async editImage({imageUrl, prompt}) {
-      const input = model === 'fal-ai/reve/edit' ? {
-        prompt,
-        image_url: imageUrl,
-        output_format: 'jpeg',
-        num_images: 1,
-      } : {
-        prompt,
-        image_urls: [imageUrl],
-        output_format: 'jpeg',
-        aspect_ratio: '16:9',
-        num_images: 1,
-        resolution: '1K',
-        limit_generations: true,
-      };
+      const input = buildEditInput({imageUrl, prompt});
       const result = await fal.subscribe(model, {
         input,
         logs: true,
@@ -311,6 +305,7 @@ module.exports = {
   createFalClient,
   stylizeFrameWithClient,
   extractImageUrl,
+  buildEditInput,
   runCli,
   updateStylizedManifest,
 };

@@ -7,8 +7,10 @@ const path = require('node:path');
 const {
   parseStylizeArgs,
   selectFramesForRun,
+  resolveOutputPath,
   planOutputs,
   stylizeFrameWithClient,
+  buildEditInput,
 } = require('./stylize-fal.ts');
 
 const frames = [
@@ -21,6 +23,24 @@ test('parseStylizeArgs parses slug prompt and limit', () => {
   assert.equal(result.slug, 'song-slug');
   assert.equal(result.promptFile, 'prompt.txt');
   assert.equal(result.limit, 1);
+  assert.equal(result.model, 'fal-ai/flux-kontext-lora');
+});
+
+test('buildEditInput uses FLUX Kontext image edit fields', () => {
+  assert.deepEqual(
+    buildEditInput?.({imageUrl: 'https://example.test/input.jpg', prompt: 'cartoonize'}),
+    {
+      prompt: 'cartoonize',
+      image_url: 'https://example.test/input.jpg',
+    }
+  );
+});
+
+test('resolveOutputPath defaults FLUX Kontext outputs to PNG', () => {
+  assert.equal(
+    resolveOutputPath({workspaceDir: '/tmp/workspace', slug: 'song-slug', frameId: 'frame-001'}),
+    '/tmp/workspace/stylized-frames/song-slug-frame-001.png'
+  );
 });
 
 test('selectFramesForRun supports limit', () => {
@@ -34,13 +54,13 @@ test('selectFramesForRun supports specific frame', () => {
 test('planOutputs skips existing outputs unless overwrite is true', () => {
   const workspaceDir = fs.mkdtempSync(path.join(os.tmpdir(), 'stylize-fal-'));
   fs.mkdirSync(path.join(workspaceDir, 'stylized-frames'), {recursive: true});
-  fs.writeFileSync(path.join(workspaceDir, 'stylized-frames', 'song-slug-frame-001.jpg'), 'exists');
+  fs.writeFileSync(path.join(workspaceDir, 'stylized-frames', 'song-slug-frame-001.png'), 'exists');
   const skipped = planOutputs({slug: 'song-slug', workspaceDir, frames, overwrite: false});
   assert.equal(skipped[0].status, 'process');
   assert.equal(skipped[1].status, 'process');
   fs.writeFileSync(
     path.join(workspaceDir, 'stylized-frames', 'fal-stylized-frames.json'),
-    JSON.stringify({version: 1, frames: {'frame-001': {output_path: 'stylized-frames/song-slug-frame-001.jpg'}}})
+    JSON.stringify({version: 1, frames: {'frame-001': {output_path: 'stylized-frames/song-slug-frame-001.png'}}})
   );
   const generated = planOutputs({slug: 'song-slug', workspaceDir, frames, overwrite: false});
   assert.equal(generated[0].status, 'skip');
