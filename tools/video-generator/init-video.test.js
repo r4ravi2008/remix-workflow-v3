@@ -98,6 +98,23 @@ test('scaffolds the video project inside the configured workspace root', () => {
   assert.ok(fs.existsSync(path.join(result.videoDir, 'public', 'design.json')));
 });
 
+test('does not copy template node_modules into the video project', () => {
+  const fixture = makeFixture();
+  fs.mkdirSync(path.join(fixture.templateDir, 'node_modules', 'isexe'), {recursive: true});
+  fs.writeFileSync(path.join(fixture.templateDir, 'node_modules', 'isexe', 'package.json'), '');
+
+  const result = initializeVideoProject({
+    workspaceSlug: fixture.workspaceSlug,
+    repoRoot: fixture.repoRoot,
+    templateDir: fixture.templateDir,
+    execSyncImpl: () => '180.25',
+    logger: {log() {}, warn() {}, error() {}},
+    processCwd: fixture.repoRoot,
+  });
+
+  assert.ok(!fs.existsSync(path.join(result.videoDir, 'node_modules')));
+});
+
 test('throws a clear error when the slug workspace does not exist', () => {
   const fixture = makeFixture();
 

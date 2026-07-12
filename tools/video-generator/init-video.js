@@ -86,7 +86,10 @@ function initializeVideoProject(options) {
   }
 
   logger.log(`Scaffolding video project for "${workspaceSlug}" in ${workspaceRoot}...`);
-  fs.cpSync(templateDir, videoDir, {recursive: true});
+  fs.cpSync(templateDir, videoDir, {
+    recursive: true,
+    filter: source => path.basename(source) !== 'node_modules',
+  });
   fs.mkdirSync(path.join(videoDir, 'public'), {recursive: true});
 
   const videoConfigPath = path.join(videoDir, 'public', 'video-config.json');
