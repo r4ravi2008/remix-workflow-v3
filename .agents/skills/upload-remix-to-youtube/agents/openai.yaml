@@ -1,0 +1,4 @@
+interface:
+  display_name: "Upload Remix to YouTube"
+  short_description: "Prepare a verified private YouTube draft"
+  default_prompt: "Use $upload-remix-to-youtube to upload and configure this remix as a private YouTube draft for my manual publication."

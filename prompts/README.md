@@ -8,7 +8,7 @@ Each step file is self-contained and can be executed by an AI agent.
 The pipeline transforms a YouTube link + target genre into a fully rendered music video:
 
 ```
-YouTube URL + Genre → [Pipeline Steps 0-9] → Music Video with Synced Lyrics + Visual Image Sequence (Cover-Art Fallback)
+YouTube URL + Genre → [Pipeline Steps 0-11] → Music Video + Short → [Optional Private YouTube Draft]
 ```
 
 ## Steps
@@ -49,6 +49,7 @@ Common patterns and conventions are extracted into the `references/` directory:
 3. **Check meta.json**: Always read the workspace's `meta.json` before acting
 4. **Handle Step 5.5**: Pause for user selection between v1 and v2
 5. **Complete Steps 6-11**: Autonomous after user selection
+6. **Optional upload handoff**: When explicitly requested, invoke `upload-remix-to-youtube` to configure a verified private draft; the user publishes it manually
 
 ## Key Conventions
 
@@ -57,4 +58,4 @@ Common patterns and conventions are extracted into the `references/` directory:
 - **Native script only**: Never romanize or transliterate Indic lyrics
 - **Generation backend**: Step 5 can use Suno (`step-5-upload-to-suno.md`) or local ACE-Step (`step-5-generate-with-ace-step.md`); both produce the same remix candidate filenames.
 - **Browser automation**: Steps 3 and 7 use Chrome DevTools MCP; Step 5 uses Chrome only for the Suno backend, while ACE-Step runs locally
-- **User checkpoint**: Only Step 5.5 requires human input
+- **User checkpoint**: Step 5.5 requires remix selection; an optional YouTube upload may pause for channel authentication or identity confirmation

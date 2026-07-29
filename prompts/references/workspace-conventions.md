@@ -75,6 +75,8 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── design.json
     ├── youtube-metadata.json
     ├── youtube-metadata-artifact.md
+    ├── <slug>-youtube-thumbnail.jpg (optional)
+    ├── youtube-upload-receipt.json
     ├── shorts-segments.json
     └── <slug>-short.mp4
 ```
@@ -115,8 +117,11 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "selected_visual_frames": null,
     "image_sequence": null,
     "final_video": null,
+    "youtube_metadata": null,
+    "youtube_thumbnail": null,
     "shorts_segments": null,
-    "short_video": null
+    "short_video": null,
+    "youtube_upload_receipt": null
   },
   "status": {
     "mp3_downloaded": false,
@@ -138,6 +143,7 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "youtube_metadata_generated": false,
     "shorts_clip_selected": false,
     "short_video_generated": false,
+    "youtube_private_draft_ready": false,
     "suno_remix_url_v1": null,
     "suno_remix_url_v2": null,
     "suno_cdn_v1": null,
@@ -163,7 +169,7 @@ Slug-prefixed asset files in a workspace follow this pattern:
 <slug>-<purpose>.<ext>
 ```
 
-Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.json`, `lyrics-timestamps.json`, `youtube-metadata.json`, `youtube-metadata-artifact.md`, and `shorts-segments.json`.
+Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.json`, `lyrics-timestamps.json`, `youtube-metadata.json`, `youtube-metadata-artifact.md`, `youtube-upload-receipt.json`, and `shorts-segments.json`.
 
 - `<slug>`: The workspace slug (lowercase, hyphenated)
 - `<purpose>`: Brief descriptor of the file's role
@@ -188,6 +194,7 @@ Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.
 | `remix-${SELECTED_REMIX}-acapella` | Vocals extracted from the selected remix |
 | `cover-art` | AI-stylized cover image |
 | `video` | Final rendered music video |
+| `youtube-thumbnail` | Optional custom thumbnail for the private YouTube draft |
 | `short` | Rendered vertical short video |
 
 ## Native Script Rule

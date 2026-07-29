@@ -7,7 +7,8 @@ It serves as a **map**, not a manual. Follow the pointers below to find detailed
 
 An AI-orchestrated pipeline that takes a YouTube link + target genre and produces a fully
 rendered music video with synced Indic-language lyrics, audio-reactive visuals, and
-AI-stylized cover art. The pipeline has 10 steps (0–9), each defined in `prompts/`.
+AI-stylized cover art. The local production pipeline has 12 steps (0–11), each defined in
+`prompts/`, followed by an optional private YouTube draft skill.
 
 ## Repository Layout
 
@@ -17,7 +18,7 @@ README.md                  ← Project overview and tech stack
 prompts/
   README.md                ← Pipeline index — read this to understand the flow
   references/              ← Shared conventions, patterns, and tool guides
-  step-0-*.md … step-9-*.md  ← One file per pipeline step
+  step-0-*.md … step-11-*.md  ← One file per pipeline step
 docs/
   intent.md                ← Project intent and design philosophy
   video-visual-system-plan.md
@@ -29,6 +30,7 @@ tools/
   remotion-best-practices/ ← Remotion rules (load via skill tool)
   suno-music-creator/      ← Suno AI workflow (load via skill tool)
   video-generation/        ← AI video generation (load via skill tool)
+  upload-remix-to-youtube/ ← Private YouTube draft upload and verification
 .remix-workspace-root.example.json ← Example repo-local config for external workspace root
 ```
 
@@ -39,7 +41,7 @@ tools/
 2. **Native script only.** Lyrics are always in Indic script (Telugu, Hindi, Tamil).
 Never romanize or transliterate. See `prompts/references/workspace-conventions.md`.
 
-3. **Steps are sequential.** Run steps 0→9 in order. Each step's prerequisites list what
+3. **Steps are sequential.** Run steps 0→11 in order. Each step's prerequisites list what
 must exist before it can run. See `prompts/README.md` for the full pipeline map.
 
 4. **Tools have their own docs.** Before using `acapella-extractor` or `video-generator`,
@@ -63,7 +65,8 @@ tool when working on the relevant step.
 2. Start at Step 0 — it collects user inputs and creates the workspace
 3. Follow each step sequentially; each file has prerequisites, instructions, and verification
 4. The user makes one decision at Step 5.5 (choosing between two remix candidates)
-5. Steps 6–9 complete autonomously after user selection
+5. Steps 6–11 complete autonomously after user selection
+6. When the user explicitly requests upload, `upload-remix-to-youtube` configures a private draft and stops for manual publication
 
 ## When You're Stuck
 

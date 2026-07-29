@@ -1,13 +1,13 @@
 ---
 name: remix-full-pipeline
-description: Use when the goal is end-to-end remix orchestration across both preparation and post-production phases, with a checkpoint between them and without duplicating the detailed instructions already owned by the phase skills.
+description: Use when the goal is end-to-end remix orchestration across preparation, post-production, and an explicitly requested private YouTube draft, with phase checkpoints and without duplicating the detailed instructions already owned by the phase skills.
 ---
 
 # Remix Full Pipeline
 
 ## Overview
 
-This is a thin coordinator for the entire remix workflow. It does not restate the step instructions from the phase skills; it only decides which phase to run, when to pause, and what handoff state must exist.
+This is a thin coordinator for the entire remix workflow. It does not restate the step instructions from the phase skills; it only decides which phase to run, when to pause, and what handoff state must exist. YouTube upload remains an optional private-draft phase.
 
 ## When to Use
 
@@ -18,12 +18,16 @@ digraph remix_full_pipeline {
     "Checkpoint reached" [shape=diamond];
     "Run remix-phase-two" [shape=box];
     "User already has remix assets?" [shape=diamond];
+    "Private YouTube draft requested?" [shape=diamond];
+    "Run upload-remix-to-youtube" [shape=box];
 
     "Starting from YouTube URL?" -> "Run remix-phase-one" [label="yes"];
     "Starting from YouTube URL?" -> "User already has remix assets?" [label="no"];
     "Run remix-phase-one" -> "Checkpoint reached";
     "Checkpoint reached" -> "Run remix-phase-two" [label="ready"];
     "User already has remix assets?" -> "Run remix-phase-two" [label="yes"];
+    "Run remix-phase-two" -> "Private YouTube draft requested?";
+    "Private YouTube draft requested?" -> "Run upload-remix-to-youtube" [label="yes"];
 }
 ```
 
@@ -37,6 +41,7 @@ digraph remix_full_pipeline {
 |---|---|
 | Steps 0-4 and optional 5 | `remix-phase-one` |
 | Steps 6-11, including composable Step 7 visual prep | `remix-phase-two` |
+| optional verified private YouTube draft | `upload-remix-to-youtube` |
 | checkpoint / delegation / resume logic | this skill |
 
 ## Implementation
@@ -48,7 +53,9 @@ digraph remix_full_pipeline {
    - remix assets were supplied directly, or
    - remix assets can be detected in the workspace.
 4. Invoke `remix-phase-two` when the handoff contract is satisfied.
-5. Summarize completed artifacts and remaining blockers.
+5. When the user explicitly requested a YouTube upload, invoke `upload-remix-to-youtube` after phase two completes.
+6. Treat the saved private draft as the upload phase's terminal state; the user publishes it manually.
+7. Summarize completed artifacts and remaining blockers.
 
 Do not duplicate the detailed step-by-step instructions from the phase skills.
 
@@ -59,6 +66,8 @@ Do not duplicate the detailed step-by-step instructions from the phase skills.
 | Re-documenting every step in this skill | Delegate to the phase skills instead |
 | Forcing phase one before checking existing remix assets | Jump straight to `remix-phase-two` when appropriate |
 | Losing the checkpoint contract | Explicitly verify handoff assets before phase two |
+| Treating render completion as upload authorization | Invoke the upload skill only after an explicit request |
+| Extending the upload into publication | Stop at the verified private draft |
 
 ## Failure Patterns
 

@@ -19,6 +19,9 @@ YouTube URL + Genre (user input)
 [Step 7] Fetch Cover Art            → Stylized with fal.ai (anime aesthetic, 2048x2048)
 [Step 8] Generate Video             → Remotion renders audio-reactive music video
 [Step 9] Generate YouTube Metadata  → Title, description, tags for upload
+[Step 10] Select Short Clip         → Chooses the strongest vertical segment
+[Step 11] Generate Short Video      → Remotion renders the 9:16 Short
+[Optional] Prepare YouTube Draft    → Uploads and verifies a private draft for manual publication
 ```
 
 ## Tech Stack
@@ -53,7 +56,9 @@ remix-gpt-coding-agent/
 │   ├── step-6-extract-acapella-and-align.md
 │   ├── step-7-fetch-cover-art.md
 │   ├── step-8-generate-video.md
-│   └── step-9-generate-youtube-metadata.md
+│   ├── step-9-generate-youtube-metadata.md
+│   ├── step-10-select-short-clip.md
+│   └── step-11-generate-short-video.md
 ├── tools/
 │   ├── acapella-extractor/            # Python: vocal extraction + lyrics alignment
 │   │   ├── extract.py                 # Mel-Band RoFormer extraction
@@ -77,7 +82,8 @@ remix-gpt-coding-agent/
 │               └── utils/             # Audio processing, design loader
 ├── .agents/skills/                    # Agent skill definitions
 │   ├── suno-music-creator/            # Suno.ai music creation workflows
-│   └── video-generation/              # AI video generation capabilities
+│   ├── video-generation/              # AI video generation capabilities
+│   └── upload-remix-to-youtube/       # Verified private YouTube draft workflow
 └── .remix-workspace-root.example.json # Example machine-local workspace root config
 ```
 
@@ -159,6 +165,16 @@ Scaffolds a Remotion project from the template, injects all assets (audio, times
 
 Produces a `youtube-metadata.json` with title, description, and tags ready for upload.
 
+### Steps 10–11: Generate Short
+
+Selects the strongest clip from the remix and renders a synced 9:16 Short.
+
+### Optional: Prepare Private YouTube Draft
+
+The `upload-remix-to-youtube` skill uploads requested videos through the user's signed-in Chrome
+session, applies metadata and end-screen settings, verifies the saved private draft, and stops for
+manual publication.
+
 ## Workspace Output
 
 Each remix session produces a complete workspace:
@@ -178,7 +194,9 @@ Each remix session produces a complete workspace:
 ├── lyrics-timestamps.json       # CTC-aligned word/line timestamps
 ├── <slug>-cover-art.jpg         # Stylized album art
 ├── <slug>-video.mp4             # Final rendered music video
+├── <slug>-short.mp4             # Final rendered vertical Short
 ├── youtube-metadata.json        # YouTube upload metadata
+├── youtube-upload-receipt.json  # Optional private-draft provider state
 └── video/                       # Remotion project files
 ```
 
