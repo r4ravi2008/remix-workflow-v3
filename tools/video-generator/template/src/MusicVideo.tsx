@@ -63,6 +63,7 @@ interface MusicVideoProps extends Record<string, unknown> {
   lyricsDataSrc: string;
   theme?: string;
   genre?: string;
+  designSrc?: string;
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -77,6 +78,7 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
   lyricsDataSrc,
   theme = 'default',
   genre = 'unknown',
+  designSrc = 'design.json',
 }) => {
   const { durationInFrames, fps } = useVideoConfig();
   const frame = useCurrentFrame();
@@ -114,40 +116,35 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
     return smoothed;
   }, [audioData, frame, fps]);
 
-  // ── Band energies (for motifs + background pulse) ──────────────────────
-  const prevBands = useRef<number[] | null>(null);
-
-  const bandEnergies: BandEnergies = useMemo(() => {
-    if (!audioData) return { bass: 0, lowMid: 0, highMid: 0, highs: 0, overall: 0 };
-
-    const raw = visualizeAudio({
-      frame, fps, audioData, numberOfSamples: 64, smoothing: false,
-    });
-    const bands = extractBandEnergies(raw);
-    const arr = [bands.bass, bands.lowMid, bands.highMid, bands.highs, bands.overall];
-    const smoothed = attackReleaseSmooth(arr, prevBands.current, 0.12, 0.94);
-    prevBands.current = smoothed;
-
-    return {
-      bass: smoothed[0], lowMid: smoothed[1], highMid: smoothed[2],
-      highs: smoothed[3], overall: smoothed[4],
-    };
-  }, [audioData, frame, fps]);
-
-  // ── Raw frequency data for motif components ────────────────────────────
-  const prevFreq = useRef<number[] | null>(null);
+  // ── Deterministic frequency data for motifs and background motion ──────
+  // Remotion may render frames out of order. A small centered audio window is
+  // therefore safer than mutable previous-frame smoothing and introduces no
+  // visible latency because the soundtrack is a fixed render asset.
   const frequencyData = useMemo(() => {
     if (!audioData) return Array(64).fill(0);
-    const raw = visualizeAudio({
-      frame, fps, audioData, numberOfSamples: 64, smoothing: false,
-    });
-    const smoothed = raw.map((v, i) => {
-      const prev = prevFreq.current?.[i] ?? v;
-      return prev * 0.7 + v * 0.3;
-    });
-    prevFreq.current = smoothed;
-    return smoothed;
-  }, [audioData, frame, fps]);
+    // Thirteen-frame centered envelope with no net timing offset. This keeps
+    // bass hits prompt while giving both the approach and recoil a smooth arc.
+    const offsets = [-6, -4, -2, 0, 2, 4, 6];
+    const weights = [1, 2, 3, 4, 3, 2, 1];
+    const samples = offsets.map((offset) => visualizeAudio({
+      frame: Math.max(0, Math.min(durationInFrames - 1, frame + offset)),
+      fps,
+      audioData,
+      numberOfSamples: 64,
+      smoothing: true,
+    }));
+    const totalWeight = weights.reduce((sum, weight) => sum + weight, 0);
+    return Array.from({length: 64}, (_, index) => samples.reduce(
+      (sum, sample, sampleIndex) => sum + sample[index] * weights[sampleIndex],
+      0,
+    ) / totalWeight);
+  }, [audioData, durationInFrames, frame, fps]);
+
+  // ── Band energies (for motifs + background pulse) ──────────────────────
+  const bandEnergies: BandEnergies = useMemo(
+    () => extractBandEnergies(frequencyData),
+    [frequencyData],
+  );
 
   // ── Data loading ───────────────────────────────────────────────────────
   const loadLyrics = useCallback(async () => {
@@ -163,13 +160,13 @@ export const MusicVideo: React.FC<MusicVideoProps> = ({
 
   const loadDesignConfig = useCallback(async () => {
     try {
-      setDesign(await loadDesign(staticFile));
+      setDesign(await loadDesign(staticFile, designSrc));
     } catch (e) {
       console.error('Failed to load design config:', e);
     } finally {
       continueRender(designHandle);
     }
-  }, [designHandle]);
+  }, [designHandle, designSrc]);
 
   const loadSequenceConfig = useCallback(async () => {
     setImageSequence(await loadImageSequence(staticFile));

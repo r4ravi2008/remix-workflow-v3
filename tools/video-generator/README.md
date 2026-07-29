@@ -7,7 +7,7 @@ Remotion-based video generation for music remixes with **audio-reactive visuals*
 - **Audio-Reactive Visuals**: Real frequency analysis drives visualizer bars, background pulses, and animated motifs
 - **LLM-Generated Designs**: Each song gets a unique visual identity based on genre, mood, and tempo
 - **6 Layout Variants**: cover-art, center-stage, full-bleed, minimal, sidebar, stacked
-- **6 Visual Motifs**: particles, geometric-burst, aurora, waveform-rings, noise-field, frequency-bars
+- **Layered Visual Motifs**: particles, geometric-burst, aurora, waveform-rings, noise-field, frequency-bars, and a pointillist generative swarm
 - **Dynamic Color Palette**: Colors are generated based on Suno style descriptors (dark, warm, dreamy, etc.)
 
 ## Architecture
@@ -138,7 +138,9 @@ npx remotion render MusicVideo out/video.mp4
   "motif": {
     "primary": "particles",
     "secondary": "noise-field",
-    "intensity": "medium"
+    "intensity": "medium",
+    "backgroundLayers": ["waveform-rings", "modern-bass-swarm"],
+    "bassResponse": {"floor": 0.025, "kick": 0.055, "peak": 0.13}
   },
   "animation": {
     "personality": "smooth",
@@ -171,6 +173,26 @@ Six layout variants are available. `cover-art` is the default compatibility layo
 | `waveform-rings` | Expanding concentric circles | Triggered by bass transients |
 | `noise-field` | Subtle animated noise texture | Bass = opacity |
 | `frequency-bars` | 32-bar spectrum visualizer | Direct frequency mapping |
+| `modern-bass-swarm` | Sparse directional vector shards with rotating outer rebels | Smoothed bass alone drives radial pressure, mark length, luminance, and detach/rejoin motion |
+
+`motif.backgroundLayers` is optional. In the `cover-art` layout, adding
+`"modern-bass-swarm"` layers the preset behind the existing artwork, rings,
+lyrics, and equalizer. Pigments are always derived from the active design
+palette. `"generative-swarm"` remains a compatibility alias.
+
+Use `motif.bassResponse` to calibrate the preset to the mastered audio's
+actual Remotion FFT range. `floor` begins the luminance response, `kick` begins
+the strong spatial hit, and `peak` maps to maximum response. The preset uses a
+centered 13-frame audio envelope followed by quintic ease-in/ease-out, so the
+motion has a smooth approach and recoil without mutable frame state.
+
+The reusable motif fragment lives in `presets/modern-bass-swarm.json`. To
+compare complete designs without editing `design.json`, put a design file in `public/` and select one at render time:
+
+```bash
+npx remotion render MusicVideo out.mp4 \
+  --props='{"designSrc":"design-modern-bass-swarm.json"}'
+```
 
 ## Animation Personalities
 

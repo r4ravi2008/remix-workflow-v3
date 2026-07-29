@@ -52,6 +52,7 @@ export const RemotionRoot: React.FC = () => {
           lyricsDataSrc: "lyrics-timestamps.json",
           theme: "default",
           genre: config.genre,
+          designSrc: "design.json",
         }}
       />
 

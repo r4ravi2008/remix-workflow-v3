@@ -1,0 +1,17 @@
+{
+  "id": "modern-bass-swarm",
+  "label": "Modern Bass Swarm",
+  "description": "Sparse vector agents that breathe, detach, and regroup from a smoothed bass envelope.",
+  "motif": {
+    "backgroundLayers": [
+      "waveform-rings",
+      "modern-bass-swarm"
+    ],
+    "intensity": "medium",
+    "bassResponse": {
+      "floor": 0.024,
+      "kick": 0.052,
+      "peak": 0.128
+    }
+  }
+}

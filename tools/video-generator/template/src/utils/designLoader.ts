@@ -35,6 +35,12 @@ export interface DesignMotif {
   primary: 'particles' | 'geometric-burst' | 'aurora' | 'waveform-rings' | 'frequency-bars-only' | 'noise-field';
   secondary: string | null;
   intensity: 'low' | 'medium' | 'high';
+  backgroundLayers?: Array<'waveform-rings' | 'generative-swarm' | 'modern-bass-swarm'>;
+  bassResponse?: {
+    floor: number;
+    kick: number;
+    peak: number;
+  };
 }
 
 export interface DesignAnimation {
@@ -55,9 +61,9 @@ export interface DesignConfig {
 /**
  * Load design.json from the public folder
  */
-export async function loadDesign(staticFileFn: (path: string) => string): Promise<DesignConfig> {
+export async function loadDesign(staticFileFn: (path: string) => string, designFile = 'design.json'): Promise<DesignConfig> {
   try {
-    const response = await fetch(staticFileFn('design.json'));
+    const response = await fetch(staticFileFn(designFile));
     if (!response.ok) {
       console.warn('design.json not found, using defaults');
       return validateDesign({});
@@ -108,6 +114,12 @@ function validateDesign(design: Partial<DesignConfig>): DesignConfig {
       primary: design.motif?.primary || 'particles',
       secondary: design.motif?.secondary || null,
       intensity: design.motif?.intensity || 'medium',
+      backgroundLayers: design.motif?.backgroundLayers || [],
+      bassResponse: {
+        floor: design.motif?.bassResponse?.floor ?? 0.025,
+        kick: design.motif?.bassResponse?.kick ?? 0.055,
+        peak: design.motif?.bassResponse?.peak ?? 0.13,
+      },
     },
     animation: {
       personality: design.animation?.personality || 'smooth',
