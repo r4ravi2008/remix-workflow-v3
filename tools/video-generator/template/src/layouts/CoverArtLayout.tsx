@@ -3,7 +3,7 @@ import { useCurrentFrame, interpolate, staticFile, Img } from 'remotion';
 import type { DesignConfig } from '../utils/designLoader';
 import type { ImageSequence, ImageSequenceFrame } from '../utils/imageSequence';
 import type { LyricsData, LyricLine, Section } from '../MusicVideo';
-import { FrequencyBarsVisualizer, GenerativeSwarmBackground, WaveformRings } from '../components';
+import { FrequencyBarsVisualizer, WaveformRings } from '../components';
 
 interface CoverArtLayoutProps {
   design: DesignConfig;
@@ -262,28 +262,6 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
               inset: 0,
               background: 'rgba(0, 0, 0, 0.45)',
             }}
-          />
-        </div>
-      )}
-
-      {/* Optional modern swarm: a palette-driven background layer, not a layout. */}
-      {(design.motif.backgroundLayers?.includes('generative-swarm') || design.motif.backgroundLayers?.includes('modern-bass-swarm')) && (
-        <div
-          style={{
-            position: 'absolute',
-            inset: 0,
-            zIndex: 1,
-            pointerEvents: 'none',
-            overflow: 'hidden',
-            isolation: 'isolate',
-            transform: 'none',
-          }}
-        >
-          <GenerativeSwarmBackground
-            design={design}
-            frequencyData={frequencyData}
-            width={1920}
-            height={1080}
           />
         </div>
       )}

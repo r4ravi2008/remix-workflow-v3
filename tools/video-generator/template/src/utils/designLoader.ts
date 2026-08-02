@@ -35,12 +35,6 @@ export interface DesignMotif {
   primary: 'particles' | 'geometric-burst' | 'aurora' | 'waveform-rings' | 'frequency-bars-only' | 'noise-field';
   secondary: string | null;
   intensity: 'low' | 'medium' | 'high';
-  backgroundLayers?: Array<'waveform-rings' | 'generative-swarm' | 'modern-bass-swarm'>;
-  bassResponse?: {
-    floor: number;
-    kick: number;
-    peak: number;
-  };
 }
 
 export interface DesignAnimation {
@@ -114,12 +108,6 @@ function validateDesign(design: Partial<DesignConfig>): DesignConfig {
       primary: design.motif?.primary || 'particles',
       secondary: design.motif?.secondary || null,
       intensity: design.motif?.intensity || 'medium',
-      backgroundLayers: design.motif?.backgroundLayers || [],
-      bassResponse: {
-        floor: design.motif?.bassResponse?.floor ?? 0.025,
-        kick: design.motif?.bassResponse?.kick ?? 0.055,
-        peak: design.motif?.bassResponse?.peak ?? 0.13,
-      },
     },
     animation: {
       personality: design.animation?.personality || 'smooth',
