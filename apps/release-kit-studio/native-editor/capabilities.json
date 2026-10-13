@@ -1,0 +1,2109 @@
+{
+  "schemaVersion": 1,
+  "baseline": "DaVinci Resolve 21 public capability families",
+  "checkedOn": "2026-10-04",
+  "coverage": "Family-level mapping. Individual tool parameters require detailed contracts before implementation.",
+  "capabilities": [
+    {
+      "id": "CORE-01",
+      "area": "Core",
+      "name": "Capability and schema discovery",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "engine.capabilities",
+      "state": "implemented",
+      "dependsOn": [],
+      "acceptance": "Only implemented tools are callable; all planned capabilities remain visible.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-DISCOVERY",
+        "P0-SCHEMA"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-02",
+      "area": "Core",
+      "name": "Local project revisions",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "project.create",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-01"
+      ],
+      "acceptance": "Create, restart, read, and reject a stale revision without losing the original project.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-CREATE",
+        "P0-RATIONAL-RATE"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-03",
+      "area": "Core",
+      "name": "Stable command intents",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "project.commit",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-02"
+      ],
+      "acceptance": "Replay identical intent without a second revision; reject the same intent with changed content.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-REPLAY",
+        "P0-INTENT-CONFLICT",
+        "P0-CONCURRENT-EDIT",
+        "P0-CRASH-RECOVERY"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-04",
+      "area": "Core",
+      "name": "Typed timeline transaction",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "project.commit",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-03"
+      ],
+      "acceptance": "Apply a valid bounded solid-clip edit atomically and reject an invalid interval.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-TRANSACTION",
+        "P0-STALE-REVISION",
+        "P0-RESOURCE-LIMIT",
+        "P0-CLIP-BOUNDS"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-05",
+      "area": "Core",
+      "name": "Native frame preview",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "frame.render",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-04"
+      ],
+      "acceptance": "Render known solid clips in Rust and compare independent decoded pixel bytes.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-NATIVE-PIXELS",
+        "P0-RECEIPT-BINDING",
+        "P0-RENDER-REPLAY",
+        "P0-CRASH-RECOVERY"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-06",
+      "area": "Core",
+      "name": "Artifact integrity",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "artifact.verify",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-05"
+      ],
+      "acceptance": "Verify the bound frame hash and dimensions; reject changed bytes.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-TAMPER",
+        "P0-FORGED-RECEIPT",
+        "P0-RECEIPT-BINDING"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-07",
+      "area": "Core",
+      "name": "Native CLI process lifecycle",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "call",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-01"
+      ],
+      "acceptance": "Return structured failures, enforce native process deadlines, and recover the original intent after termination.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-CANCELLATION",
+        "P0-PROTOCOL",
+        "P0-RESOURCE-LIMIT"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CORE-08",
+      "area": "Core",
+      "name": "Agent workflow checks",
+      "owner": "Rust",
+      "module": "core",
+      "phase": "P0",
+      "command": "progress",
+      "state": "implemented",
+      "dependsOn": [
+        "CORE-01"
+      ],
+      "acceptance": "Report capability state and enforce no prohibited dependency or execution path.",
+      "source": "docs/SPEC.md",
+      "evidence": [],
+      "sourceKind": "owned-specification",
+      "behaviorContract": "docs/features/core.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "P0-RUNTIME-POLICY",
+        "P0-PROGRESS-AUTHORITY"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-01",
+      "area": "Media",
+      "name": "Media ingest and metadata",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.import",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure hashes, streams, dimensions, rates, sample counts, and timecodes from actual files.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-01-A",
+        "MEDIA-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-02",
+      "area": "Media",
+      "name": "Bins and smart metadata search",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.search",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Return exact metadata predicates without changing source identity.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-02-A",
+        "MEDIA-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-03",
+      "area": "Media",
+      "name": "Proxies and optimized media",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.proxy",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Bind proxy mapping to the original hash and compare seek positions across both representations.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-03-A",
+        "MEDIA-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-04",
+      "area": "Media",
+      "name": "Relink and media management",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.relink",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Reject substituted sources; preserve edits when identical content moves.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-04-A",
+        "MEDIA-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-05",
+      "area": "Media",
+      "name": "Audio and video synchronization",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.sync",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Measure offsets against synthetic claps and known timecode cases.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-05-A",
+        "MEDIA-05-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-06",
+      "area": "Media",
+      "name": "Checksum clone and consolidation",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.clone",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Independently compare every copied source hash and preserve missing-file findings.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-06-A",
+        "MEDIA-06-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-07",
+      "area": "Media",
+      "name": "Camera RAW decoding",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.decodeRaw",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Compare a supported camera RAW corpus against declared decoder and color metadata.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-07-A",
+        "MEDIA-07-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "MEDIA-08",
+      "area": "Media",
+      "name": "Image sequence and alpha ingest",
+      "owner": "Rust",
+      "module": "media",
+      "phase": "P1",
+      "command": "media.sequence",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Detect missing frames and preserve alpha, ordering, and bit depth.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "MEDIA-08-A",
+        "MEDIA-08-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-01",
+      "area": "Edit",
+      "name": "Track and timeline composition",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.put",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Render overlapping video and audio tracks with exact ordering and gap behavior.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-01-A",
+        "EDIT-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-02",
+      "area": "Edit",
+      "name": "Insert overwrite replace append",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.edit",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Compare expected clip intervals and source offsets for each edit operation.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-02-A",
+        "EDIT-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-03",
+      "area": "Edit",
+      "name": "Ripple roll slip slide trimming",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.trim",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Match before and after intervals, linked tracks, and handle constraints.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-03-A",
+        "EDIT-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-04",
+      "area": "Edit",
+      "name": "Split edits and linking",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.link",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01",
+        "AUDIO-01"
+      ],
+      "acceptance": "Preserve independent audio and video boundaries through linked edits.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-04-A",
+        "EDIT-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-05",
+      "area": "Edit",
+      "name": "Nested and compound timelines",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.nest",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Match flattened reference output and reject recursive composition cycles.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-05-A",
+        "EDIT-05-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-06",
+      "area": "Edit",
+      "name": "Transitions and fades",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.transition",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Compare first, midpoint, and last frames plus out-of-handle rejection.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-06-A",
+        "EDIT-06-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-07",
+      "area": "Edit",
+      "name": "Transforms cropping and stabilization",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.transform",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Compare geometric reference points and stabilized motion measurements.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-07-A",
+        "EDIT-07-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-08",
+      "area": "Edit",
+      "name": "Keyframes and interpolation",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.animate",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Compare integer-time samples for hold, linear, and curve interpolation.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-08-A",
+        "EDIT-08-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-09",
+      "area": "Edit",
+      "name": "Retiming and optical flow",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.retime",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-01"
+      ],
+      "acceptance": "Measure frame mapping, duplicate-frame behavior, and occlusion cases.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-09-A",
+        "EDIT-09-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-10",
+      "area": "Edit",
+      "name": "Subtitles and closed captions",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "caption.put",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Round-trip subtitle intervals and native Unicode without transliteration.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-10-A",
+        "EDIT-10-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-11",
+      "area": "Edit",
+      "name": "Undo redo and versions",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "project.restore",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Restore exact immutable content while preserving original revision history.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-11-A",
+        "EDIT-11-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EDIT-12",
+      "area": "Edit",
+      "name": "Markers flags and timeline metadata",
+      "owner": "Rust",
+      "module": "timeline",
+      "phase": "P2",
+      "command": "timeline.mark",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Round-trip names, colors, time positions, and references.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/edit",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/editing.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EDIT-12-A",
+        "EDIT-12-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CUT-01",
+      "area": "Cut",
+      "name": "Source tape and rapid assembly",
+      "owner": "Rust",
+      "module": "cut",
+      "phase": "P7",
+      "command": "cut.assemble",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01",
+        "EDIT-01"
+      ],
+      "acceptance": "Produce the expected ordered source ranges from a deterministic assembly plan.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/cut",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "CUT-01-A",
+        "CUT-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CUT-02",
+      "area": "Cut",
+      "name": "Sync bins and multicamera edits",
+      "owner": "Rust",
+      "module": "cut",
+      "phase": "P7",
+      "command": "cut.multicam",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-05",
+        "EDIT-01"
+      ],
+      "acceptance": "Measure camera-switch times against synchronized sources.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/cut",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "CUT-02-A",
+        "CUT-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CUT-03",
+      "area": "Cut",
+      "name": "Source overwrite and smart insert",
+      "owner": "Rust",
+      "module": "cut",
+      "phase": "P7",
+      "command": "cut.overwrite",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "EDIT-02"
+      ],
+      "acceptance": "Match source timecode and preserve unaffected timeline intervals.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/cut",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "CUT-03-A",
+        "CUT-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "CUT-04",
+      "area": "Cut",
+      "name": "Live ingest and replay",
+      "owner": "Rust",
+      "module": "cut",
+      "phase": "P7",
+      "command": "cut.capture",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Bound recording buffers and prove ordered recovery after input interruption.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/cut",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/media-cut.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "CUT-04-A",
+        "CUT-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-01",
+      "area": "Fusion",
+      "name": "Typed node graphs and caching",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "graph.put",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Reject graph cycles; cache by node content and invalidate changed dependencies.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-01-A",
+        "FUSION-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-02",
+      "area": "Fusion",
+      "name": "Merge masks and blend modes",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "graph.compose",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "FUSION-01"
+      ],
+      "acceptance": "Compare premultiplied alpha and mask edges against independent reference images.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-02-A",
+        "FUSION-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-03",
+      "area": "Fusion",
+      "name": "Native-script titles and typography",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "text.render",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "FUSION-01"
+      ],
+      "acceptance": "Inspect Telugu, Hindi, and Tamil ligatures, line breaks, fallback, and glyph bounds.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-03-A",
+        "FUSION-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-04",
+      "area": "Fusion",
+      "name": "Motion curves and expressions",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "graph.animate",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "FUSION-01",
+        "EDIT-08"
+      ],
+      "acceptance": "Evaluate bounded expressions with deterministic timing and no arbitrary code execution.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-04-A",
+        "FUSION-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-05",
+      "area": "Fusion",
+      "name": "Keying and rotoscoping",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "mask.extract",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure edge quality and temporal consistency on an annotated corpus.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-05-A",
+        "FUSION-05-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-06",
+      "area": "Fusion",
+      "name": "Point planar and camera tracking",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "track.solve",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure reprojection error and reject insufficient-feature cases.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-06-A",
+        "FUSION-06-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-07",
+      "area": "Fusion",
+      "name": "3D scenes lights and particles",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "scene.render",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Compare camera transforms, depth occlusion, lighting, and seeded particle trajectories.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-07-A",
+        "FUSION-07-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "FUSION-08",
+      "area": "Fusion",
+      "name": "Music-reactive environment layers",
+      "owner": "Rust",
+      "module": "fusion",
+      "phase": "P3",
+      "command": "reactive.bind",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "FUSION-02",
+        "AUDIO-08"
+      ],
+      "acceptance": "Bind envelopes to source audio and masks; protect people and text from displacement.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fusion",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "FUSION-08-A",
+        "FUSION-08-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-01",
+      "area": "Color",
+      "name": "Color management and transforms",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.configure",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Compare declared input, working, and output spaces against color reference patches.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-01-A",
+        "COLOR-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-02",
+      "area": "Color",
+      "name": "Primary wheels curves and grading",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.grade",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLOR-01"
+      ],
+      "acceptance": "Compare numeric patch transforms and bounded clipping behavior.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-02-A",
+        "COLOR-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-03",
+      "area": "Color",
+      "name": "Secondary qualifiers and windows",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.qualify",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLOR-01"
+      ],
+      "acceptance": "Compare key selections and spatial masks against annotated images.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-03-A",
+        "COLOR-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-04",
+      "area": "Color",
+      "name": "LUTs and node ordering",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.lut",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLOR-01"
+      ],
+      "acceptance": "Compare trilinear or tetrahedral lookup samples and node-order changes.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-04-A",
+        "COLOR-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-05",
+      "area": "Color",
+      "name": "Scopes and clipping diagnostics",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.measure",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLOR-01"
+      ],
+      "acceptance": "Compare histogram, waveform, and vectorscope counts against independent calculations.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-05-A",
+        "COLOR-05-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-06",
+      "area": "Color",
+      "name": "HDR grading and tone mapping",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.hdr",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure highlight handling and metadata on HDR reference cases.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-06-A",
+        "COLOR-06-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-07",
+      "area": "Color",
+      "name": "Tracking grading masks",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.track",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure mask position error and source-bound tracking reuse.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-07-A",
+        "COLOR-07-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-08",
+      "area": "Color",
+      "name": "Noise reduction restoration and grain",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.restore",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure spatial and temporal artifacts and seeded grain reproducibility.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-08-A",
+        "COLOR-08-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLOR-09",
+      "area": "Color",
+      "name": "Stills galleries and grade matching",
+      "owner": "Rust",
+      "module": "color",
+      "phase": "P4",
+      "command": "color.match",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Bind reference stills and compare stored grade versions without source substitution.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/color",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLOR-09-A",
+        "COLOR-09-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-01",
+      "area": "Fairlight",
+      "name": "Sample-accurate editing and mixing",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.mix",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Compare known impulses and exact sample counts through edits and channel routing.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-01-A",
+        "AUDIO-01-B",
+        "AUDIO-01-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-02",
+      "area": "Fairlight",
+      "name": "Waveforms meters and loudness",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.measure",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "AUDIO-01"
+      ],
+      "acceptance": "Compare peak, true-peak, RMS, and integrated loudness against an independent verifier.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-02-A",
+        "AUDIO-02-B",
+        "AUDIO-02-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-03",
+      "area": "Fairlight",
+      "name": "EQ dynamics and effects",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.process",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "AUDIO-01"
+      ],
+      "acceptance": "Measure impulse and frequency responses plus clipping and latency.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-03-A",
+        "AUDIO-03-B",
+        "AUDIO-03-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-04",
+      "area": "Fairlight",
+      "name": "Buses sends automation and folders",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.route",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "AUDIO-01"
+      ],
+      "acceptance": "Compare exact routing gains and automation sample positions.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-04-A",
+        "AUDIO-04-B",
+        "AUDIO-04-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-05",
+      "area": "Fairlight",
+      "name": "ADR voice recording and Foley",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.record",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Verify capture latency, dropped samples, source binding, and take management.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-05-A",
+        "AUDIO-05-B",
+        "AUDIO-05-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-06",
+      "area": "Fairlight",
+      "name": "Surround and immersive audio",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.spatial",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Verify channel layout and measured speaker mapping on a multichannel corpus.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-06-A",
+        "AUDIO-06-B",
+        "AUDIO-06-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-07",
+      "area": "Fairlight",
+      "name": "Audio plugins and external processing",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.plugin",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure latency compensation and recover from an isolated plugin crash.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-07-A",
+        "AUDIO-07-B",
+        "AUDIO-07-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AUDIO-08",
+      "area": "Fairlight",
+      "name": "Music envelopes and beat analysis",
+      "owner": "Rust",
+      "module": "audio",
+      "phase": "P2",
+      "command": "audio.envelope",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "MEDIA-01"
+      ],
+      "acceptance": "Bind measurements to audio hash and compare timings against an annotated rhythm corpus.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/fairlight",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/audio.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AUDIO-08-A",
+        "AUDIO-08-B",
+        "AUDIO-08-C"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "PHOTO-01",
+      "area": "Photo",
+      "name": "Still development and RAW processing",
+      "owner": "Rust",
+      "module": "photo",
+      "phase": "P4",
+      "command": "photo.develop",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Compare declared RAW processing and output color metadata.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/photo",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "PHOTO-01-A",
+        "PHOTO-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "PHOTO-02",
+      "area": "Photo",
+      "name": "Crop reframe and image export",
+      "owner": "Rust",
+      "module": "photo",
+      "phase": "P4",
+      "command": "photo.export",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLOR-01",
+        "MEDIA-01"
+      ],
+      "acceptance": "Compare source-resolution crops and independent output dimensions.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/photo",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "PHOTO-02-A",
+        "PHOTO-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "PHOTO-03",
+      "area": "Photo",
+      "name": "Albums and grade versions",
+      "owner": "Rust",
+      "module": "photo",
+      "phase": "P4",
+      "command": "photo.album",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Preserve immutable image membership and grade references across restart.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/photo",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "PHOTO-03-A",
+        "PHOTO-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "PHOTO-04",
+      "area": "Photo",
+      "name": "Tethered capture",
+      "owner": "Rust",
+      "module": "photo",
+      "phase": "P4",
+      "command": "photo.capture",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Verify camera input identity and recover from device disconnect.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/photo",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/color-photo.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "PHOTO-04-A",
+        "PHOTO-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "DELIVER-01",
+      "area": "Deliver",
+      "name": "Native codec capability registry",
+      "owner": "Rust",
+      "module": "delivery",
+      "phase": "P1",
+      "command": "codec.capabilities",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Report actual per-platform decode and encode support with a measured corpus.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-01-A",
+        "DELIVER-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "DELIVER-02",
+      "area": "Deliver",
+      "name": "Movie encoding and muxing",
+      "owner": "Rust",
+      "module": "delivery",
+      "phase": "P1",
+      "command": "render.export",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "DELIVER-01",
+        "MEDIA-01"
+      ],
+      "acceptance": "Independently decode encoded frames and PCM timing without FFmpeg.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-02-A",
+        "DELIVER-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "DELIVER-03",
+      "area": "Deliver",
+      "name": "Image sequences and still export",
+      "owner": "Rust",
+      "module": "delivery",
+      "phase": "P1",
+      "command": "render.sequence",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Verify frame ordering, dimensions, alpha, count, and missing-frame detection.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-03-A",
+        "DELIVER-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "DELIVER-04",
+      "area": "Deliver",
+      "name": "Render queue cancellation and recovery",
+      "owner": "Effect",
+      "module": "application-adapters/delivery",
+      "phase": "P6",
+      "command": "render.status",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "DELIVER-02",
+        "CORE-03"
+      ],
+      "acceptance": "Kill the host during a job and reconcile without duplicate or substituted outputs.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-04-A",
+        "DELIVER-04-B"
+      ],
+      "layer": "application"
+    },
+    {
+      "id": "DELIVER-05",
+      "area": "Deliver",
+      "name": "Source-bound technical QC",
+      "owner": "Rust",
+      "module": "delivery",
+      "phase": "P2",
+      "command": "artifact.measure",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "DELIVER-02",
+        "AUDIO-02"
+      ],
+      "acceptance": "Detect black frames, discontinuities, sync drift, clipping, and malformed output.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-05-A",
+        "DELIVER-05-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "DELIVER-06",
+      "area": "Deliver",
+      "name": "Presets and remote rendering",
+      "owner": "Effect",
+      "module": "application-adapters/delivery",
+      "phase": "P6",
+      "command": "render.submit",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "DELIVER-04",
+        "COLLAB-01"
+      ],
+      "acceptance": "Preserve an immutable recipe across local and remote execution.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-06-A",
+        "DELIVER-06-B"
+      ],
+      "layer": "application"
+    },
+    {
+      "id": "DELIVER-07",
+      "area": "Deliver",
+      "name": "Release-kit profile and archive",
+      "owner": "Rust",
+      "module": "delivery",
+      "phase": "P5",
+      "command": "kit.build",
+      "state": "planned",
+      "dependsOn": [
+        "DELIVER-02",
+        "FUSION-03",
+        "FUSION-08",
+        "AUDIO-01",
+        "PHOTO-02",
+        "CORE-06",
+        "MEDIA-01",
+        "EDIT-01",
+        "DELIVER-05",
+        "AUDIO-08"
+      ],
+      "acceptance": "Verify all six outputs from an actual full song and inspect complete playback and audio.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/media",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "DELIVER-07-A",
+        "DELIVER-07-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLLAB-01",
+      "area": "Collaboration",
+      "name": "Project libraries and tenant authorization",
+      "owner": "Effect",
+      "module": "application-adapters/collaboration",
+      "phase": "P6",
+      "command": "project.authorize",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Reject cross-tenant revisions, sources, jobs, and receipt lookups.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/collaboration",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLLAB-01-A",
+        "COLLAB-01-B"
+      ],
+      "layer": "application"
+    },
+    {
+      "id": "COLLAB-02",
+      "area": "Collaboration",
+      "name": "Optimistic revisions and shared editing",
+      "owner": "Rust",
+      "module": "collaboration",
+      "phase": "P6",
+      "command": "project.merge",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "CORE-03"
+      ],
+      "acceptance": "Resolve or reject simultaneous edits without lost updates.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/collaboration",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLLAB-02-A",
+        "COLLAB-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "COLLAB-03",
+      "area": "Collaboration",
+      "name": "Clip bin and timeline ownership",
+      "owner": "Effect",
+      "module": "application-adapters/collaboration",
+      "phase": "P6",
+      "command": "project.claim",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLLAB-01"
+      ],
+      "acceptance": "Revoke expired ownership and reject stale owners.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/collaboration",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLLAB-03-A",
+        "COLLAB-03-B"
+      ],
+      "layer": "application"
+    },
+    {
+      "id": "COLLAB-04",
+      "area": "Collaboration",
+      "name": "Cloud media synchronization",
+      "owner": "Effect",
+      "module": "application-adapters/collaboration",
+      "phase": "P6",
+      "command": "media.publish",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLLAB-01",
+        "MEDIA-01"
+      ],
+      "acceptance": "Verify private object hashes and resume interrupted transfers.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/collaboration",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLLAB-04-A",
+        "COLLAB-04-B"
+      ],
+      "layer": "application"
+    },
+    {
+      "id": "COLLAB-05",
+      "area": "Collaboration",
+      "name": "Review annotations and notifications",
+      "owner": "Effect",
+      "module": "application-adapters/collaboration",
+      "phase": "P6",
+      "command": "review.record",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02",
+        "COLLAB-01",
+        "CORE-06"
+      ],
+      "acceptance": "Bind annotations and approval to exact output hashes and authenticated reviewers.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/collaboration",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "COLLAB-05-A",
+        "COLLAB-05-B"
+      ],
+      "layer": "application"
+    },
+    {
+      "id": "AI-01",
+      "area": "AI and extensions",
+      "name": "Transcription and text-driven editing",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "speech.align",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure word timestamps and language accuracy on a native-script corpus.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AI-01-A",
+        "AI-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AI-02",
+      "area": "AI and extensions",
+      "name": "Segmentation object recognition and masks",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "vision.segment",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure mask accuracy and temporal stability on labeled scenes.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AI-02-A",
+        "AI-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AI-03",
+      "area": "AI and extensions",
+      "name": "Smart reframe upscale and motion synthesis",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "vision.transform",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Measure crop retention, identity stability, resolution, and motion artifacts.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AI-03-A",
+        "AI-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "AI-04",
+      "area": "AI and extensions",
+      "name": "Automatic color and scene search",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "vision.search",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Compare retrieval and matching against labeled reference cases.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/fusion-ai.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "AI-04-A",
+        "AI-04-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EXT-01",
+      "area": "AI and extensions",
+      "name": "OFX and effect plugin execution",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "plugin.run",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Sandbox plugin failures and verify buffer formats and render determinism.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EXT-01-A",
+        "EXT-01-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EXT-02",
+      "area": "AI and extensions",
+      "name": "Interchange EDL AAF XML and OTIO",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "project.interchange",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Round-trip a golden timeline corpus and report unsupported semantics.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EXT-02-A",
+        "EXT-02-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EXT-03",
+      "area": "AI and extensions",
+      "name": "Control panels and capture hardware",
+      "owner": "Rust",
+      "module": "operators",
+      "phase": "P7",
+      "command": "device.bind",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Verify device identity, control mapping, and disconnect recovery.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EXT-03-A",
+        "EXT-03-B"
+      ],
+      "layer": "native"
+    },
+    {
+      "id": "EXT-04",
+      "area": "AI and extensions",
+      "name": "Optional editor and review UI",
+      "owner": "UI",
+      "module": "application-adapters/operators",
+      "phase": "P6",
+      "command": "ui.connect",
+      "state": "planned",
+      "dependsOn": [
+        "CORE-01",
+        "CORE-02"
+      ],
+      "acceptance": "Exercise the same commands and evidence through keyboard-accessible browser controls.",
+      "source": "https://www.blackmagicdesign.com/products/davinciresolve/studio",
+      "evidence": [],
+      "sourceKind": "capability-family-reference",
+      "behaviorContract": "docs/features/delivery-collaboration-extensions.md",
+      "acceptanceCorpus": null,
+      "acceptanceCaseIds": [
+        "EXT-04-A",
+        "EXT-04-B"
+      ],
+      "layer": "application",
+      "technologyCandidates": [
+        "React",
+        "Tauri",
+        "Foldkit"
+      ],
+      "optionalDependencies": {
+        "hostedReview": [
+          "COLLAB-01",
+          "COLLAB-05"
+        ]
+      }
+    }
+  ],
+  "referencePolicy": "Owned contracts define our behavior. Blackmagic links identify broad capability families, not exact implementation semantics or acceptance corpora."
+}

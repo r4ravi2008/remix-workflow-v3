@@ -1,8 +1,8 @@
-# Step 9: Generate YouTube Metadata
+# Step 9: Generate Release Metadata and Platform Covers
 
 ## Objective
 
-Create optimized YouTube metadata (title, description, tags, thumbnail text) for the remix video to maximize discoverability and engagement. The metadata should highlight the remix genre while respecting the original song's cultural roots.
+Create optimized YouTube metadata and a matched pair of finished cover images for YouTube and Instagram. The metadata and artwork should highlight the remix genre while respecting the original song's cultural roots.
 
 ## Key Requirements
 
@@ -10,6 +10,9 @@ Create optimized YouTube metadata (title, description, tags, thumbnail text) for
 - **Compelling description**: Hook viewers in first 2 lines, include credits, links, and timestamps — no references to Suno, AI, or any generation tools
 - **Strategic tags**: Mix of broad (genre) and specific (song/artist) keywords — no AI/tool tags
 - **Thumbnail text**: Short, bold text that reads well at small sizes — no AI/tool references
+- **Finished YouTube thumbnail**: 1280x720 JPG composed for 16:9 discovery surfaces
+- **Finished Instagram Reel cover**: 1080x1920 JPG composed independently for 9:16, with faces and text in the center-safe region
+- **Paired visual system**: Use the same approved identities, palette, title, genre, and source credit; do not stretch or blindly crop one platform image into the other
 - **Language tags**: Include both English and native language (Telugu/Hindi/Tamil) keywords
 - **STRICT RULE**: Never mention Suno, AI, "AI-generated", "AI-powered", or any music generation tool anywhere in the title, description, tags, hashtags, or thumbnail text
 
@@ -18,6 +21,7 @@ Create optimized YouTube metadata (title, description, tags, thumbnail text) for
 - `${WORKSPACE_DIR}/meta.json` exists with `video_title`, `genre`, `language`, `youtube_url`
 - `${WORKSPACE_DIR}/${SLUG}-suno-style.txt` exists (for style descriptors)
 - `${WORKSPACE_DIR}/${SLUG}-video.mp4` exists (video is ready to upload)
+- canonical source frames, selected visual frames, or approved cover artwork are available for identity and composition reference
 
 ## Workspace Path Resolution
 
@@ -153,7 +157,7 @@ Subscribe for more remixes of classic Indian songs!
 
 ---
 
-### 9.5 — Generate Thumbnail Text
+### 9.5 — Generate Thumbnail Text and Finished Platform Covers
 
 **Primary Text** (large, center):
 ```
@@ -177,6 +181,24 @@ Fan Remix
 - Must be readable at 1280×720 scaled to 160×90 (mobile)
 - Use high contrast colors from design.json palette
 - Consider Telugu/Hindi text if original script is recognizable
+
+Create both files:
+
+| Platform | File | Canvas | Composition requirement |
+|---|---|---|---|
+| YouTube | `${WORKSPACE_DIR}/${SLUG}-youtube-thumbnail.jpg` | 1280x720, 16:9 | Strong landscape hierarchy; readable at 320x180 |
+| Instagram | `${WORKSPACE_DIR}/${SLUG}-instagram-reel-cover.jpg` | 1080x1920, 9:16 | Separate portrait composition; readable at 180x320; essential faces, title, genre, and credit kept in the center-safe region |
+
+Use the same approved source identities, mood, palette, and deterministic title system for both files. Recompose the scene for each canvas. Do not stretch the landscape image and do not accept a blind center crop as the portrait design.
+
+When the Dhool branded artwork system applies, load `create-dhool-song-thumbnail` and read its `references/dhool-brand.md` before generating either file.
+
+Verification:
+
+1. Inspect both images at full resolution.
+2. Create and inspect a 320x180 YouTube preview and a 180x320 Instagram preview.
+3. Confirm faces remain recognizable, title spelling is exact, no generated text or watermark appears, and the Instagram cover retains its essential content when the outer top and bottom regions are obscured by Reel UI.
+4. Do not mark Step 9 complete when only thumbnail copy or color suggestions exist.
 
 ---
 
@@ -209,7 +231,9 @@ File path: ${WORKSPACE_DIR}/youtube-metadata.json
       "background": "<from design.json>",
       "text": "<from design.json>",
       "accent": "<from design.json>"
-    }
+    },
+    "youtubeImage": "<slug>-youtube-thumbnail.jpg",
+    "instagramReelCover": "<slug>-instagram-reel-cover.jpg"
   },
   "hashtags": ["#tag1", "#tag2", ...],
   "category": "Music",
@@ -281,11 +305,15 @@ Update `${WORKSPACE_DIR}/meta.json`:
 ```json
 "status": {
   ...,
-  "youtube_metadata_generated": true
+  "youtube_metadata_generated": true,
+  "youtube_thumbnail_generated": true,
+  "instagram_reel_cover_generated": true
 },
 "files": {
   ...,
-  "youtube_metadata": "<slug>/youtube-metadata.json"
+  "youtube_metadata": "<slug>/youtube-metadata.json",
+  "youtube_thumbnail": "<slug>/<slug>-youtube-thumbnail.jpg",
+  "instagram_reel_cover": "<slug>/<slug>-instagram-reel-cover.jpg"
 }
 ```
 
@@ -314,6 +342,8 @@ THUMBNAIL TEXT:
 Files saved:
   • youtube-metadata.json
   • youtube-metadata-artifact.md
+  • <slug>-youtube-thumbnail.jpg
+  • <slug>-instagram-reel-cover.jpg
 ```
 
 ---
@@ -334,6 +364,8 @@ Files saved:
 |---|---|
 | Full metadata JSON | `<workspaceRoot>/<slug>/youtube-metadata.json` |
 | **Markdown artifact (copy-paste)** | `<workspaceRoot>/<slug>/youtube-metadata-artifact.md` |
+| YouTube thumbnail | `<workspaceRoot>/<slug>/<slug>-youtube-thumbnail.jpg` |
+| Instagram Reel cover | `<workspaceRoot>/<slug>/<slug>-instagram-reel-cover.jpg` |
 | Updated metadata | `<workspaceRoot>/<slug>/meta.json` |
 
 ## Error Handling
@@ -346,6 +378,8 @@ Files saved:
 | Missing original credits | Use placeholder: "[Original artist info unavailable — please verify]" |
 | Description over 5000 chars | Truncate tags section or remove timestamps |
 | No design.json | Use neutral colors (#1a1a2e, #ffffff) for thumbnail suggestions |
+| Portrait cover loses faces or title | Recompose from the approved references; do not crop the YouTube thumbnail |
+| Only thumbnail text exists | Render both image files and inspect their mobile previews before completion |
 
 ---
 

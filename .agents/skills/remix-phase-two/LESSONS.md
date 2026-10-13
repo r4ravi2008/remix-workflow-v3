@@ -102,6 +102,12 @@ Operational mistakes and practical fixes discovered while running the full remix
 
 **Fix:** Ask whether missing curated assets should be excluded or regenerated if intent is unclear. When the user says continue without them, remove those frames from `selected-visual-frames.json` and regenerate `image-sequence.json` with the remaining frames.
 
+## 13. Platform Covers Need Separate Compositions
+
+**What happened:** The pipeline described YouTube thumbnail text but did not guarantee a usable Instagram cover. A 16:9 thumbnail cannot be stretched or blindly cropped to 9:16 without losing faces, title hierarchy, or safe placement.
+
+**Fix:** Step 9 now produces a matched artwork pair from the same approved references: a 1280x720 YouTube thumbnail and a separately composed 1080x1920 Instagram Reel cover. Inspect both at full resolution and as small mobile previews before updating workspace state.
+
 ## Checklist for Future Runs
 
 Before starting phase two:
@@ -123,3 +129,5 @@ Before rendering video:
 - [ ] Exclude user-deleted title cards/bad frames from `selected-visual-frames.json` and `image-sequence.json`
 - [ ] Verify `cover-art.jpg` is in `video/public/cover-art.jpg` only when using cover-art fallback
 - [ ] Consider preview render for long songs (>5 min)
+- [ ] Verify `<slug>-youtube-thumbnail.jpg` at 1280x720 and its 320x180 preview
+- [ ] Verify `<slug>-instagram-reel-cover.jpg` at 1080x1920 and its 180x320 preview, with essential content in the center-safe region

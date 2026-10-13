@@ -1,0 +1,42 @@
+{
+  "schema": 1,
+  "records": [
+    {
+      "file": "snapshot-schema1.json",
+      "sha256": "a4afc9237cdc477ddc0c62023b7e0ed185a9f39bd3f72fd3f6596964d1c82423",
+      "bytes": 3064,
+      "source": "immutable revisions document"
+    },
+    {
+      "file": "plan-schema2.json",
+      "sha256": "97fdd9f63d48ee3b600ee37a845c302e79815bd1870b20dae376f9c4a957e025",
+      "bytes": 369279,
+      "source": "immutable plans document"
+    },
+    {
+      "file": "plan-schema3.json",
+      "sha256": "4e5a89b00e7b5fabaafb4bf1335c1a5c3538c593765b4f5e5c818ff6bcede219",
+      "bytes": 4983,
+      "source": "immutable plans document"
+    },
+    {
+      "file": "receipt-schema2.json",
+      "sha256": "44c0c27ad1a58f22746011673d8e4d4a211c5b5cdeffcb18172d6cc73fc73be2",
+      "bytes": 1418,
+      "source": "immutable artifact receipt"
+    },
+    {
+      "file": "plan-schema4.json",
+      "sha256": "5cf0320f82bfc19839c5a06ffec15449fcdb80b97be15e2b4fb4105517ef0687",
+      "bytes": 413967,
+      "source": "A13-reviewed immutable static-layer plans document"
+    },
+    {
+      "file": "snapshot-schema1-placement.json",
+      "sha256": "00d8a0eb3bbf0cd6290e68fffaa8c4d8b5a654446fb2220f5d084da17944e1ea",
+      "bytes": 409983,
+      "source": "A13-reviewed immutable static-layer revisions document"
+    }
+  ],
+  "scope": "Exact historical canonical JSON document bytes; no media, private credentials or runtime databases."
+}

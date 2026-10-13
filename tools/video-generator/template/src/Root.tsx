@@ -15,6 +15,7 @@ interface VideoConfig {
     startTime: number;
     endTime: number;
     duration: number;
+    videoSrc?: string;
   };
 }
 
@@ -71,6 +72,7 @@ export const RemotionRoot: React.FC = () => {
             genre: config.genre,
             clipStartTime: config.short.startTime,
             clipEndTime: config.short.endTime,
+            videoSrc: config.short.videoSrc,
           }}
         />
       )}

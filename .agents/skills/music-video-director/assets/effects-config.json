@@ -1,0 +1,140 @@
+{
+  "schema_version": 1,
+  "seed": 260918,
+  "framing": {
+    "base_frame": "contain",
+    "allow_source_crop": false,
+    "allow_transient_transition_masks": true
+  },
+  "transitions": {
+    "enabled": true,
+    "minimum_distinct_styles": 3,
+    "minimum_uses_per_style": 2,
+    "palette": [
+      "Cross Dissolve",
+      "Blur Dissolve",
+      "Edge Wipe"
+    ],
+    "selection": "section-aware-balanced",
+    "avoid_adjacent_repeat": true,
+    "duration_beats": [
+      0.25,
+      0.5,
+      1.0
+    ],
+    "section_density": {
+      "intro": 0.35,
+      "verse": 0.45,
+      "chorus": 0.8,
+      "outro": 0.25
+    },
+    "flash_max_opacity": 0.18,
+    "fallback": "record unsupported style; do not silently count a dissolve as a different effect"
+  },
+  "boomerang": {
+    "enabled": false,
+    "direction_sequence": [
+      "forward",
+      "reverse",
+      "forward"
+    ],
+    "leg_beats": 1,
+    "max_events_per_16_beats": 1,
+    "eligible": [
+      "water",
+      "reflections",
+      "fabric",
+      "architecture",
+      "hands"
+    ],
+    "exclude": [
+      "singing",
+      "dialogue",
+      "unsafe continuity reversal"
+    ],
+    "reverse_audio": false,
+    "implementation": "verified Resolve or Fusion time map"
+  },
+  "motion_graphics": {
+    "enabled": false,
+    "owner": "remotion-wrapper",
+    "palette": [
+      "spectrum",
+      "edge-pulse",
+      "orbit-ring"
+    ],
+    "placement": "outside-picture-and-lyric-safe-zones",
+    "opacity_max": 0.2,
+    "reactivity": "measured audio or beat events",
+    "seeded": true,
+    "rest_fraction": 0.5
+  },
+  "lyrics": {
+    "enabled": false,
+    "display": "native",
+    "canonical_script": "source-language",
+    "owner": "remotion-wrapper",
+    "max_lines": 2,
+    "face_safe": true,
+    "word_highlight": "only verified word timing"
+  },
+  "review": {
+    "require_live_type_readback": true,
+    "require_rendered_style_contact_sheet": true,
+    "require_boomerang_frame_correspondence": true,
+    "require_normal_speed_playback_with_sound": true
+  },
+  "rhythmic_cuts": {
+    "enabled": false,
+    "shot_patterns": [
+      [
+        1,
+        2,
+        2,
+        1,
+        1,
+        2,
+        3,
+        4
+      ]
+    ],
+    "step_beats": [
+      0.5,
+      1
+    ],
+    "direction_pattern": [
+      "forward",
+      "forward",
+      "reverse",
+      "reverse",
+      "forward",
+      "forward",
+      "reverse",
+      "forward"
+    ],
+    "phrase_rests": true,
+    "source_window_reuse": "same motion window for each reverse-forward pair",
+    "performance_exclusion": "Never reverse or shuffle visible singing out of lyric alignment"
+  },
+  "lip_sync": {
+    "enabled_when_visible_singing": true,
+    "source": "original performance matched by sung words",
+    "remix_alignment": "canonical remix vocal timing",
+    "direction": "forward_only",
+    "retime": "reviewable word or phrase mapping; preserve canonical audio",
+    "unverified": "use non-singing coverage; never claim synchronization from timestamps alone"
+  },
+  "identity_references": {
+    "match_original_characters_when_requested": true,
+    "required_views": [
+      "face",
+      "profile",
+      "body"
+    ],
+    "source_priority": [
+      "original-song frames",
+      "user-provided identity reference"
+    ],
+    "stylized_reference_role": "style only; never substitute generated facial proportions for original identity"
+  }
+}

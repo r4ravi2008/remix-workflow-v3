@@ -1,0 +1,17 @@
+# Rust producer pinned qualification A02 parent source review
+
+Root accepts frozen A02 within source scope. No P1 or P2 remains. Separate source peer review is pending when this review is saved.
+
+The manifest is 12,090 bytes with SHA-256 `3a5cf1db90f57a53b1988c09b2bb6a8dfde9c8609f5ac3dea07a0f62510c5199`. Root independently matched all eight source files and three direct external bindings. The source aggregate has 179,143 bytes and SHA-256 `7009ab7ef3546020149560cf92e915f02dd2bfbc14a7afe044c5309629a16f45`. The direct external aggregate has 99,156 bytes and SHA-256 `c3b5cbad895c66631387dc7cb69d324bda371b971020bed63a365c245aca630d`.
+
+A02 explicitly binds the frozen A01 manifest and both completed A01 rejection reviews. The A01 manifest controls its transitive closure. Root freshly measured A01's eight source files and 207 external bindings and reproduced both aggregates. The rejected A01 recipe remains preserved history. A02 uses its own current three-row closure receipt, which agrees with its manifest. This closes A01's sole P2 finding without treating the old recipe as current compiler policy.
+
+Root read the complete A02 manifest and all eight file deltas against reviewed A01. The recipe changes package, crate, harness, outputs and owned TMPDIR names. Its closure correctly names the direct three-row aggregate and exact transitive predecessor manifest. The Rust deltas change only the local trust-module path, diagnostic output path and harness crate name. The trust-root source is byte-identical to A01. Reconstruction, private constructors, fresh full revalidation, pin bytes and all four expected vector identities remain unchanged.
+
+Root verified all twenty explicit imports and included-byte paths against the current source, transitive authority and fixed recipe vector receipts. The local qualification module is also a declared source file. The 63-row Runner subject is an explicit recipe-bound vector. The compiler preflight must measure that vector and the other three vector leaves, rather than treating three direct manifest rows as the entire compiler input closure.
+
+The saved independent proof is `rust-producer-pinned-qualification-a02-parent-source-readback-a01.json`, 152,522 bytes, SHA-256 `397bc1d331d903525602a0a6c10ecaa0b81eaa8898810f170ff28dd39162a1d2`. It contains retained-descriptor measurements and identity readbacks for every declared row and all four vector leaves. Those observations cover 216 unique paths.
+
+The no-argument diagnostic still loads private opaque authority, performs fresh full revalidation, compares all four references and both final byte strings, and exclusively publishes diagnostic data. Callers cannot select trust paths, expected hashes, commands, dispositions or Accepted constructors. The fixed recipe retains the measured compiler, four archive receipts, fixed target and ten environment variables. Two direct compiles follow accepted root and peer source reviews. An external bootstrap and root and peer review must bind the exact source, compiled diagnostic and pin before one positive invocation. Historical absent-pin controls remain outside that invocation.
+
+This source review establishes no compilation, opaque runtime value, execution authorization, native child, product integration, WATCHED, HEARD or creative acceptance. The review is same-model-family and nonblind. Disk identity checks do not attest loaded runtime images.

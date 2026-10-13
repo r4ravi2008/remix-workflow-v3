@@ -75,9 +75,17 @@ Each cloned repo uses a local, untracked config file at the repo root:
     ├── design.json
     ├── youtube-metadata.json
     ├── youtube-metadata-artifact.md
-    ├── <slug>-youtube-thumbnail.jpg (optional)
+    ├── <slug>-youtube-thumbnail.jpg
+    ├── <slug>-instagram-reel-cover.jpg
     ├── youtube-upload-receipt.json
     ├── shorts-segments.json
+    ├── resolve-scenes.json
+    ├── resolve-scenes-short.json
+    ├── <slug>-resolve-vertical.mp4
+    ├── vertical-scene-review/
+    │   ├── resolve/contact-sheet-index.json
+    │   ├── final/contact-sheet-index.json
+    │   └── scene-review.md
     └── <slug>-short.mp4
 ```
 
@@ -119,7 +127,11 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "final_video": null,
     "youtube_metadata": null,
     "youtube_thumbnail": null,
+    "instagram_reel_cover": null,
     "shorts_segments": null,
+    "resolve_vertical_video": null,
+    "vertical_scene_contact_sheet": null,
+    "vertical_scene_review": null,
     "short_video": null,
     "youtube_upload_receipt": null
   },
@@ -141,7 +153,11 @@ Each cloned repo uses a local, untracked config file at the repo root:
     "cover_art_fetched": false,
     "video_generated": false,
     "youtube_metadata_generated": false,
+    "youtube_thumbnail_generated": false,
+    "instagram_reel_cover_generated": false,
     "shorts_clip_selected": false,
+    "resolve_vertical_generated": false,
+    "vertical_scene_review_passed": false,
     "short_video_generated": false,
     "youtube_private_draft_ready": false,
     "suno_remix_url_v1": null,
@@ -169,7 +185,7 @@ Slug-prefixed asset files in a workspace follow this pattern:
 <slug>-<purpose>.<ext>
 ```
 
-Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.json`, `lyrics-timestamps.json`, `youtube-metadata.json`, `youtube-metadata-artifact.md`, `youtube-upload-receipt.json`, and `shorts-segments.json`.
+Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.json`, `lyrics-timestamps.json`, `youtube-metadata.json`, `youtube-metadata-artifact.md`, `youtube-upload-receipt.json`, `shorts-segments.json`, `resolve-scenes.json`, and `resolve-scenes-short.json`.
 
 - `<slug>`: The workspace slug (lowercase, hyphenated)
 - `<purpose>`: Brief descriptor of the file's role
@@ -194,7 +210,9 @@ Fixed-name workspace files are exceptions to this pattern: `meta.json`, `design.
 | `remix-${SELECTED_REMIX}-acapella` | Vocals extracted from the selected remix |
 | `cover-art` | AI-stylized cover image |
 | `video` | Final rendered music video |
-| `youtube-thumbnail` | Optional custom thumbnail for the private YouTube draft |
+| `youtube-thumbnail` | 1280x720 custom thumbnail for YouTube |
+| `instagram-reel-cover` | 1080x1920 portrait cover for Instagram Reels; essential content stays center-safe |
+| `resolve-vertical` | 1080x1920 shot-by-shot reframed Resolve picture master |
 | `short` | Rendered vertical short video |
 
 ## Native Script Rule

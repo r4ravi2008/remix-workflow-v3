@@ -1,0 +1,23 @@
+[package]
+name = "editor-cli"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "native-editor"
+path = "src/main.rs"
+
+[features]
+test-hooks = ["editor-core/test-hooks"]
+
+[dependencies]
+editor-core = { path = "../editor-core" }
+serde.workspace = true
+serde_json.workspace = true
+schemars.workspace = true
+sha2.workspace = true
+
+[dev-dependencies]
+flate2 = "1.1"
+rusqlite.workspace = true

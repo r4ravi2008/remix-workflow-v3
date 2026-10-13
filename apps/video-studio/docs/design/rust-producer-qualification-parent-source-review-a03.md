@@ -1,0 +1,21 @@
+# Rust producer qualification A03 parent source review
+
+A03 is rejected before compilation with one P2 metadata group. The four A02 repairs are closed in source scope. Separate-author source review is complete. This source review creates no accepted value or execution authority.
+
+Root read the complete eight-file diff against the fully read frozen A02 package. src/lib.rs is byte-identical. qualification.rs changes only fixed A03 evidence, output, and reader paths plus the two case dependency indices. The harness changes only its crate name. Documentation and recipe changes close the four reconciled A02 groups.
+
+Root rehashed all eight source rows, totaling 133,496 bytes. Root rehashed all 124 external rows, totaling 29,569,950 bytes. The 64,579-byte manifest has SHA-256 92339f65ba2554090cdd01e78ff3a22192496194c82fd1deb579b462d6f14761. Both explicitly framed aggregates reproduce: source 92d6a67f158cc04a291e8c9a12d03434966ffd52203f1ccc542d6ba1592468ba and external 1428b76b9df3b6bc06c49e6e629ba43aab30189290c5219b0c38c4e9559e97e4. Source order is ascending path UTF-8 bytes. External order is ascending role UTF-8 bytes, then path UTF-8 bytes. Each domain has one NUL terminator. No row adds NUL separators.
+
+All 16 recursively discovered literal Rust path/include sources are bound. The predecessor metadata retains the exact A02 manifest digest. The external table binds the eight A02 files and complete stable A02 parent and peer review artifacts. Root independently rehashed the A02 manifest and verified its declared predecessor digest. A02 remains immutable and uncompiled.
+
+The fixed recipe now uses the A03 exclusive attempt/tmp path. Its package, working directory, crate names, library output, diagnostic output, and attempt paths agree. The compiler, target, four direct archives, existing dependency roots, and ten environment variables retain the reviewed recipe. The A03 attempt, diagnostic publication, future evidence, and reader-control roots are absent.
+
+Each of the ten case booleans now depends on measured canonical report 0011 and actual invocation 0006. The ten-case order, count scalars, and 63-role schedule remain unchanged. The public contract shows FixedReconstructionDiagnostic::publish_fixed_diagnostics as a method. The contract names the three top Source rows appended by the trust root: acceptance, peer, and parent.
+
+The production pin remains absent. The diagnostic publishes six role-index receipts and seven files, then records seven qualification negatives and four controls through this package's reader. Historical subject and trust matrices are not repeated. The runner vector's actual byte count and SHA-256 require publication and independent evidence review before trust data is authored.
+
+P2 — correct the two explicit A02 predecessor aggregate labels. predecessors.qualificationA02SourceAggregateSha256 is d3bdadb014d9a572946880fae13658c4f72888106ad9c4ace9b1e8712fa2c049. The frozen A02 source aggregate is babe43dc9c6eff45c905f77a49894f691a3ea2be4b0b78e9d2dfc76adf6962f8. predecessors.qualificationA02ExternalAggregateSha256 repeats the A03 aggregate 1428b76b9df3b6bc06c49e6e629ba43aab30189290c5219b0c38c4e9559e97e4. The frozen A02 external aggregate is 451ed5a3f4eb443402469b5f26d6c17731306cafd4d0133151948bc492e9388c. These labels conflict with their exact predecessor manifest and completed reviews. Populate both values directly from the frozen A02 manifest. Preserve A03 and repair only this group in a coherent successor.
+
+No A03 compilation, control execution, accepted value, trust pin, attempt authorization, native producer, media operation, product integration, WATCHED, HEARD, or creative acceptance occurred. Root source review is complete within these finite boundaries. The initial parent report was corrected before use after root and peer both verified these explicit predecessor mismatches.
+
+Root read the complete 3,726-byte separate-author peer report with SHA-256 5ad6b45964bc85e50e7e5d4816856286002ce643cfabb5728b12b350952c91bf. The peer confirms no P1 and the same one P2 group. The peer rehashed all source/external rows and both aggregates. Both reviews are same-model-family and nonblind. A04 must close only the explicit predecessor metadata group before its fresh source review and fixed diagnostic build.

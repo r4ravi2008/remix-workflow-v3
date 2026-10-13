@@ -41,6 +41,7 @@ digraph remix_full_pipeline {
 |---|---|
 | Steps 0-4 and optional 5 | `remix-phase-one` |
 | Steps 6-11, including composable Step 7 visual prep | `remix-phase-two` |
+| provider-generated motion needed by Step 7 or the final edit | `music-video-director` |
 | optional verified private YouTube draft | `upload-remix-to-youtube` |
 | checkpoint / delegation / resume logic | this skill |
 
@@ -53,9 +54,10 @@ digraph remix_full_pipeline {
    - remix assets were supplied directly, or
    - remix assets can be detected in the workspace.
 4. Invoke `remix-phase-two` when the handoff contract is satisfied.
-5. When the user explicitly requested a YouTube upload, invoke `upload-remix-to-youtube` after phase two completes.
-6. Treat the saved private draft as the upload phase's terminal state; the user publishes it manually.
-7. Summarize completed artifacts and remaining blockers.
+5. When phase two needs provider-generated motion rather than only its still-sequence or cover-art path, invoke `music-video-director` for that component. Resume phase two only after its accepted local clips and provider job lineage are recorded in the remix workspace. The motion provider is a project choice, not a new pipeline phase.
+6. When the user explicitly requested a YouTube upload, invoke `upload-remix-to-youtube` after phase two completes.
+7. Treat the saved private draft as the upload phase's terminal state; the user publishes it manually.
+8. Summarize completed artifacts and remaining blockers.
 
 Do not duplicate the detailed step-by-step instructions from the phase skills.
 
@@ -66,6 +68,7 @@ Do not duplicate the detailed step-by-step instructions from the phase skills.
 | Re-documenting every step in this skill | Delegate to the phase skills instead |
 | Forcing phase one before checking existing remix assets | Jump straight to `remix-phase-two` when appropriate |
 | Losing the checkpoint contract | Explicitly verify handoff assets before phase two |
+| Baking one video provider into the coordinator | Delegate provider choice and generation evidence to `music-video-director` |
 | Treating render completion as upload authorization | Invoke the upload skill only after an explicit request |
 | Extending the upload into publication | Stop at the verified private draft |
 

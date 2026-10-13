@@ -1,0 +1,17 @@
+[workspace]
+members = ["crates/editor", "crates/cli"]
+exclude = ["experiments/native-media"]
+resolver = "3"
+
+[workspace.package]
+edition = "2024"
+version = "0.1.0"
+
+[workspace.dependencies]
+serde = { version = "=1.0.229", features = ["derive"] }
+serde_json = { version = "1.0", features = ["float_roundtrip"] }
+sha2 = "0.10"
+rusqlite = { version = "=0.31.0", features = ["bundled"] }
+
+[workspace.lints.clippy]
+all = "warn"

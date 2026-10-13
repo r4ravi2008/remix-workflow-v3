@@ -27,13 +27,13 @@ interface CoverArtVerticalLayoutProps {
 //  +----------------------+
 //  |                      |
 //  |   cover-art.jpg      |
-//  |   (inset, rounded,   |  60% (1152px)
+//  |   (inset, rounded,   |  80% (1536px)
 //  |    feathered edges)   |
 //  |                      |
 //  |   title + genre      |
 //  +----------------------+
 //  |                      |
-//  |   scrolling lyrics   |  30% (576px)
+//  |   scrolling lyrics   |  10% (192px)
 //  |   (active highlight) |
 //  |                      |
 //  +----------------------+
@@ -44,8 +44,8 @@ interface CoverArtVerticalLayoutProps {
 // Cover art is inset by ~2.5% with rounded corners and feathered edges
 // that blend smoothly into the background gradient.
 
-const COVER_ART_HEIGHT = 1152; // 60% of 1920px
-const LYRICS_HEIGHT = 576; // 30% of 1920px
+const COVER_ART_HEIGHT = 1536; // 80% of 1920px
+const LYRICS_HEIGHT = 192; // 10% of 1920px
 const VISUALIZER_HEIGHT = 192; // 10% of 1920px
 
 const LINE_HEIGHT = 60;
@@ -264,8 +264,8 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
       {/* ── Option C: Radial rings behind cover art ── */}
       <svg
         width="1080"
-        height="1152"
-        viewBox="0 0 1080 1152"
+        height={COVER_ART_HEIGHT}
+        viewBox={`0 0 1080 ${COVER_ART_HEIGHT}`}
         style={{
           position: 'absolute',
           top: 0,
@@ -309,7 +309,7 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
         />
       </div>
 
-      {/* ── Top 60%: cover art + title below ── */}
+      {/* ── Top 80%: cover art + title below ── */}
       <div
         style={{
           width: '100%',
@@ -355,14 +355,34 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
                   'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
               }}
             >
+              {/* Blurred fill layer — keeps the 1:1 cover art area rich when the
+                  frame is letterboxed, without cropping or stretching the main image */}
+              {!coverArtError && (
+                <Img
+                  src={staticFile(getSafeImageSrc(activeImageSrc))}
+                  onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
+                  style={{
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'cover',
+                    objectPosition: 'center',
+                    filter: 'blur(28px) saturate(1.2) brightness(0.6)',
+                    transform: 'scale(1.15)',
+                  }}
+                />
+              )}
               {!coverArtError ? (
                 <Img
                   src={staticFile(getSafeImageSrc(activeImageSrc))}
                   onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
                   style={{
+                    position: 'absolute',
+                    inset: 0,
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                     objectPosition: 'center',
                   }}
                 />
@@ -489,7 +509,7 @@ export const CoverArtVerticalLayout: React.FC<CoverArtVerticalLayoutProps> = ({
         </div>
       </div>
 
-      {/* ── Middle 30%: scrolling lyrics ── */}
+      {/* ── Middle 10%: scrolling lyrics ── */}
       <div
         style={{
           width: '100%',

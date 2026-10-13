@@ -1,0 +1,4 @@
+interface:
+  display_name: "Create Dhool Song Covers"
+  short_description: "Build paired YouTube and Instagram song covers"
+  default_prompt: "Use $create-dhool-song-thumbnail to create source-authentic Dhool covers for YouTube and Instagram with ChatGPT image generation."

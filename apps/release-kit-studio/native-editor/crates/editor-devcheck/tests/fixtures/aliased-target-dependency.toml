@@ -1,0 +1,4 @@
+[package]
+name = "editor-core"
+[target.'cfg(unix)'.dependencies]
+codec = { package = "ffmpeg-next", version = "1", optional = true }

@@ -1,0 +1,160 @@
+{
+  "schemaVersion": 1,
+  "archivedOn": "2026-10-05",
+  "originalLinksUseOriginalPaths": true,
+  "entries": [
+    {
+      "originalPath": "apps/release-kit-studio/README.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/README.md",
+      "action": "copy-baseline",
+      "reason": "Earlier Release Kit prototype guidance retained while the current entry point is corrected",
+      "sha256": "433de1dcebedda3342d436c6f8f0e83c632d28f14dcba538e43d3aee6b314d69",
+      "bytes": 14983,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/PRODUCT.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/PRODUCT.md",
+      "action": "copy-baseline",
+      "reason": "Earlier Release Kit prototype guidance retained while the current entry point is corrected",
+      "sha256": "9c927dd4bc163e85146895259e030510a58899217b5878bc1cc0e50212a19ae9",
+      "bytes": 3786,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/agent/README.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/agent/README.md",
+      "action": "copy-baseline",
+      "reason": "Earlier Release Kit prototype guidance retained while the current entry point is corrected",
+      "sha256": "5a740fdc2cd0b58f1b637b1774f80ab0bbda354985083cb803541e22a9b32c49",
+      "bytes": 18888,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/worker/README.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/worker/README.md",
+      "action": "copy-baseline",
+      "reason": "Earlier Release Kit prototype guidance retained while the current entry point is corrected",
+      "sha256": "1d5bcc384cf830c209e49a327a7daa12ed50e31b62a06df4ba4bfd3687482dda",
+      "bytes": 5099,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/DESIGN.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/DESIGN.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "e4216d72453e11d286f05df89f78e6acbfb40baf107d82c918ce02e189e640f9",
+      "bytes": 15703,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/.impeccable/studio-brief.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/.impeccable/studio-brief.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "4d4435d0cc2701d334cd063a406055e3bd323a572c83d49e74bb79e2eced75e2",
+      "bytes": 2189,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/.impeccable/surfaces/src-entry-ts.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/.impeccable/surfaces/src-entry-ts.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "9aa7a49094f6edfca135383a4abad1c7ddf282eac51128626cb6b9ae8dc6721f",
+      "bytes": 2312,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/.impeccable/review/finish-review.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/.impeccable/review/finish-review.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "641f7ed01ce121a08b43173e905af5da8c9fc094805f66120539d2348df6b48c",
+      "bytes": 3607,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/agent/LOCAL_CLI.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/agent/LOCAL_CLI.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "c5e5127b93f118dc97485ab7ee34985fc46dd3196567b107248cbbad15530132",
+      "bytes": 5275,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/director-implementation.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/director-implementation.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "f6220604e770baf55ba3b45c0b789c221b7a42d7baa96b5a5097be1670d0afc6",
+      "bytes": 5235,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/implementation-progress.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/implementation-progress.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "b636ada2b19a212b4eec73be872e9f45788a06c5f8a08642893d91363b858ebc",
+      "bytes": 7173,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/product-and-cloud-plan.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/product-and-cloud-plan.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "115ac920917c924701b23f35627ca276abcc834882311faede3880456ea0456b",
+      "bytes": 8342,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/production-architecture.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/production-architecture.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "faa98f993d392184b612fc85fcb061eed06ae1620d81aa06210c08ef6c74c574",
+      "bytes": 8906,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/editor/ARCHITECTURE.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/editor/ARCHITECTURE.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "9482e7e9a54ba803262f7f99bae4420b9b93ab6bfa060549315099d007dc347f",
+      "bytes": 8309,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/editor/IMPLEMENTATION.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/editor/IMPLEMENTATION.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "4cde2fc99da3fbec16cb50ce587d08470f7483cc34c98cff0ca2168ffea490f4",
+      "bytes": 15316,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/editor/PROGRESS.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/editor/PROGRESS.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "9af1c6621b82fe11d524368fe2b86ab9a112e0f446e05d833a7c79dfdccf3f03",
+      "bytes": 19264,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/docs/editor/SPEC.md",
+      "archivePath": "apps/release-kit-studio/docs/archive/2026-10-05/docs/editor/SPEC.md",
+      "action": "move",
+      "reason": "Earlier Release Kit UI, worker, or Python/FFmpeg prototype record, outside the Rust implementation contract",
+      "sha256": "775fad1490cb4bee00ba95a67f22829ede1a89abb320e3924cd39e2aa91d4a5f",
+      "bytes": 12123,
+      "archivedOn": "2026-10-05"
+    }
+  ]
+}

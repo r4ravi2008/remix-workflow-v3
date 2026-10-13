@@ -1,0 +1,4 @@
+interface:
+  display_name: "Music Video Director"
+  short_description: "Song-led storyboards, AI footage, and Resolve edits"
+  default_prompt: "Use $music-video-director to turn my song and creative direction into a beat-synced music video, starting from the assets I already have."

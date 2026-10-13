@@ -1,0 +1,52 @@
+{
+  "name": "release-kit-studio",
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "format": "oxfmt",
+    "test": "vitest run",
+    "test:editor-bun": "bun agent/check-editor-request-bun.mjs",
+    "test:perception": "python3 -m unittest agent/test_audio_perception.py agent/test_audio_duration.py agent/test_omni_perception.py agent/test_speech_evidence.py agent/test_remote_observation.py agent/test_lyric_candidates.py agent/test_lyric_alignment.py agent/test_ctc_alignment.py agent/test_lyric_audit.py editor/engine/test_visual_diagnostics.py editor/engine/test_preview.py",
+    "lint": "oxlint src agent editor",
+    "editor": "bun agent/editor-cli.ts",
+    "observe": "bun agent/observe.ts",
+    "deploy": "alchemy deploy",
+    "destroy": "alchemy destroy",
+    "check": "bun run typecheck && bun run lint && bun run test && bun run test:perception && bun run test:editor-bun && bun run build",
+    "editor:local:setup": "bun agent/editor-local.mjs setup",
+    "editor:local": "bun agent/editor-local.mjs serve",
+    "editor:local:cli": "bun agent/editor-local.mjs cli",
+    "test:editor-local": "bun agent/check-editor-local.mjs"
+  },
+  "dependencies": {
+    "@effect/platform-browser": "4.0.0",
+    "@foldkit/ui": "0.165.0",
+    "@fontsource-variable/manrope": "^5.3.0",
+    "effect": "4.0.0",
+    "foldkit": "0.165.0"
+  },
+  "devDependencies": {
+    "@alchemy.run/frontend-frameworks": "2.0.0-beta.80",
+    "@cloudflare/workers-types": "5.20261003.1",
+    "@effect/platform-bun": "4.0.0",
+    "@effect/platform-node": "4.0.0",
+    "@foldkit/devtools": "0.165.0",
+    "@foldkit/devtools-mcp": "0.24.0",
+    "@foldkit/oxlint-plugin": "0.15.1",
+    "@foldkit/vite-plugin": "0.26.0",
+    "@tailwindcss/vite": "^4.3.3",
+    "@types/node": "^26.6.4",
+    "alchemy": "2.0.0-beta.80",
+    "happy-dom": "^20.14.5",
+    "oxfmt": "^0.66.0",
+    "oxlint": "^1.85.0",
+    "tailwindcss": "^4.3.3",
+    "typescript": "^7.0.2",
+    "vite": "^8.3.1",
+    "vitest": "^5.0.2"
+  }
+}

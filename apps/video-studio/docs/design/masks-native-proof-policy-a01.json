@@ -1,0 +1,80 @@
+{
+  "schema": 1,
+  "state": "declared-before-mask-implementation-or-export",
+  "scope": "bounded native technical masks unit; no watched/heard/creative claim",
+  "frames": 72,
+  "width": 320,
+  "height": 180,
+  "frame_rate": {
+    "numerator": 24,
+    "denominator": 1
+  },
+  "tracks": 4,
+  "sources": "masks-proof-inputs-a01.json; four common picture assets and one WAV per variant",
+  "preencode": {
+    "metric": "exact BGRA byte equality",
+    "scope": "12 independent8x8 pure fixture frames replayed through product composition",
+    "frames": 12,
+    "width": 8,
+    "height": 8,
+    "required": "every pure fixture frame and byte",
+    "actual_native_pipeline": "No raw compositor buffer dump exists;72-frame native reference is compared with decoded H.264 full frames and each ROI, not claimed byte-exact."
+  },
+  "decoded_picture": {
+    "metric": "RGB MSE and PSNR with maximum sample value 255",
+    "minimum_psnr_db": 34.0,
+    "zero_mse": "record exact_identity true and psnr_db null; do not emit Infinity",
+    "roi_definition": "generate and hash exact frame-local rectangles before export from the selected fixture and independent reference",
+    "regions": [
+      {
+        "kind": "full_frame",
+        "definition": "complete 320x180 output"
+      },
+      {
+        "kind": "reveal_interior",
+        "definition": "source-bearing clipped picture-window pixels with raw mask coverage65536"
+      },
+      {
+        "kind": "fractional_strip",
+        "definition": "source-bearing clipped picture-window row or column with raw coverage strictly between0 and65536"
+      },
+      {
+        "kind": "hidden_region",
+        "definition": "source-bearing clipped picture-window pixels whose final effective weight is zero; compare the final composed reference including other layers"
+      },
+      {
+        "kind": "contain_bar",
+        "definition": "clipped destination rectangle minus fitted source-bearing picture window"
+      },
+      {
+        "kind": "overlap",
+        "definition": "pairwise intersection of positive effective bounds from active tracks"
+      },
+      {
+        "kind": "signed_clip_visible",
+        "definition": "visible picture-window intersection for placements with negative x or y"
+      }
+    ],
+    "nonempty_regions": "require coordinates, RGB sample count, MSE and pass at34dB or exact identity separately",
+    "empty_regions": "record empty with sample_count0 and no metric or pass claim",
+    "lossy_scope": "pure byte equality is edge-arithmetic authority; H.264 ROI measurements are separate"
+  },
+  "audio": {
+    "frames": 144000,
+    "sample_rate": 48000,
+    "channels": 2,
+    "synthetic_interval": [
+      8191,
+      152191
+    ],
+    "canonical24_interval": [
+      0,
+      144000
+    ],
+    "minimum_channel_cosine": 0.999,
+    "clock": "integer epoch/ticks/timescale; reject booleans/missing epoch; positive continuous chunks and EOF",
+    "captures": "retain each fresh capture; compare each to its actual WAV interval; do not require identical f32 bytes"
+  },
+  "source_execution": "direct native fully-masked worker test with held-source PTS fault injection; no raster while valid source still executes",
+  "ownership": "fresh frozen mask producer, Plan6 intents, source/receipt/reverify bindings, active cancel, eight legacy roundtrips/readbacks and deliberate corruption controls"
+}

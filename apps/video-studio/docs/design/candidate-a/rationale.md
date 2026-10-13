@@ -1,0 +1,88 @@
+# Rationale
+
+## Problem
+
+The editor must own real movie and audio semantics while remaining usable without a hosted application. It needs immutable revisions, exact source identity, integer edit boundaries, layered timelines, recoverable exports, and truthful review evidence. The shape is non-obvious because Panja combines unsupported and supported source codecs, historical proxy frame labels, generated originals, and perception gates. The Rust editor must preserve that history without importing the old runtime or letting application adapters become a second editor.
+
+## Usage (caller's view)
+
+[`README.md`](README.md) is the normative usage sketch. A library caller opens `Studio`, creates or opens one `Project`, and performs whole operations. `Project::commit` accepts one atomic change set. `Project::export` produces or reconciles one source-bound artifact. `Project::record_review` stores an observation for that exact artifact. The direct CLI maps one request to the same methods. An Effect adapter reconciles Herdr separately, then imports a verified generated original and its receipt.
+
+The caller never selects internal stages. It never handles AVFoundation objects, SQLite rows, staging paths, writer backpressure, or temporary media. This keeps the call chain short and makes the usage agree with [`types.rs`](types.rs).
+
+## Shape
+
+The persistent `Project` aggregate is the authority. It contains an immutable revision journal, mutable branch heads, an intent journal, content-addressed assets, source representation bindings, export jobs, artifacts, and review evidence.
+
+Each revision stores one complete semantic snapshot. Its frame rate is rational. Video and audio boundaries use integer frame, sample, or native media tick types. Half-open intervals and nonzero durations are encoded in types. Source clips name presentation sample ordinals from an immutable sample index. Retime knots map integer output frame boundaries to integer source ticks. These choices prevent floating-point seconds from becoming edit identity, per `encode-lessons-in-structure`.
+
+An asset ID is its measured byte hash. A source binding separates original authority from the exact representation selected for decode. A nonidentity representation requires a sample map and verification receipt. This makes the Panja VP9 limitation visible and prevents silent proxy selection, per `boundary-discipline`.
+
+Lineage is an acyclic graph over immutable assets and exact ranges. Generated originals record external attempt and workflow receipts. Cleanup, aspect normalization, retiming proxies, and upscales become separate derived assets. The timeline revision contains nondestructive edit transforms. This gives each transformation one owner and one source of truth.
+
+Timeline track order defines composition order. Items within one visual lane cannot overlap. Layering uses separate tracks. Video and audio use separate interval types. Masks, motion, color, text, and audio values are part of the revision. Text preserves exact UTF-8 and binds an explicit font-asset chain. No implicit normalization, transliteration, or font fallback occurs.
+
+The aggregate validates the complete candidate snapshot before it appends a revision. Import paths exist only at the boundary. Stored snapshots use content identity. A change set either commits fully or has no semantic effect, per `make-operations-idempotent` and `boundary-discipline`.
+
+Long export work uses a durable job with a fencing epoch. The database lock protects claims and promotion, not the whole render. Replaying the same intent first reconciles the stored job and output. A stale worker cannot promote after another worker takes ownership, per `separate-before-serializing-shared-state`.
+
+Review records live beside revisions because adding evidence must not create a new edit revision. Each record binds the exact revision, project hash, artifact hash, renderer build, evidence kind, coverage, actor, and outcome. Acceptance is derived from policy and matching records. There is no trusted mutable acceptance flag. Measurements cannot satisfy playback or listening gates.
+
+`video-studio-core` exposes `Studio` and `Project`. `video-studio-macos` contains all unsafe framework adaptation. `video-studio-cli` owns transport and process lifetime. This creates one deep public interface with three ownership layers. It hides codec probing, sample indexing, timeline evaluation, composition, mixing, encoding, storage, and recovery behind six meaningful project operations. The remaining exposed complexity is intrinsic: callers must choose assets, exact ranges, edit semantics, output profiles, and review claims.
+
+Effect and tenant application orchestration remain separate. The Effect adapter owns authorization, budgets, Herdr submission, uncertain-job reconciliation, process supervision, and delivery. It uses the CLI contract and cannot query native storage. The native editor imports only verified generated bytes and completed receipts.
+
+## Synthesis decision
+
+This file is Candidate A only. It does not inspect another candidate. The parent architect must populate the final synthesis decision after independent comparison.
+
+Candidate A should be selected when project mutation, crash recovery, source lineage, and evidence are the dominant complexity. Its aggregate interface keeps those invariants behind one durable owner.
+
+## Tradeoffs accepted
+
+- We accept a substantial aggregate implementation in exchange for a small caller surface and one invariant owner.
+- We accept complete immutable snapshots in exchange for simple inspection, hashing, and recovery. Storage can deduplicate snapshot content later.
+- We accept strict optimistic conflicts in exchange for explicit concurrent edits. Branching preserves intentional alternatives.
+- We accept staging media before the commit transaction in exchange for short database locks. Orphaned content-addressed blobs need garbage collection.
+- We accept recomputing an interrupted MP4 in the first version in exchange for correct idempotency before resumable native encoding exists.
+- We accept macOS as the first media backend in exchange for a real AVFoundation movie and audio path. The core keeps framework types private.
+- We accept explicit representation records in exchange for preserving unsupported originals without hidden transcoding.
+- We accept CPU composition as the first correctness path in exchange for avoiding an unverified Metal toolchain. Full-film speed remains measured work.
+- We accept explicit font assets in exchange for stable original-script shaping and no silent fallback.
+- We accept separate application job storage in exchange for keeping tenant, provider, and Herdr policy out of the native editor.
+
+## Alternatives considered
+
+### Mutable project document
+
+A single overwritten JSON document makes the first save simple. It exposes revision, concurrency, recovery, and review invalidation rules to every caller. It also weakens artifact binding. The immutable aggregate hides more complexity behind the same caller actions.
+
+### Caller-coordinated media services
+
+Separate public probe, decode, composite, mix, encode, mux, and verify services look modular. They force callers to preserve ordering, temporary ownership, timestamps, and failure recovery. That is a shallow interface. One export operation has greater interface depth.
+
+### AVMutableComposition as project authority
+
+Persisting an Apple composition would simplify some native export cases. It would leak platform objects into project identity and make custom masks, generated lineage, review evidence, and another backend depend on AVFoundation representation decisions. The chosen shape keeps AVFoundation behind one adapter.
+
+### Project-wide serialized render lock
+
+Holding one SQLite write transaction during a full movie render prevents competing writers. It also blocks edits for minutes or hours and does not model worker death cleanly. Short claims plus fencing keep shared state safe without long serialization.
+
+## Open questions and risks
+
+- Which audio hash becomes canonical for the rebuilt Panja film: the 261.56-second master or the 273-second reprise master?
+- Which verified native representation and sample map will cover every Panja range from the VP9 authority asset?
+- Do historical `source_frames` describe original presentation samples, extracted proxy frames, or timeline frames?
+- What minimum macOS version and hardware family must the first release support?
+- Is Rec.709 SDR the first supported color contract, with HDR rejected until a separate corpus passes?
+- Which font files can the project bundle for Telugu and other complex-script acceptance cases?
+- Does the full-film target require a custom Metal compositor, or can Core Image and CPU composition meet measured throughput?
+- Which review actor types may satisfy creative gates under autonomous mode, and which gates require human approval?
+- How much staged media storage can one project consume before the aggregate applies backpressure?
+- Which native representation acquisition process is allowed when the original codec is unsupported?
+
+## Next implementation step
+
+Build `MAC-NATIVE-MOVIE-AUDIO-ROUNDTRIP-01` with the real AV1 source and WAV fixture before any PNG-only, timeline-wide, or Panja production work.
+

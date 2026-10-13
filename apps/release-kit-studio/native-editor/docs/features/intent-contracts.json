@@ -1,0 +1,795 @@
+{
+  "version": 1,
+  "coreDocumentSha256": "507ec68bec2e8339d3b4db6d7596031193e40ae0f4b051910feb08dfcb475777",
+  "fixture": {
+    "durationFrames": 96,
+    "frameRate": 24,
+    "width": 64,
+    "height": 64,
+    "background": [
+      12,
+      25,
+      48,
+      255
+    ],
+    "blue": [
+      0,
+      64,
+      255,
+      255
+    ],
+    "gold": [
+      255,
+      192,
+      0,
+      255
+    ],
+    "alpha": [
+      12,
+      25,
+      48,
+      160
+    ]
+  },
+  "features": [
+    {
+      "featureId": "CORE-01",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-01-A",
+          "check": "discovery",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "discovery",
+              "value": {
+                "toolNames": [
+                  "artifact.verify",
+                  "engine.capabilities",
+                  "frame.render",
+                  "project.commit",
+                  "project.create",
+                  "project.inspect"
+                ],
+                "implementedFeatureIds": [
+                  "CORE-01",
+                  "CORE-02",
+                  "CORE-03",
+                  "CORE-04",
+                  "CORE-05",
+                  "CORE-06",
+                  "CORE-07",
+                  "CORE-08"
+                ],
+                "binaryMatches": true,
+                "noState": true,
+                "unknownExit": 2,
+                "unknownError": "unknown_tool",
+                "futureExit": 2,
+                "futureError": "unsupported_capability"
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-01-B",
+          "check": "schema",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "schema",
+              "value": {
+                "schemaIdentity": true,
+                "schemaHashMatches": true,
+                "unknownFieldExit": 2,
+                "unknownFieldError": "invalid_input",
+                "noState": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-02",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-02-A",
+          "check": "historical-revisions",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "historical-revisions",
+              "value": {
+                "createExit": 0,
+                "firstCommitExit": 0,
+                "secondCommitExit": 0,
+                "revision0Exact": true,
+                "revision1Exact": true,
+                "independentHashes": true,
+                "historicalAfterNewRevision": true,
+                "latestRevision": 2
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-02-B",
+          "check": "rate-normalization",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "rate-normalization",
+              "value": {
+                "originalExit": 0,
+                "equivalentExit": 0,
+                "equivalentReplay": true,
+                "sameResult": true,
+                "normalizedRate": {
+                  "numerator": 30000,
+                  "denominator": 1001
+                },
+                "zeroExit": 2,
+                "zeroError": "invalid_input",
+                "noZeroProject": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-03",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-03-A",
+          "check": "old-replay",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "old-replay",
+              "value": {
+                "exit": 0,
+                "originalResult": true,
+                "returnedRevision": 1,
+                "replayed": true,
+                "latestRevision": 2,
+                "latestUnchanged": true,
+                "independentHash": true
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-03-B",
+          "check": "intent-conflict",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "intent-conflict",
+              "value": {
+                "exit": 2,
+                "error": "intent_conflict",
+                "beforeAfterEqual": true,
+                "independentHashes": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-04",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-04-A",
+          "check": "adjacent-intervals",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "adjacent-intervals",
+              "value": {
+                "exactClips": true,
+                "frame47": {
+                  "width": 64,
+                  "height": 64,
+                  "allPixelsMatch": true,
+                  "decodedChannels": 16384,
+                  "expectedRgba": [
+                    0,
+                    64,
+                    255,
+                    255
+                  ],
+                  "firstPixel": [
+                    0,
+                    64,
+                    255,
+                    255
+                  ],
+                  "mismatchCount": 0,
+                  "firstMismatch": null
+                },
+                "frame48": {
+                  "width": 64,
+                  "height": 64,
+                  "allPixelsMatch": true,
+                  "decodedChannels": 16384,
+                  "expectedRgba": [
+                    255,
+                    192,
+                    0,
+                    255
+                  ],
+                  "firstPixel": [
+                    255,
+                    192,
+                    0,
+                    255
+                  ],
+                  "mismatchCount": 0,
+                  "firstMismatch": null
+                },
+                "frame47Binding": true,
+                "frame48Binding": true
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-04-B",
+          "check": "rollback",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "rollback",
+              "value": {
+                "exit": 2,
+                "error": "invalid_input",
+                "beforeAfterEqual": true,
+                "independentHashes": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-05",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-05-A",
+          "check": "all-pixels",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "all-pixels",
+              "value": {
+                "background": {
+                  "width": 64,
+                  "height": 64,
+                  "allPixelsMatch": true,
+                  "decodedChannels": 16384,
+                  "expectedRgba": [
+                    12,
+                    25,
+                    48,
+                    255
+                  ],
+                  "firstPixel": [
+                    12,
+                    25,
+                    48,
+                    255
+                  ],
+                  "mismatchCount": 0,
+                  "firstMismatch": null
+                },
+                "alpha": {
+                  "width": 64,
+                  "height": 64,
+                  "allPixelsMatch": true,
+                  "decodedChannels": 16384,
+                  "expectedRgba": [
+                    12,
+                    25,
+                    48,
+                    160
+                  ],
+                  "firstPixel": [
+                    12,
+                    25,
+                    48,
+                    160
+                  ],
+                  "mismatchCount": 0,
+                  "firstMismatch": null
+                },
+                "uncovered": {
+                  "width": 64,
+                  "height": 64,
+                  "allPixelsMatch": true,
+                  "decodedChannels": 16384,
+                  "expectedRgba": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "firstPixel": [
+                    0,
+                    0,
+                    0,
+                    0
+                  ],
+                  "mismatchCount": 0,
+                  "firstMismatch": null
+                },
+                "commitExit": 0,
+                "backgroundBinding": true
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-05-B",
+          "check": "render-recovery",
+          "profile": "test-hooks",
+          "expected": [
+            {
+              "id": "render-recovery",
+              "value": {
+                "checkpoints": [
+                  {
+                    "hook": "after-pending",
+                    "checkpoint": true,
+                    "timeoutExit": 1,
+                    "timeoutError": "process_timeout",
+                    "bounded": true,
+                    "retryExit": 0,
+                    "pixels": {
+                      "width": 64,
+                      "height": 64,
+                      "allPixelsMatch": true,
+                      "decodedChannels": 16384,
+                      "expectedRgba": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "firstPixel": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "mismatchCount": 0,
+                      "firstMismatch": null
+                    },
+                    "replayExit": 0,
+                    "replayed": true,
+                    "sameReceipt": true,
+                    "revisionBinding": true,
+                    "intentBinding": true,
+                    "exactBytesMatchUnpaused": true,
+                    "receiptBindings": {
+                      "projectId": "project",
+                      "revision": 1,
+                      "frame": 0,
+                      "intentId": "after-pending",
+                      "snapshotHashMatches": true,
+                      "binaryHashMatches": true,
+                      "rendererVersion": "native-rgba-png/0.1.0",
+                      "artifactIdMatches": true,
+                      "generatedPathMatches": true,
+                      "measuredHashMatches": true,
+                      "measuredLengthMatches": true,
+                      "width": 64,
+                      "height": 64,
+                      "format": "png-rgba8"
+                    }
+                  },
+                  {
+                    "hook": "during-file-write",
+                    "checkpoint": true,
+                    "timeoutExit": 1,
+                    "timeoutError": "process_timeout",
+                    "bounded": true,
+                    "retryExit": 0,
+                    "pixels": {
+                      "width": 64,
+                      "height": 64,
+                      "allPixelsMatch": true,
+                      "decodedChannels": 16384,
+                      "expectedRgba": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "firstPixel": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "mismatchCount": 0,
+                      "firstMismatch": null
+                    },
+                    "replayExit": 0,
+                    "replayed": true,
+                    "sameReceipt": true,
+                    "revisionBinding": true,
+                    "intentBinding": true,
+                    "exactBytesMatchUnpaused": true,
+                    "receiptBindings": {
+                      "projectId": "project",
+                      "revision": 1,
+                      "frame": 0,
+                      "intentId": "during-file-write",
+                      "snapshotHashMatches": true,
+                      "binaryHashMatches": true,
+                      "rendererVersion": "native-rgba-png/0.1.0",
+                      "artifactIdMatches": true,
+                      "generatedPathMatches": true,
+                      "measuredHashMatches": true,
+                      "measuredLengthMatches": true,
+                      "width": 64,
+                      "height": 64,
+                      "format": "png-rgba8"
+                    }
+                  },
+                  {
+                    "hook": "after-file-flush",
+                    "checkpoint": true,
+                    "timeoutExit": 1,
+                    "timeoutError": "process_timeout",
+                    "bounded": true,
+                    "retryExit": 0,
+                    "pixels": {
+                      "width": 64,
+                      "height": 64,
+                      "allPixelsMatch": true,
+                      "decodedChannels": 16384,
+                      "expectedRgba": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "firstPixel": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "mismatchCount": 0,
+                      "firstMismatch": null
+                    },
+                    "replayExit": 0,
+                    "replayed": true,
+                    "sameReceipt": true,
+                    "revisionBinding": true,
+                    "intentBinding": true,
+                    "exactBytesMatchUnpaused": true,
+                    "receiptBindings": {
+                      "projectId": "project",
+                      "revision": 1,
+                      "frame": 0,
+                      "intentId": "after-file-flush",
+                      "snapshotHashMatches": true,
+                      "binaryHashMatches": true,
+                      "rendererVersion": "native-rgba-png/0.1.0",
+                      "artifactIdMatches": true,
+                      "generatedPathMatches": true,
+                      "measuredHashMatches": true,
+                      "measuredLengthMatches": true,
+                      "width": 64,
+                      "height": 64,
+                      "format": "png-rgba8"
+                    }
+                  },
+                  {
+                    "hook": "after-promotion",
+                    "checkpoint": true,
+                    "timeoutExit": 1,
+                    "timeoutError": "process_timeout",
+                    "bounded": true,
+                    "retryExit": 0,
+                    "pixels": {
+                      "width": 64,
+                      "height": 64,
+                      "allPixelsMatch": true,
+                      "decodedChannels": 16384,
+                      "expectedRgba": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "firstPixel": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "mismatchCount": 0,
+                      "firstMismatch": null
+                    },
+                    "replayExit": 0,
+                    "replayed": true,
+                    "sameReceipt": true,
+                    "revisionBinding": true,
+                    "intentBinding": true,
+                    "exactBytesMatchUnpaused": true,
+                    "receiptBindings": {
+                      "projectId": "project",
+                      "revision": 1,
+                      "frame": 0,
+                      "intentId": "after-promotion",
+                      "snapshotHashMatches": true,
+                      "binaryHashMatches": true,
+                      "rendererVersion": "native-rgba-png/0.1.0",
+                      "artifactIdMatches": true,
+                      "generatedPathMatches": true,
+                      "measuredHashMatches": true,
+                      "measuredLengthMatches": true,
+                      "width": 64,
+                      "height": 64,
+                      "format": "png-rgba8"
+                    }
+                  },
+                  {
+                    "hook": "after-receipt-commit",
+                    "checkpoint": true,
+                    "timeoutExit": 1,
+                    "timeoutError": "process_timeout",
+                    "bounded": true,
+                    "retryExit": 0,
+                    "pixels": {
+                      "width": 64,
+                      "height": 64,
+                      "allPixelsMatch": true,
+                      "decodedChannels": 16384,
+                      "expectedRgba": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "firstPixel": [
+                        12,
+                        25,
+                        48,
+                        255
+                      ],
+                      "mismatchCount": 0,
+                      "firstMismatch": null
+                    },
+                    "replayExit": 0,
+                    "replayed": true,
+                    "sameReceipt": true,
+                    "revisionBinding": true,
+                    "intentBinding": true,
+                    "exactBytesMatchUnpaused": true,
+                    "receiptBindings": {
+                      "projectId": "project",
+                      "revision": 1,
+                      "frame": 0,
+                      "intentId": "after-receipt-commit",
+                      "snapshotHashMatches": true,
+                      "binaryHashMatches": true,
+                      "rendererVersion": "native-rgba-png/0.1.0",
+                      "artifactIdMatches": true,
+                      "generatedPathMatches": true,
+                      "measuredHashMatches": true,
+                      "measuredLengthMatches": true,
+                      "width": 64,
+                      "height": 64,
+                      "format": "png-rgba8"
+                    }
+                  }
+                ],
+                "boundsExit": 2,
+                "boundsError": "invalid_input",
+                "onePngPerIntent": true,
+                "boundsNoOutput": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-06",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-06-A",
+          "check": "receipt-measurements",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "receipt-measurements",
+              "value": {
+                "exit": 0,
+                "verified": true,
+                "receiptUnchanged": true,
+                "independentHashMatches": true,
+                "independentLengthMatches": true,
+                "independentDimensionsMatch": true,
+                "snapshotBinding": true,
+                "revision": 1,
+                "frame": 0
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-06-B",
+          "check": "tamper-preservation",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "tamper-preservation",
+              "value": {
+                "verifyExit": 2,
+                "verifyError": "artifact_integrity_mismatch",
+                "replayExit": 2,
+                "replayError": "artifact_integrity_mismatch",
+                "alteredBytesPreserved": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-07",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-07-A",
+          "check": "framing",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "framing",
+              "value": {
+                "validExit": 0,
+                "oneDocument": true,
+                "requestId": "intent-scenario-request",
+                "emptyStderr": true,
+                "schemaMatches": true,
+                "duplicateExit": 2,
+                "duplicateError": "invalid_input",
+                "malformedExit": 2,
+                "malformedError": "invalid_input"
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-07-B",
+          "check": "deadline-recovery",
+          "profile": "test-hooks",
+          "expected": [
+            {
+              "id": "deadline-recovery",
+              "value": {
+                "blockedExit": 1,
+                "blockedError": "process_timeout",
+                "blockedBounded": true,
+                "blockedComplete": true,
+                "checkpoint": true,
+                "timeoutExit": 1,
+                "timeoutError": "process_timeout",
+                "timeoutBounded": true,
+                "timeoutRequestId": "intent-scenario-request",
+                "retryExit": 0,
+                "retryRevision": 2,
+                "replayExit": 0,
+                "replayed": true,
+                "sameResult": true,
+                "latestRevision": 2,
+                "largeExit": 0,
+                "largeComplete": true,
+                "largeClips": 4000,
+                "largeResponse": true,
+                "readerDelayObserved": true,
+                "largeEmptyStderr": true
+              }
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "featureId": "CORE-08",
+      "nonGoals": [
+        "Full music video production, playback, listening, creative approval, trusted capability promotion"
+      ],
+      "reviewRequirements": [
+        "oracle-adequacy-required-unreviewed"
+      ],
+      "cases": [
+        {
+          "caseId": "CORE-08-A",
+          "check": "progress-authority",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "progress-authority",
+              "value": {
+                "exit": 0,
+                "compiledProgressMatches": true,
+                "independentBinaryMatches": true,
+                "implemented": 8,
+                "planned": 73,
+                "emptyEvidence": true
+              }
+            }
+          ]
+        },
+        {
+          "caseId": "CORE-08-B",
+          "check": "forged-promotion",
+          "profile": "default",
+          "expected": [
+            {
+              "id": "forged-promotion",
+              "value": {
+                "progressExit": 0,
+                "progressUnchanged": true,
+                "futureExit": 2,
+                "futureError": "unsupported_capability",
+                "fakeFilesPreserved": true
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

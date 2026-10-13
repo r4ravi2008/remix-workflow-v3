@@ -1,0 +1,22 @@
+{
+  "status": "preserved-before-masks-implementation",
+  "source_database": "/Users/aira/projects/remix-gpt-coding-agent/artifacts/scratch-video-goal-20261005/native-project-a01/state/studio.sqlite",
+  "records": [
+    {
+      "path": "apps/video-studio/crates/editor/tests/fixtures/legacy/snapshot-schema1-motion.json",
+      "bytes": 410865,
+      "sha256": "1947fcb6939dbec40f13ae23b87a156f5d6e1758fa18e058aaa1f810abc313d3",
+      "sqlite_table": "revisions",
+      "schema": 1
+    },
+    {
+      "path": "apps/video-studio/crates/editor/tests/fixtures/legacy/plan-schema5.json",
+      "bytes": 415912,
+      "sha256": "8ca51e03d048971a86cb598990fabd2f93f839c98b1b6c5fda3eb7aa90c3ee06",
+      "sqlite_table": "plans",
+      "schema": 5
+    }
+  ],
+  "runtime_tests": "pending addition during selected masks implementation",
+  "prior_version": "source-native-unit-a09 remains preserved; these new fixtures were added after A09"
+}

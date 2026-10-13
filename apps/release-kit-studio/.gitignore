@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.alchemy/
+.env
+.env.*
+!.env.example
+.impeccable/review/
+.impeccable/mocks/
+.impeccable/question/
+.impeccable/runtime/
+__pycache__/
+.local/

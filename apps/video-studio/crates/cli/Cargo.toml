@@ -1,0 +1,16 @@
+[package]
+name = "video-studio-cli"
+version.workspace = true
+edition.workspace = true
+
+[[bin]]
+name = "video-studio"
+path = "src/main.rs"
+
+[dependencies]
+video-studio = { path = "../editor" }
+serde_json.workspace = true
+
+[lints]
+workspace = true
+

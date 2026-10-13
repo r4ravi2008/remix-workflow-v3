@@ -1,0 +1,295 @@
+{
+  "schemaVersion": 1,
+  "archivedOn": "2026-10-05",
+  "originalLinksUseOriginalPaths": true,
+  "entries": [
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/candidate-a.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/candidate-a.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "5c256289e11bb02d8c90d53ace581562548a0027b2ee03c68c6005012dbe959b",
+      "bytes": 32663,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/candidate-b.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/candidate-b.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "9d8b0acaa1e1a2eb0dd98691886a20c41d077e73129b8d9d2c092466ec07e28d",
+      "bytes": 12564,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/guardrail-a.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/guardrail-a.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "0c843f380164aa6ca21c68574ca24c433ee265d2c50dea6ab0fe7e872a596f5a",
+      "bytes": 27584,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/guardrail-b.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/guardrail-b.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "a47d45ce747fa70bdf4c6395229ced56f691b0f8662669ddc3e9727a5fad782e",
+      "bytes": 27579,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/guardrail-judge.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/guardrail-judge.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "bc2241d9e41ee5b7be5bb39fe3f1d6bb36eead242a317060d987bb9ac5fb53a7",
+      "bytes": 4175,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/intent-a.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/intent-a.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "cecd0e29407693a3d95a46a6113592b8b7da71bb53c813f49df2f330b246cea0",
+      "bytes": 24351,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/intent-b.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/intent-b.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "3569a3395c65af17d83ea39516a61b00ec3827d7682fb29e911a3eeb13ca2202",
+      "bytes": 21433,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/intent-judge.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/intent-judge.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "8826e06925ed4c8e43a129a6c3fbc8f90d52b27f96fd9fab2fe365d10cc756c8",
+      "bytes": 4293,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/intent-synthesis.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/intent-synthesis.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "806418ad84631f505e53b92d643b1f392c14b051f59955c2c2f795df5c77172f",
+      "bytes": 3689,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/rust-first-a.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/rust-first-a.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "3c908b60a6c4a3eadd11bc0ca6ad6a63e9ed1184aac4ec6f4bfe62ee2b70a22b",
+      "bytes": 6718,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/arena/rust-first-b.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/arena/rust-first-b.md",
+      "action": "move",
+      "reason": "Superseded alternative design or judgment, outside current implementation instructions",
+      "sha256": "7b0a0be0aa6d315af9214846f3ddd129f97cb0ac53fe25677fc26658019394a8",
+      "bytes": 6669,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/AUDIT.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/AUDIT.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "33d31a1c3453b06099eff3e4c95b4537f24ba698c070204369bb7223b1c420b8",
+      "bytes": 2919,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/FEATURE-REVIEW.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/FEATURE-REVIEW.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "8252ac7f33fe6d61d5077a1fe0ddec4b927a7668d9dbabf5599f806917a7e913",
+      "bytes": 1994,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/GROUNDING.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/GROUNDING.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "6db5abd1c948b572d6b5242a949cef3cab8b05ae866771b9bfe469c69a8ac151",
+      "bytes": 4231,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/GUARDRAIL-GROUNDING.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/GUARDRAIL-GROUNDING.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "1716b6dd851ee47028a75745dc62d6eb8d22b1ce966f232b0897637d681664cd",
+      "bytes": 2512,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/GUARDRAIL-REVIEW.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/GUARDRAIL-REVIEW.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "e1b20e71f31ca452913723a67b52c92a6f66d71942cfa8ad58980f8c0e0d9abe",
+      "bytes": 5649,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/GUARDRAIL-TASKS.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/GUARDRAIL-TASKS.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "0dc87de1996ed48a22a8665426cb73e8312e866ed0a9e941b96ceccc41736f6d",
+      "bytes": 5751,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/INTENT-TASKS.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/INTENT-TASKS.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "f056432d3f9a5048e4185d9ecc7e6351b0af5c3372f3756000e685ae8a4fc944",
+      "bytes": 6219,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/RUNTIME-REVIEW.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/RUNTIME-REVIEW.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "49d723187bd54e3764fded75f3e1bb55d4b43d921c27c33800ba4f45ba33ed33",
+      "bytes": 1505,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/TASKS.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/TASKS.md",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "7f82dbe57e1cc5c48eeeff9730dbaae7838581b3b9378ec142d0a28d94bb56d5",
+      "bytes": 3760,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/baseline.json",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/baseline.json",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "6bb0d99a4761449a187ad4580b2c829fda76de7aad306323bc25455bb6af61e3",
+      "bytes": 219,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/RUST-FIRST-CHECK.json",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/RUST-FIRST-CHECK.json",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "073a5e8d327449a575e2abe916162ad7c6052961c77ba19ecd290587b43682d4",
+      "bytes": 11714,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/spec-check.json",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/spec-check.json",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "2f1aa2c040f950450d1acc8fd60db1653977e635023cd906d2cfa6b035d42d27",
+      "bytes": 5829,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/features/coverage-check.json",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/features/coverage-check.json",
+      "action": "move",
+      "reason": "Historical task, review, baseline, or receipt for an earlier source snapshot",
+      "sha256": "79af7e2de6724d37acbc6901f609ce81d6e473534fcad160687fe02553392ec9",
+      "bytes": 1251,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/ARCHITECTURE.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/ARCHITECTURE.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "432f43da0bed5689fca2a4b55bc7c6358941645d15c602dfa2a3b2e14e019c89",
+      "bytes": 8734,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/GUARDRAILS.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/GUARDRAILS.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "aaee4bc7b886d86bb4c29e42d3646fc2350f440a843bf1a81d1b0546f8fec564",
+      "bytes": 3502,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/WORKFLOW.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/WORKFLOW.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "5c250cdeac47f9c3c9310c3e23236ffc68e705d5d6b63e2ec2c7a53243de465a",
+      "bytes": 5289,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/PROGRESS.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/PROGRESS.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "2212ef72cb15edc98ae2e5175f572565b71c6e35e7af05bfe3a385bf35f981d5",
+      "bytes": 8568,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/VERIFICATION.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/VERIFICATION.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "771f71e0bedd5de45fc6e4fee2a1686114e8b9141c43944a7bfb9a4cb294015b",
+      "bytes": 7800,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/INTENT-VERIFICATION.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/INTENT-VERIFICATION.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "91c20ac274c2b1f65c2b8dad58642053c40c4348633dc0e6ca7a9ada54290b31",
+      "bytes": 6521,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/WRITING.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/WRITING.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "19358574e8db18d2e67203dbcad6fd76c5367af9f30043296847e56bb14717ba",
+      "bytes": 7872,
+      "archivedOn": "2026-10-05"
+    },
+    {
+      "originalPath": "apps/release-kit-studio/native-editor/docs/SPEC.md",
+      "archivePath": "apps/release-kit-studio/native-editor/docs/archive/2026-10-05/docs/SPEC.md",
+      "action": "copy-baseline",
+      "reason": "Pre-cleanup version retained while the current implementation guide is condensed",
+      "sha256": "04e90f8c268cb786cb3e7ea5c95dea14818230e3cb0204e0da53102caf0ef14a",
+      "bytes": 36308,
+      "archivedOn": "2026-10-05"
+    }
+  ]
+}

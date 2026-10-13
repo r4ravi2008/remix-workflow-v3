@@ -3,7 +3,7 @@ import { useCurrentFrame, interpolate, staticFile, Img } from 'remotion';
 import type { DesignConfig } from '../utils/designLoader';
 import type { ImageSequence, ImageSequenceFrame } from '../utils/imageSequence';
 import type { LyricsData, LyricLine, Section } from '../MusicVideo';
-import { FrequencyBarsVisualizer, WaveformRings } from '../components';
+import { BassVoxelFractalBackground, FrequencyBarsVisualizer, WaveformRings } from '../components';
 
 interface CoverArtLayoutProps {
   design: DesignConfig;
@@ -35,8 +35,10 @@ interface CoverArtLayoutProps {
 //  └─────────────────────────────────┴──────────────────┘
 //         75% (1440px)                    25% (480px)
 //
-// Cover art is inset by ~2.5% with rounded corners and feathered edges
+  // Cover art is inset by ~2.5% with rounded corners and feathered edges
 // that blend smoothly into the background gradient.
+// The image is displayed with object-fit: contain so the full frame is visible
+// without stretching or cropping, while the blurred background fills the square.
 
 const LINE_HEIGHT = 60;
 const CONTAINER_HEIGHT = 270; // 25% of 1080px
@@ -266,6 +268,28 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
         </div>
       )}
 
+      {/* Recursive isometric voxel fractals: an alternative bass-only layer. */}
+      {design.motif.backgroundLayers?.includes('bass-voxel-fractal') && (
+        <div
+          style={{
+            position: 'absolute',
+            inset: 0,
+            zIndex: 1,
+            pointerEvents: 'none',
+            overflow: 'hidden',
+            isolation: 'isolate',
+            transform: 'none',
+          }}
+        >
+          <BassVoxelFractalBackground
+            design={design}
+            frequencyData={frequencyData}
+            width={1920}
+            height={1080}
+          />
+        </div>
+      )}
+
       {/* ── Option C: Radial rings behind cover art ── */}
       <svg
         width="1440"
@@ -359,6 +383,24 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
               'radial-gradient(ellipse 96% 96% at 50% 50%, black 75%, transparent 100%)',
           }}
         >
+          {/* Blurred fill layer — keeps the 1:1 cover art area rich when the
+              frame is letterboxed, without cropping or stretching the main image */}
+          {!coverArtError && (
+            <Img
+              src={staticFile(getSafeImageSrc(activeImageSrc))}
+              onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
+              style={{
+                position: 'absolute',
+                inset: 0,
+                width: '100%',
+                height: '100%',
+                objectFit: 'cover',
+                objectPosition: 'center',
+                filter: 'blur(28px) saturate(1.2) brightness(0.6)',
+                transform: 'scale(1.15)',
+              }}
+            />
+          )}
           {!coverArtError ? (
             <>
               {previousImageSrc && transitionProgress < 1 && (
@@ -370,7 +412,7 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
                     inset: 0,
                     width: '100%',
                     height: '100%',
-                    objectFit: 'cover',
+                    objectFit: 'contain',
                     objectPosition: 'center',
                     opacity: 1 - transitionProgress,
                   }}
@@ -380,13 +422,13 @@ export const CoverArtLayout: React.FC<CoverArtLayoutProps> = ({
                 src={staticFile(getSafeImageSrc(activeImageSrc))}
                 onError={() => handleImageError(getSafeImageSrc(activeImageSrc))}
                 style={{
-                  position: 'absolute',
-                  inset: 0,
-                  width: '100%',
-                  height: '100%',
-                  objectFit: 'cover',
-                  objectPosition: 'center',
-                  opacity: previousSequenceFrame ? transitionProgress : 1,
+                    position: 'absolute',
+                    inset: 0,
+                    width: '100%',
+                    height: '100%',
+                    objectFit: 'contain',
+                    objectPosition: 'center',
+                    opacity: previousSequenceFrame ? transitionProgress : 1,
                 }}
               />
             </>

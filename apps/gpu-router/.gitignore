@@ -1,0 +1,5 @@
+node_modules/
+.state/
+.alchemy/
+.env
+.dev.vars

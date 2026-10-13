@@ -1,0 +1,299 @@
+{
+  "kind": "rust-foundation-check",
+  "checkedAt": "2026-10-04T19:45:31.892802+00:00",
+  "scope": "Bounded native P0 tests and parent CLI artifact inspection. Movie, audio, text, layers, GPU, hosted deployment, and creative approval are outside this evidence.",
+  "featureState": "implemented",
+  "trustedAcceptancePromotion": false,
+  "defaultTestsPassed": 29,
+  "testHookTestsPassed": 32,
+  "fmtCheck": "passed",
+  "clippyDefault": "passed with warnings denied",
+  "clippyTestHooks": "passed with warnings denied",
+  "defaultBinaryWithoutTestHooks": true,
+  "engine": {
+    "binarySha256": "af14003015252d57caa4b2220fe19552128808e0f5fa686c9869f50b9de8e2ce",
+    "identityVersion": 1,
+    "implementedFeatureIds": [
+      "CORE-01",
+      "CORE-02",
+      "CORE-03",
+      "CORE-04",
+      "CORE-05",
+      "CORE-06",
+      "CORE-07",
+      "CORE-08"
+    ],
+    "kernelVersion": "0.1.0",
+    "limits": {
+      "canvasAxis": 2048,
+      "canvasPixels": 4194304,
+      "clips": 10000,
+      "deadlineSeconds": 30,
+      "frames": 10000000,
+      "inputBytes": 1048576,
+      "outputBytes": 4194304
+    },
+    "protocolVersion": 1,
+    "schemaSha256": "694d3672fe8c49bd6ca8475707db2f67e9651d033bebfeb909dc484aac424d10",
+    "tools": [
+      {
+        "description": "Remeasure a registered artifact",
+        "name": "artifact.verify"
+      },
+      {
+        "description": "Discover compiled native tools and limits",
+        "name": "engine.capabilities"
+      },
+      {
+        "description": "Produce a source-bound CPU PNG frame",
+        "name": "frame.render"
+      },
+      {
+        "description": "Atomically apply typed clip edits",
+        "name": "project.commit"
+      },
+      {
+        "description": "Create an immutable revision-zero project",
+        "name": "project.create"
+      },
+      {
+        "description": "Read an immutable project snapshot",
+        "name": "project.inspect"
+      }
+    ]
+  },
+  "suiteEvidenceDirectory": "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/rust-p0-final-20261004",
+  "suiteSummarySha256": "87213a2823f0dcdf256ab666f0588ad9955df2ed070465b0ffe1642aeb1a1f32",
+  "logs": {
+    "default/cargo-test.log": {
+      "sha256": "bb90297f8a6b1387155aae18926d3a486971a41feee2a949ae60114a81588458",
+      "bytes": 2170
+    },
+    "test-hooks/cargo-test.log": {
+      "sha256": "9784e527859b53491b4650c9a6dba374e75b9211ee8f47ae7514b1a3135d40b5",
+      "bytes": 2291
+    },
+    "clippy-default.log": {
+      "sha256": "d3ec30de77bda38c0a65f2eb726a8664408d292f7aa22b3290c3fa854c55c478",
+      "bytes": 205
+    },
+    "clippy-test-hooks.log": {
+      "sha256": "fc98df7841c155d0edfc304d0b51d404b1a8049ef276f8c7611b070d90aedfe4",
+      "bytes": 205
+    },
+    "build-default.log": {
+      "sha256": "59639588a6f1826f129cbcd121edc07279dab94786f5fa5bde6b3439b2e845cc",
+      "bytes": 72
+    }
+  },
+  "sourceFiles": [
+    {
+      "path": "Cargo.lock",
+      "sha256": "f13f90b8861b336f4329ae43dc485bdaf2e388e45ff419145aabd84eed011936",
+      "bytes": 13342
+    },
+    {
+      "path": "Cargo.toml",
+      "sha256": "8b0a117103ad04234bb1402288ba63d27d1d925e335ac9385d89b0b16c9cf9af",
+      "bytes": 380
+    },
+    {
+      "path": "capabilities.json",
+      "sha256": "0ba1b0c2e89cd71e9f307496eaefd36ff0ae20a8c07605a3e89a4bb1543ba558",
+      "bytes": 63166
+    },
+    {
+      "path": "crates/editor-cli/Cargo.toml",
+      "sha256": "158dd8c61b47f0da01c2bdbf025fc0bc07659f7bd49b08b431727948d3e8aae6",
+      "bytes": 428
+    },
+    {
+      "path": "crates/editor-cli/src/main.rs",
+      "sha256": "f6b92ec587a41e5eec0a80870d93ff8b82074d21be34d7f81bdb80bf3306c08b",
+      "bytes": 14253
+    },
+    {
+      "path": "crates/editor-cli/src/protocol.rs",
+      "sha256": "90ccb0d48970a5a1b3c53d13fd31e4c98dc78a0ac95380ad2a90a1f68b8b2af0",
+      "bytes": 11677
+    },
+    {
+      "path": "crates/editor-cli/tests/acceptance.rs",
+      "sha256": "568a49b72beb90552693fd76eddded0d646ccb4786ed5d78a6a00df542565bf8",
+      "bytes": 47477
+    },
+    {
+      "path": "crates/editor-core/Cargo.toml",
+      "sha256": "da2b4f7b2d328d39e9f4ccaeb4fb0d6e31b80a2d0cfe8b06cb4dab87bf1ef530",
+      "bytes": 323
+    },
+    {
+      "path": "crates/editor-core/src/frame.rs",
+      "sha256": "a5f367f7c33e6d0b6407b6488531db9254de41085cdb9dcea5092b483c346847",
+      "bytes": 7842
+    },
+    {
+      "path": "crates/editor-core/src/lib.rs",
+      "sha256": "d27e0d805137831b110ec23c4bb617b404cbfa81c4fbd4acae44bced7f3e1720",
+      "bytes": 15389
+    },
+    {
+      "path": "crates/editor-core/src/project.rs",
+      "sha256": "6523ebb2d5140f96954e7c55585eac789434eafb129ea3df821439c636281e53",
+      "bytes": 11849
+    },
+    {
+      "path": "crates/editor-core/src/store.rs",
+      "sha256": "9111327de554d5ab8988f89fdb85fb8d903ba9e50183ef26670778d4c7e53449",
+      "bytes": 16267
+    }
+  ],
+  "parentObservation": {
+    "kind": "independent-parent-cli-observation",
+    "checkedAt": "2026-10-04T19:45:31.892802+00:00",
+    "scope": "Current default CLI example and independent stdlib PNG decoding. No trusted capability promotion.",
+    "binarySha256": "af14003015252d57caa4b2220fe19552128808e0f5fa686c9869f50b9de8e2ce",
+    "schemaSha256": "694d3672fe8c49bd6ca8475707db2f67e9651d033bebfeb909dc484aac424d10",
+    "checks": [
+      "discovery identity",
+      "fixture create",
+      "atomic edit",
+      "native PNG rendering",
+      "all 4096 RGBA pixels independently decoded",
+      "PNG chunk CRCs",
+      "stored bytes and hash",
+      "unchanged intent replay",
+      "altered bytes rejected and preserved",
+      "restored original verified"
+    ],
+    "pixels": 4096,
+    "rgba": [
+      12,
+      25,
+      48,
+      255
+    ],
+    "artifact": "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state/pal-pal-cli-test/artifacts/frame-226cf6bc53437611ece31162c3b6ee63c1cfb40113128f6a.png",
+    "artifactSha256": "459b89f908174afac1c3b7c3f1a8afc872bdfad34acb246d507e4419f4d58d9f",
+    "run": "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d",
+    "processes": [
+      {
+        "name": "tools",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "tools"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "c01d510d519882c740dd01d934771c9f1f419d36ec155ebce73c144bd42f9be5",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "create",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "call",
+          "project.create",
+          "examples/project.json",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "bd19cfebb04aee1569c862f141d03e36a7b95ed306e49404cac745db4a176551",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inputSha256": "7a65e754f148d4cf7bd50b95f519fb4889fab590906c87c12139d6650e982d98"
+      },
+      {
+        "name": "edit",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "call",
+          "project.commit",
+          "examples/put-clip.json",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "9e4d29b0af9b3bccb7ce76a46f4449a942aadf6fff7883c82d09eea288f60b09",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inputSha256": "97af71301b0f1a5d2d71b40d8878948dc2cbb83ee29647dbc3e8c6fa1d61ae59"
+      },
+      {
+        "name": "render",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "call",
+          "frame.render",
+          "examples/frame.json",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "30509c65dabf4de25dc9719751af7a8fbdf1369a6fb74edf3c09e53bd2b0c84a",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inputSha256": "aefdd41a11e26af8aba913cbe03a9ddba26e01fad489a5fca9de87b2a83d9b44"
+      },
+      {
+        "name": "verify",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "verify",
+          "pal-pal-cli-test",
+          "frame-226cf6bc53437611ece31162c3b6ee63c1cfb40113128f6a",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "ca7ef37403fd63f7b736de00a1626a5d0e0a5460f1e9b9952def30299e00c277",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "replay-edit",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "call",
+          "project.commit",
+          "examples/put-clip.json",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "52c2a402e93df3dc70a3e0364f098a700fe330bed6d5058779e076acc711ee09",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "inputSha256": "97af71301b0f1a5d2d71b40d8878948dc2cbb83ee29647dbc3e8c6fa1d61ae59"
+      },
+      {
+        "name": "tamper",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "verify",
+          "pal-pal-cli-test",
+          "frame-226cf6bc53437611ece31162c3b6ee63c1cfb40113128f6a",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 2,
+        "stdoutSha256": "fa8f80a47e21cd7c86ea51b787b7e862ed8a3cb1025d51497c09957b48e92d38",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      {
+        "name": "restored",
+        "argv": [
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/target/debug/native-editor",
+          "verify",
+          "pal-pal-cli-test",
+          "frame-226cf6bc53437611ece31162c3b6ee63c1cfb40113128f6a",
+          "--state",
+          "/Users/aira/projects/remix-gpt-coding-agent/apps/release-kit-studio/native-editor/.runs/parent-final-8f44519d/state"
+        ],
+        "exitCode": 0,
+        "stdoutSha256": "ca7ef37403fd63f7b736de00a1626a5d0e0a5460f1e9b9952def30299e00c277",
+        "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    ]
+  },
+  "limitsOfEvidence": [
+    "Test-hook interruption coverage uses a separate feature-gated executable.",
+    "No physical power-loss experiment.",
+    "Execution deadline does not bound stdout draining; invoking agent owns total process timeout."
+  ]
+}

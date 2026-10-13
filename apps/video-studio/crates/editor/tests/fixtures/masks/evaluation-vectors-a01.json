@@ -1,0 +1,1716 @@
+{
+  "schema": 1,
+  "scope": "Independent exhaustive axis-reveal coverage cases: signed unclipped origins, canvas clipping, both axes and inversion, sparse curve modes, opacity boundary weights, and final holds.",
+  "rounds": [
+    {
+      "numerator": "-3",
+      "denominator": 2,
+      "expected": "-2"
+    },
+    {
+      "numerator": "3",
+      "denominator": 2,
+      "expected": "2"
+    },
+    {
+      "numerator": "1",
+      "denominator": 2,
+      "expected": "1"
+    },
+    {
+      "numerator": "-1",
+      "denominator": 2,
+      "expected": "-1"
+    },
+    {
+      "numerator": "7",
+      "denominator": 4,
+      "expected": "2"
+    },
+    {
+      "numerator": "-7",
+      "denominator": 4,
+      "expected": "-2"
+    },
+    {
+      "numerator": "0",
+      "denominator": 1,
+      "expected": "0"
+    }
+  ],
+  "quantization_controls": [
+    {
+      "name": "below_half",
+      "input": 7.629394531249999e-06,
+      "expected_q16": 0
+    },
+    {
+      "name": "at_half",
+      "input": 7.62939453125e-06,
+      "expected_q16": 1
+    },
+    {
+      "name": "above_half",
+      "input": 7.629394531250002e-06,
+      "expected_q16": 1
+    },
+    {
+      "name": "quarter",
+      "input": 0.25,
+      "expected_q16": 16384
+    },
+    {
+      "name": "midpoint",
+      "input": 0.5,
+      "expected_q16": 32768
+    },
+    {
+      "name": "one",
+      "input": 1.0,
+      "expected_q16": 65536
+    }
+  ],
+  "cases": [
+    {
+      "name": "horizontal_normal_curve",
+      "clip_frames": 4,
+      "canvas": {
+        "width": 6,
+        "height": 4
+      },
+      "window": {
+        "x": -1,
+        "y": 1,
+        "width": 4,
+        "height": 2
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.0,
+            "to_next": "linear"
+          },
+          {
+            "frame": 1,
+            "value": 0.5,
+            "to_next": "linear"
+          },
+          {
+            "frame": 3,
+            "value": 1.0
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 0,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 49152,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 3,
+          "progress_q16": 65536,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 3,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "horizontal_inverted_fractional",
+      "clip_frames": 3,
+      "canvas": {
+        "width": 8,
+        "height": 3
+      },
+      "window": {
+        "x": 1,
+        "y": 0,
+        "width": 5,
+        "height": 3
+      },
+      "axis": "horizontal",
+      "inverted": true,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.25,
+            "to_next": "linear"
+          },
+          {
+            "frame": 2,
+            "value": 0.75
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 16384,
+          "visible_bounds": {
+            "x": 1,
+            "y": 0,
+            "width": 5,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 49152,
+              "effective_q16": 49152
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 4,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 0,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 49152,
+              "effective_q16": 49152
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 4,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 1,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 49152,
+              "effective_q16": 49152
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 4,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 1,
+            "y": 0,
+            "width": 5,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            },
+            {
+              "x": 4,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 0,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            },
+            {
+              "x": 4,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 1,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            },
+            {
+              "x": 4,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 49152,
+          "visible_bounds": {
+            "x": 1,
+            "y": 0,
+            "width": 5,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 4,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 16384,
+              "effective_q16": 16384
+            },
+            {
+              "x": 5,
+              "y": 0,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 1,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 4,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 16384,
+              "effective_q16": 16384
+            },
+            {
+              "x": 5,
+              "y": 1,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 2,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 4,
+              "y": 2,
+              "offset": 3,
+              "coverage_q16": 16384,
+              "effective_q16": 16384
+            },
+            {
+              "x": 5,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "vertical_signed_top_clip",
+      "clip_frames": 3,
+      "canvas": {
+        "width": 6,
+        "height": 6
+      },
+      "window": {
+        "x": 2,
+        "y": -2,
+        "width": 2,
+        "height": 5
+      },
+      "axis": "vertical",
+      "inverted": false,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.25,
+            "to_next": "linear"
+          },
+          {
+            "frame": 2,
+            "value": 0.75
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 16384,
+          "visible_bounds": {
+            "x": 2,
+            "y": 0,
+            "width": 2,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 2,
+            "y": 0,
+            "width": 2,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 49152,
+          "visible_bounds": {
+            "x": 2,
+            "y": 0,
+            "width": 2,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 49152,
+              "effective_q16": 49152
+            },
+            {
+              "x": 3,
+              "y": 1,
+              "offset": 3,
+              "coverage_q16": 49152,
+              "effective_q16": 49152
+            },
+            {
+              "x": 2,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 2,
+              "offset": 4,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "vertical_inverted_bottom_right_clip",
+      "clip_frames": 2,
+      "canvas": {
+        "width": 6,
+        "height": 6
+      },
+      "window": {
+        "x": 5,
+        "y": 3,
+        "width": 3,
+        "height": 5
+      },
+      "axis": "vertical",
+      "inverted": true,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.0,
+            "to_next": "linear"
+          },
+          {
+            "frame": 1,
+            "value": 1.0
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 0,
+          "visible_bounds": {
+            "x": 5,
+            "y": 3,
+            "width": 1,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 5,
+              "y": 3,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 4,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 5,
+              "y": 5,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 65536,
+          "visible_bounds": {
+            "x": 5,
+            "y": 3,
+            "width": 1,
+            "height": 3
+          },
+          "pixels": [
+            {
+              "x": 5,
+              "y": 3,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 5,
+              "y": 4,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 5,
+              "y": 5,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "width_one_fraction",
+      "clip_frames": 3,
+      "canvas": {
+        "width": 3,
+        "height": 3
+      },
+      "window": {
+        "x": 0,
+        "y": 1,
+        "width": 1,
+        "height": 2
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.0,
+            "to_next": "linear"
+          },
+          {
+            "frame": 1,
+            "value": 0.5,
+            "to_next": "linear"
+          },
+          {
+            "frame": 2,
+            "value": 1.0
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 0,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 0,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 0,
+              "coverage_q16": 32768,
+              "effective_q16": 32768
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 65536,
+          "visible_bounds": {
+            "x": 0,
+            "y": 1,
+            "width": 1,
+            "height": 2
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 1,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 0,
+              "y": 2,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "effective_zero_at_32767",
+      "clip_frames": 1,
+      "canvas": {
+        "width": 1,
+        "height": 1
+      },
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 32767,
+        "height": 1
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 1,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 1.52587890625e-05
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 1,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 32767,
+              "effective_q16": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "effective_one_at_32768",
+      "clip_frames": 1,
+      "canvas": {
+        "width": 1,
+        "height": 1
+      },
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 32768,
+        "height": 1
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 1,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 1.52587890625e-05
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 1,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 1,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 32768,
+              "effective_q16": 1
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "constant_one_key",
+      "clip_frames": 3,
+      "canvas": {
+        "width": 2,
+        "height": 1
+      },
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 2,
+        "height": 1
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.5
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 32768,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 2,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "step_final_hold",
+      "clip_frames": 5,
+      "canvas": {
+        "width": 4,
+        "height": 1
+      },
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 4,
+        "height": 1
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.0,
+            "to_next": "step"
+          },
+          {
+            "frame": 2,
+            "value": 0.75,
+            "to_next": "step"
+          },
+          {
+            "frame": 4,
+            "value": 1.0
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 0,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 0,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 49152,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 3,
+          "progress_q16": 49152,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 4,
+          "progress_q16": 65536,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 4,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 3,
+              "y": 0,
+              "offset": 3,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "linear_final_hold",
+      "clip_frames": 4,
+      "canvas": {
+        "width": 3,
+        "height": 1
+      },
+      "window": {
+        "x": 0,
+        "y": 0,
+        "width": 3,
+        "height": 1
+      },
+      "axis": "horizontal",
+      "inverted": false,
+      "opacity_q16": 65536,
+      "progress": {
+        "keys": [
+          {
+            "frame": 0,
+            "value": 0.25,
+            "to_next": "linear"
+          },
+          {
+            "frame": 3,
+            "value": 0.75
+          }
+        ]
+      },
+      "expected": [
+        {
+          "frame": 0,
+          "progress_q16": 16384,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 49152,
+              "effective_q16": 49152
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 1,
+          "progress_q16": 27307,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 16385,
+              "effective_q16": 16385
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 2,
+          "progress_q16": 38229,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 49151,
+              "effective_q16": 49151
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 0,
+              "effective_q16": 0
+            }
+          ]
+        },
+        {
+          "frame": 3,
+          "progress_q16": 49152,
+          "visible_bounds": {
+            "x": 0,
+            "y": 0,
+            "width": 3,
+            "height": 1
+          },
+          "pixels": [
+            {
+              "x": 0,
+              "y": 0,
+              "offset": 0,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 1,
+              "y": 0,
+              "offset": 1,
+              "coverage_q16": 65536,
+              "effective_q16": 65536
+            },
+            {
+              "x": 2,
+              "y": 0,
+              "offset": 2,
+              "coverage_q16": 16384,
+              "effective_q16": 16384
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

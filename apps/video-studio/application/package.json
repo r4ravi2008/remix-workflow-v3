@@ -1,0 +1,17 @@
+{
+  "name": "video-studio-application",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc -p tsconfig.json",
+    "test": "vitest run --config vitest.config.ts"
+  },
+  "dependencies": {
+    "effect": "4.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "22.15.0",
+    "typescript": "7.0.2",
+    "vitest": "5.0.2"
+  }
+}

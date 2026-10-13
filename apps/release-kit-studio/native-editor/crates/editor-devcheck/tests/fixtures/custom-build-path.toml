@@ -1,0 +1,3 @@
+[package]
+name = "editor-core"
+build = "tools/build-native.rs"

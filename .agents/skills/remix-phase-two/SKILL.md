@@ -1,18 +1,18 @@
 ---
 name: remix-phase-two
-description: Use when remix audio already exists or can be detected in a workspace, and the goal is lyric alignment, optional visual-sequence handling, full video rendering, YouTube metadata, and short-video generation with transliterated sync by default.
+description: Use when remix audio already exists or can be detected in a workspace, and the goal is lyric alignment, optional visual-sequence handling, full video rendering, release metadata, paired YouTube and Instagram cover images, and short-video generation with transliterated sync by default.
 ---
 
 # Remix Phase Two
 
 ## Overview
 
-This skill owns the post-production half of the remix workflow. Native-script lyrics stay canonical, but alignment uses a separate transliterated file by default after Suno metatags are stripped, and phase two runs through both long-form and short-form outputs.
+This skill owns the post-production half of the remix workflow. Native-script lyrics stay canonical, but alignment uses a separate transliterated file by default after Suno metatags are stripped. Phase two runs through long-form video, short-form video, and a matched pair of YouTube and Instagram cover images.
 
 ## When to Use
 
 - Remix audio already exists from Step 5, or the user provides it directly
-- User wants synced lyrics, video render, YouTube metadata, and optional or default short-form output
+- User wants synced lyrics, video render, release metadata, paired platform cover images, and optional or default short-form output
 - Visual sequence assets or cover art fallback may already exist, be provided, or be skipped
 
 Do not use this when the workspace still needs original download, native-lyrics discovery, or Suno prep. Use `remix-phase-one` instead.
@@ -30,6 +30,7 @@ Auto-detect patterns:
 - cover art fallback: `meta.json.files.cover_art`, then `*cover-art*`
 - lyrics: native lyrics first, then Suno lyrics as fallback input for stripping/transliteration
 - short config: `meta.json.shorts_clip_mode`, `meta.json.shorts_duration`, then Step 10 defaults of `auto` and `30`
+- release artwork: `meta.json.files.youtube_thumbnail` and `meta.json.files.instagram_reel_cover`, then matching slug-prefixed images in the workspace
 
 ## Implementation
 
@@ -65,16 +66,30 @@ Auto-detect patterns:
    - reuse provided or detected `image-sequence.json` plus `stylized-frames/` when available
    - if the user first skips visual prep but later asks for stylized frames, resume Step 7 from the latest instruction rather than treating the earlier skip as permanent
    - fall back to detected `cover-art.jpg`, then the template placeholder, when visual sequence assets are absent or intentionally skipped
-15. Run Steps 8 and 9 and update `meta.json` after each completed step.
+15. Run Steps 8 and 9 and update `meta.json` after each completed step. Step 9 is incomplete until it produces and verifies both platform artwork files:
+   - YouTube thumbnail: `<slug>-youtube-thumbnail.jpg`, 1280x720, 16:9
+   - Instagram Reel cover: `<slug>-instagram-reel-cover.jpg`, 1080x1920, 9:16
+   - build both from the same approved identity, palette, and title system, but compose each canvas independently; never stretch the YouTube image or rely on a blind center crop
+   - keep faces, title, and genre inside the Instagram cover's center-safe region so feed/profile crops and Reel UI do not remove essential information
+   - inspect both full-resolution files plus small previews at 320x180 and 180x320 before marking them complete
+   - when the Dhool thumbnail system applies, read `create-dhool-song-thumbnail` and its `references/dhool-brand.md` before generating the pair
+   - persist `files.youtube_thumbnail`, `files.instagram_reel_cover`, `status.youtube_thumbnail_generated`, and `status.instagram_reel_cover_generated`
 16. Continue into short generation by default after Step 9:
    - run Step 10 to select a short clip from the chosen remix and `lyrics-timestamps.json`
    - default to `shorts_clip_mode: auto` unless `meta.json` explicitly requests manual selection
    - if manual mode is enabled, present candidates and pause for the user's choice before Step 11
    - write `shorts-segments.json`, merge short config into `video-config.json`, and persist `status.shorts_clip_selected`
 17. Run Step 11 after Step 10 selection completes:
+   - read `references/vertical-resolve-remotion.md` before editing or rendering the vertical version
+   - duplicate the approved Resolve timeline and reframe every scene for 1080x1920 using shot-specific focal points; never use a single blind center crop
+   - export `<slug>-resolve-vertical.mp4`, record every scene in `resolve-scenes.json`, and generate head/middle/tail contact-sheet samples for every scene
+   - require a separate review sub-agent to inspect every labeled contact-sheet cell and issue a per-scene pass/fail report; fix and re-review failures before Remotion rendering
    - verify the existing Remotion project contains the short composition and required vertical layout components
+   - use the Resolve vertical video in the top 80% of the 1080x1920 canvas, the active native-script lyric in the next 10%, and the equalizer/progress in the bottom 10%
+   - fit lyrics to the real font metrics, cap them at two lines, and inspect them at phone-preview size
    - render the 9:16 short and copy it to `<slug>-short.mp4`
-   - update `meta.json` with `status.short_video_generated` and `files.short_video`
+   - generate a final-output scene contact sheet and have the separate review sub-agent verify that Remotion introduced no new crop, blanking, or lyric overflow
+   - update `meta.json` with `status.resolve_vertical_generated`, `status.vertical_scene_review_passed`, `status.short_video_generated`, `files.resolve_vertical_video`, `files.vertical_scene_contact_sheet`, `files.vertical_scene_review`, and `files.short_video`
 
 ## Common Mistakes
 
@@ -99,6 +114,12 @@ Auto-detect patterns:
 | Updating behavior but not state after a user correction | Record superseded instructions and resolved decisions in workspace state |
 | Rendering over outputs after inputs changed | Compare output timestamps to selected audio, timestamps, visual assets, and template files; regenerate stale outputs |
 | Starting phase two from ACE-Step candidates without selection | Ask for `v1` or `v2`, then persist `status.selected_remix` before Step 6 |
+| Reusing the 16:9 YouTube thumbnail for Instagram | Generate a separate 9:16 composition from the approved references; do not stretch or blindly crop |
+| Treating thumbnail copy as a finished thumbnail | Require readable image files for both platforms and inspect their mobile previews |
+| Applying one center crop to the Resolve timeline | Reframe every scene around its own focal subject and keyframe moving subjects |
+| Reviewing only the midpoint of each scene | Generate head, middle, and tail samples for every scene |
+| Letting the editing agent approve its own framing | Use a separate review sub-agent and store a per-scene report |
+| Giving lyrics the old 30% scrolling panel | Use a measured active-lyric band at 10%; reserve the bottom 10% for the equalizer |
 
 ## Failure Patterns
 
@@ -113,6 +134,8 @@ Auto-detect patterns:
 | Manifest exists but visuals are absent | Check active Remotion layout and render a still/preview before full render |
 | Missing source frames are automatically extraction failures | Check whether the user intentionally removed bad/title-card frames and update manifests accordingly |
 | Assume a successful render means fonts are correct | Verify bundled/system Telugu font availability and inspect preview/output when fonts changed |
+| Metadata JSON contains thumbnail text, so artwork is done | Render and verify the YouTube thumbnail and Instagram Reel cover as actual files |
+| A Resolve export exists, so vertical framing is approved | Require every-scene contact sheets and an independent per-scene review |
 
 ## Red Flags
 
@@ -134,6 +157,11 @@ Auto-detect patterns:
 - "The video rendered once, so font/template changes do not need re-verification"
 - "A newer `final-v1.mp3` is only a workspace scan result, so stale `meta.json` still wins"
 - "Both ACE-Step candidates exist, so I can pick one automatically"
+- "The YouTube thumbnail can be center-cropped into an Instagram cover"
+- "Thumbnail text in metadata is enough; image files are optional"
+- "A single center crop is good enough for every scene"
+- "The contact sheet can sample the whole video evenly instead of covering every scene"
+- "The Resolve render passed, so the Remotion wrapper does not need a second visual review"
 
 If any of these appear, stop and re-apply the phase-two rules: native lyrics stay canonical, transliteration is an alignment artifact, metatags are stripped before sync, missing inputs are auto-detected when possible, Step 7 visual sequence prep stays composable with cover-art fallback, and the default autonomous path continues through Steps 10 and 11 unless `meta.json` or the user requires manual short selection.
 

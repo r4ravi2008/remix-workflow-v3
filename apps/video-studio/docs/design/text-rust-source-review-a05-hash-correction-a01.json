@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "kind": "source-review-hash-correction",
+  "review": "text-rust-source-review-a05.md",
+  "review_preserved": true,
+  "reviewed_package": "feasibility-rust-a05",
+  "path": "artifacts/scratch-video-goal-20261005/native-project-a01/native-text-unit-a01/feasibility-rust-a05/src/model.rs",
+  "bytes": 23434,
+  "sha256": "0af5ec5e375a4d3ace3498e97f1cf6d01d3921bcdaed52eac2dd2dd731947fb4",
+  "previous_review_entry": "0af5ec5e375a4d3ace3498e97f1cf6d01d3921bcdaed52eac2dd731947fb4",
+  "previous_review_entry_length": 61,
+  "correction": "The A05 review table omitted three hexadecimal characters from the unchanged model.rs SHA-256. This sidecar records the complete hash and does not edit the review or source.",
+  "same_model_family": true,
+  "scope": "Hash identity correction only; no build, typecheck, format, test, execution, native, project, media, GPU, or Resolve operation."
+}

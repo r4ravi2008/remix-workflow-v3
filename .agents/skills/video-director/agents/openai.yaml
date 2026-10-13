@@ -1,0 +1,4 @@
+interface:
+  display_name: "Video Director"
+  short_description: "Produce stories, Telugu news bytes, videos and Shorts"
+  default_prompt: "Use $video-director to turn this news item or story into a Telugu video, starting with verification and a concise script."

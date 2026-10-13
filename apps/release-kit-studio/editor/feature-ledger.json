@@ -1,0 +1,183 @@
+[
+  {
+    "id": "F01",
+    "name": "Immutable projects and atomic edit revisions",
+    "implementation": "implemented",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "editor/store.test.ts",
+      "docs/editor/worker-runtime-receipt.json"
+    ],
+    "remaining": "Live collaboration and higher revision retention are later extensions."
+  },
+  {
+    "id": "F02",
+    "name": "Private content-addressed media",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/worker-runtime-receipt.json",
+      "agent/test_audio_duration.py",
+      "src/audio.test.ts",
+      "docs/audio-duration-runtime-receipt.json"
+    ],
+    "remaining": "Proxies, large multipart upload and reproducible relinking remain."
+  },
+  {
+    "id": "F03",
+    "name": "Frame-based timeline and clip edits",
+    "implementation": "implemented",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "editor/project.test.ts",
+      "docs/editor/render-canary-receipt.json"
+    ],
+    "remaining": "Current compiler accepts one continuous visual sequence per composition."
+  },
+  {
+    "id": "F04",
+    "name": "Transforms and fades; layered transitions",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/render-canary-receipt.json"
+    ],
+    "remaining": "Layers, crossfades, source handles and transform keyframes remain."
+  },
+  {
+    "id": "F05",
+    "name": "Exact native-script lyrics and shaped titles",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "editor/project.test.ts",
+      "docs/editor/render-canary-receipt.json",
+      "agent/observation.test.ts",
+      "agent/test_lyric_audit.py",
+      "docs/lyric-evidence-qualification.json"
+    ],
+    "remaining": "Native Telugu rendering is verified locally. Source-bound proposals, two alignment backends and disagreement checks exist; real cue timing and legibility remain unqualified."
+  },
+  {
+    "id": "F06",
+    "name": "Bounded SDR color controls",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/render-canary-receipt.json"
+    ],
+    "remaining": "HDR conform, scene matching and LUT provenance remain."
+  },
+  {
+    "id": "F07",
+    "name": "Canonical sound and source-range QC",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/render-canary-receipt.json",
+      "docs/gpu-observation-transport-receipt.json",
+      "docs/audio-perception-complete-coverage.json"
+    ],
+    "remaining": "Source-bound observations and measured audio checks exist. The current music model remains unqualified for automatic direction; complete listening review remains."
+  },
+  {
+    "id": "F08",
+    "name": "Masked environment reactivity",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/render-canary-receipt.json"
+    ],
+    "remaining": "Mask protection characterization, tracked masks and envelope provenance remain."
+  },
+  {
+    "id": "F09",
+    "name": "Cloud render intents and reconciliation",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/worker-runtime-receipt.json",
+      "editor/capacity.test.ts",
+      "agent/editor-request.test.ts",
+      "docs/editor/capacity-runtime-receipt.json",
+      "docs/editor/long-kit-runtime-receipt.json",
+      "docs/editor/compressed-kit-runtime-receipt.json"
+    ],
+    "remaining": "Shared deployment capacity and render tenant rotation are locally verified. Public-cloud enforcement, tenant quotas, verification fairness and long-render crash/deadline stress tests remain."
+  },
+  {
+    "id": "F10",
+    "name": "Byte-bound QC and separate review evidence",
+    "implementation": "partial",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "docs/editor/render-canary-receipt.json",
+      "docs/editor/http-protocol-receipt.json",
+      "docs/editor/worker-runtime-receipt.json",
+      "docs/editor/long-kit-runtime-receipt.json",
+      "docs/editor/compressed-kit-runtime-receipt.json",
+      "editor/artifact.test.ts",
+      "editor/engine/test_visual_diagnostics.py",
+      "editor/archive.test.ts",
+      "docs/editor/frame-diagnostics-runtime-receipt.json",
+      "docs/editor/frame-diagnostics-archive-runtime-receipt.json",
+      "editor/preview.test.ts",
+      "editor/engine/test_preview.py",
+      "agent/editor-preview.test.ts",
+      "docs/editor/review-preview-runtime-receipt.json",
+      "docs/editor/review-preview-session-runtime-receipt.json",
+      "docs/editor/review-preview-long-timeout-receipt.json",
+      "docs/editor/review-preview-long-recovery-runtime-receipt.json",
+      "docs/editor/review-preview-long-runtime-receipt.json",
+      "docs/editor/review-preview-long-frame-inspection.json",
+      "docs/editor/request-client-runtime-receipt.json"
+    ],
+    "remaining": "All-frame diagnostics, manifest export, source-bound review previews, full-resolution sample correspondence and full-length ending preview performance are locally verified. Semantic seam inspection, complete motion/listening evidence and public-cloud verification remain."
+  },
+  {
+    "id": "F11",
+    "name": "Six-output kit validation and packaging",
+    "implementation": "implemented",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "editor/project.test.ts",
+      "docs/editor/render-canary-receipt.json",
+      "editor/production-access.test.ts",
+      "docs/editor/production-runtime-receipt.json",
+      "agent/editor-recipe.test.ts",
+      "docs/editor/generated-production-runtime-receipt.json",
+      "editor/archive.test.ts",
+      "editor/zip.test.ts",
+      "agent/verify-kit.py",
+      "docs/editor/archive-runtime-receipt.json",
+      "docs/editor/long-kit-runtime-receipt.json",
+      "docs/editor/compressed-kit-runtime-receipt.json"
+    ],
+    "remaining": "Measured and generated-media synthetic kits package all six outputs with immutable project and manifest. Public-cloud transfer, multi-gigabyte performance and real Pal Pal production remain unverified."
+  },
+  {
+    "id": "F12",
+    "name": "Agent discovery and progress tracking",
+    "implementation": "implemented",
+    "verification": "local-tests-and-canaries",
+    "cloudVerified": false,
+    "evidence": [
+      "agent/editor-cli.test.ts",
+      "docs/editor/worker-runtime-receipt.json",
+      "agent/editor-recipe.test.ts",
+      "docs/editor/generated-production-runtime-receipt.json"
+    ],
+    "remaining": "Schema discovery and offline/remote tools work; deployment verification stays separate."
+  }
+]

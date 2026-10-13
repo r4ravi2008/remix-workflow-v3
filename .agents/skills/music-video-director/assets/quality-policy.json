@@ -1,0 +1,254 @@
+{
+  "schemaVersion": 1,
+  "profile": "standard",
+  "profiles": {
+    "exploratory": 2,
+    "standard": 3,
+    "meticulous": 4
+  },
+  "max_attempts_per_component": 3,
+  "overrides": {},
+  "kinds": {
+    "audio": {
+      "criteria": [
+        "fidelity",
+        "phrase_integrity"
+      ],
+      "hard_gates": [
+        "correct_source",
+        "decodes",
+        "requested_range_intact"
+      ]
+    },
+    "audio_map": {
+      "criteria": [
+        "timing_accuracy",
+        "section_accuracy"
+      ],
+      "hard_gates": [
+        "canonical_audio_bound",
+        "listening_verified"
+      ]
+    },
+    "brief": {
+      "criteria": [
+        "emotional_fit",
+        "specificity"
+      ],
+      "hard_gates": [
+        "user_constraints_met",
+        "interpretation_evidence_disclosed"
+      ]
+    },
+    "storyboard": {
+      "criteria": [
+        "emotional_fit",
+        "coherence",
+        "causal_readability",
+        "coverage",
+        "anchor_coverage",
+        "feasibility"
+      ],
+      "hard_gates": [
+        "scope_respected",
+        "audio_map_bound",
+        "anchor_plan_complete",
+        "approval_boundary_met",
+        "creative_proof_reviewed"
+      ]
+    },
+    "source_selection": {
+      "criteria": [
+        "relevance",
+        "composition",
+        "identity"
+      ],
+      "hard_gates": [
+        "provenance_verified",
+        "reuse_policy_met"
+      ]
+    },
+    "image": {
+      "criteria": [
+        "emotional_fit",
+        "composition",
+        "identity",
+        "anatomy",
+        "sharpness",
+        "style_continuity",
+        "canvas_consistency",
+        "sequence_continuity"
+      ],
+      "hard_gates": [
+        "references_compared",
+        "no_forbidden_content",
+        "intended_use_feasible",
+        "provenance_recorded",
+        "production_canvas_verified",
+        "sequence_context_reviewed"
+      ]
+    },
+    "motion": {
+      "criteria": [
+        "emotional_fit",
+        "identity",
+        "temporal_stability",
+        "motion_quality",
+        "continuity",
+        "endpoint_continuity"
+      ],
+      "hard_gates": [
+        "accepted_anchors_bound",
+        "whole_usable_range_watched",
+        "usable_duration_verified",
+        "lip_sync_policy_met",
+        "current_source_snapshot_verified",
+        "editorial_usable_range_reviewed"
+      ]
+    },
+    "lyrics": {
+      "criteria": [
+        "timing",
+        "legibility",
+        "placement",
+        "motion_quality",
+        "visual_integration"
+      ],
+      "hard_gates": [
+        "text_and_audio_version_match",
+        "script_policy_met",
+        "all_cues_reviewed",
+        "rendered_font_and_bounds_verified",
+        "subject_clearance_verified",
+        "layout_tested_at_delivery_size"
+      ]
+    },
+    "edit": {
+      "criteria": [
+        "emotional_fit",
+        "pacing",
+        "sync",
+        "continuity",
+        "causal_readability",
+        "temporal_direction",
+        "variety",
+        "color_consistency",
+        "focal_framing",
+        "focal_sharpness"
+      ],
+      "hard_gates": [
+        "dependency_inventory_complete",
+        "audio_preserved",
+        "coverage_complete",
+        "footage_policy_met",
+        "transitions_reviewed",
+        "event_order_monotonic",
+        "no_unintended_black_or_freeze",
+        "text_policy_met",
+        "render_state_verified",
+        "overlay_clearance_verified",
+        "corrections_rechecked",
+        "all_shots_composition_and_focus_reviewed",
+        "all_joins_rendered_and_reviewed",
+        "lyrics_integrated_in_picture",
+        "creative_intent_realized"
+      ]
+    },
+    "wrapper": {
+      "criteria": [
+        "emotional_fit",
+        "composition",
+        "focal_framing",
+        "legibility"
+      ],
+      "hard_gates": [
+        "correct_film_bound",
+        "single_audio_and_lyric_owner",
+        "aspect_ratio_preserved",
+        "nested_text_ownership_verified",
+        "shot_framing_reviewed"
+      ]
+    },
+    "export": {
+      "criteria": [
+        "emotional_fit",
+        "pacing",
+        "sync",
+        "narrative_readability",
+        "focal_framing",
+        "focal_sharpness",
+        "visual_finish",
+        "audio_finish"
+      ],
+      "hard_gates": [
+        "dependency_inventory_complete",
+        "correct_render_bound",
+        "technical_checks_pass",
+        "full_playback_watched_and_heard",
+        "no_unintended_black_or_freeze",
+        "ending_intact",
+        "corrections_rechecked",
+        "no_known_visual_defect_deferred",
+        "shot_cue_join_review_complete"
+      ]
+    },
+    "story_graphic": {
+      "criteria": [
+        "semantic_clarity",
+        "reading_time",
+        "legibility",
+        "placement",
+        "motion_quality"
+      ],
+      "hard_gates": [
+        "conversation_and_scene_bound",
+        "all_panels_reviewed",
+        "subject_clearance_verified",
+        "scene_exit_verified"
+      ]
+    }
+  },
+  "timed_review": {
+    "motion": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed"
+      ]
+    },
+    "lyrics": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "story_graphic": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "edit": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "wrapper": {
+      "scope": "full",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "export": {
+      "scope": "full",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    }
+  }
+}

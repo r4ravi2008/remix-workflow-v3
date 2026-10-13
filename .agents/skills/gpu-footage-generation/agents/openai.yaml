@@ -1,0 +1,4 @@
+interface:
+  display_name: "GPU Footage Generation"
+  short_description: "RunPod and Herdr motion jobs with verified recovery"
+  default_prompt: "Use $gpu-footage-generation to produce usable motion footage from my selected anchors on RunPod or my local GPU through Herdr, with a reviewed pilot and resumable jobs."

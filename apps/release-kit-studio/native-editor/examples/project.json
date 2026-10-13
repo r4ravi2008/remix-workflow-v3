@@ -1,0 +1,16 @@
+{
+  "projectId": "pal-pal-cli-test",
+  "intentId": "create-v1",
+  "name": "Pal Pal CLI test",
+  "timeline": {
+    "frameRate": {
+      "numerator": 24,
+      "denominator": 1
+    },
+    "durationFrames": 96,
+    "canvas": {
+      "width": 64,
+      "height": 64
+    }
+  }
+}

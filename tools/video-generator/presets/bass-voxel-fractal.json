@@ -1,0 +1,17 @@
+{
+  "id": "bass-voxel-fractal",
+  "label": "Bass Voxel Fractal",
+  "description": "Recursive isometric voxel constellations whose spacing, scale, and extrusion bloom with bass energy.",
+  "motif": {
+    "backgroundLayers": [
+      "waveform-rings",
+      "bass-voxel-fractal"
+    ],
+    "intensity": "medium",
+    "bassResponse": {
+      "floor": 0.024,
+      "kick": 0.052,
+      "peak": 0.128
+    }
+  }
+}

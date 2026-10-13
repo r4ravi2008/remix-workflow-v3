@@ -20,7 +20,7 @@ import {
   BandEnergies,
   EnvelopeState,
 } from './utils/audioUtils';
-import { CoverArtVerticalLayout } from './layouts';
+import { CoverArtVerticalLayout, ResolveVerticalLayout } from './layouts';
 import type { LyricsData, LyricLine, Section } from './MusicVideo';
 
 // ─── Data types ──────────────────────────────────────────────────────────────
@@ -32,6 +32,7 @@ interface MusicVideoShortProps extends Record<string, unknown> {
   genre?: string;
   clipStartTime: number;
   clipEndTime: number;
+  videoSrc?: string;
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -47,6 +48,7 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
   genre = 'unknown',
   clipStartTime,
   clipEndTime,
+  videoSrc,
 }) => {
   const { fps } = useVideoConfig();
   const frame = useCurrentFrame();
@@ -168,6 +170,7 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
   }, [designHandle]);
 
   const loadSequence = useCallback(async () => {
+    if (videoSrc) return;
     const rawSequence = await loadImageSequence(staticFile);
     if (rawSequence) {
       setImageSequence({
@@ -181,7 +184,7 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
           })),
       });
     }
-  }, [clipStartTime, clipEndTime, clipDuration]);
+  }, [clipStartTime, clipEndTime, clipDuration, videoSrc]);
 
   useEffect(() => { loadLyrics(); loadDesignConfig(); loadSequence(); }, [loadLyrics, loadDesignConfig, loadSequence]);
 
@@ -239,23 +242,34 @@ export const MusicVideoShort: React.FC<MusicVideoShortProps> = ({
         />
       )}
 
-      {/* Directly render CoverArtVerticalLayout for shorts (bypass layout switch) */}
+      {/* Resolve-backed shorts use a fixed 80/10/10 mobile layout. */}
       {design != null && lyricsData != null && (
-        <CoverArtVerticalLayout
-          design={design}
-          frequencyData={frequencyData}
-          bandEnergies={bandEnergies}
-          barHeights={barHeights}
-          lyricsData={lyricsData}
-          currentLyric={currentLyric}
-          nextLyric={nextLyric}
-          currentSection={currentSection}
-          currentTime={currentTime}
-          overallProgress={overallProgress}
-          songTitle={songTitle}
-          genre={genre}
-          imageSequence={imageSequence}
-        />
+        videoSrc ? (
+          <ResolveVerticalLayout
+            design={design}
+            barHeights={barHeights}
+            currentLyric={currentLyric}
+            overallProgress={overallProgress}
+            videoSrc={videoSrc}
+            videoTrimBeforeSeconds={clipStartTime}
+          />
+        ) : (
+          <CoverArtVerticalLayout
+            design={design}
+            frequencyData={frequencyData}
+            bandEnergies={bandEnergies}
+            barHeights={barHeights}
+            lyricsData={lyricsData}
+            currentLyric={currentLyric}
+            nextLyric={nextLyric}
+            currentSection={currentSection}
+            currentTime={currentTime}
+            overallProgress={overallProgress}
+            songTitle={songTitle}
+            genre={genre}
+            imageSequence={imageSequence}
+          />
+        )
       )}
     </AbsoluteFill>
   );

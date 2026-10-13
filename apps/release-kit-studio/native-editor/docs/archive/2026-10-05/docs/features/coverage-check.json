@@ -1,0 +1,22 @@
+{
+  "kind": "feature-document-coverage",
+  "checkedAt": "2026-10-04T22:17:18.739Z",
+  "verdict": "VERIFIED",
+  "scope": "81-family document coverage and structure only. Semantics require review; no editor runtime capability is promoted.",
+  "expectedFeatures": 81,
+  "observedFeatures": 81,
+  "documentCount": 7,
+  "hashes": {
+    "coverage.json": "eec541790d57fa9fc4fef48a88efd1d92ecce0706c10f2e40d37e2647acc7fe1",
+    "capabilities.json": "0ba1b0c2e89cd71e9f307496eaefd36ff0ae20a8c07605a3e89a4bb1543ba558",
+    "core.md": "37f8706796db2396db852e07018118a9fd24ba0089c62770d72bc181b146c858",
+    "media-cut.md": "eeee86daed92cc6d6b09f9239f4c7dc02ff3a0de1108c3174878f4e31f614cd5",
+    "editing.md": "86059b4182bef73807b441647b786b976488818c68954cbb1556db24f8fee2bb",
+    "fusion-ai.md": "8d6647578bac706c91c0d9a746615552855a2108acce9b689f3afc4e27b7f1d6",
+    "color-photo.md": "b02878ca9079baa5145cf8d3c3e0cb844d93a077b909fc93492bab2a0350e2d9",
+    "audio.md": "68035dec6145ef7f4ac17a330895f3f8b5f508bb159fdf0fc22d27e1432f5068",
+    "delivery-collaboration-extensions.md": "d80c3e8372e78a45fb7ec25773268247ec32fa49f284852f21e9e8f2e32430df",
+    "../FEATURES.md": "e8e35408ebbd4a14ff40b78a81570434d40b76693f24aaf2bc71a9f9d08be426"
+  },
+  "issues": []
+}

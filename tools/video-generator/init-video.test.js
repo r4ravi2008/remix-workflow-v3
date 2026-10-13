@@ -226,3 +226,27 @@ test('short template loads and passes image sequence to vertical layout', () => 
   assert.match(verticalSource, /activeSequenceFrame/);
   assert.match(verticalSource, /staticFile\(getSafeImageSrc\(activeImageSrc\)\)/);
 });
+
+test('short template supports Resolve video in an 80/10/10 vertical layout', () => {
+  const templateRoot = path.join(__dirname, 'template', 'src');
+  const rootSource = fs.readFileSync(path.join(templateRoot, 'Root.tsx'), 'utf8');
+  const shortSource = fs.readFileSync(path.join(templateRoot, 'MusicVideoShort.tsx'), 'utf8');
+  const resolveLayoutSource = fs.readFileSync(path.join(templateRoot, 'layouts', 'ResolveVerticalLayout.tsx'), 'utf8');
+
+  assert.match(rootSource, /videoSrc: config\.short\.videoSrc/);
+  assert.match(shortSource, /<ResolveVerticalLayout/);
+  assert.match(resolveLayoutSource, /const PICTURE_HEIGHT = 1536/);
+  assert.match(resolveLayoutSource, /const LYRIC_HEIGHT = 192/);
+  assert.match(resolveLayoutSource, /const EQUALIZER_HEIGHT = 192/);
+  assert.match(resolveLayoutSource, /objectFit: 'contain'/);
+  assert.match(resolveLayoutSource, /WebkitLineClamp: 2/);
+});
+
+test('all Remotion packages are pinned to one version', () => {
+  const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, 'template', 'package.json'), 'utf8'));
+  const remotionDependencies = Object.entries(packageJson.dependencies)
+    .filter(([name]) => name === 'remotion' || name.startsWith('@remotion/'));
+  const versions = new Set(remotionDependencies.map(([, version]) => version));
+
+  assert.deepEqual([...versions], ['4.0.441']);
+});

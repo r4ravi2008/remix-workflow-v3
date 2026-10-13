@@ -1,0 +1,17 @@
+[workspace]
+members = ["crates/editor-core", "crates/editor-cli", "crates/editor-devcheck"]
+resolver = "2"
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "MIT"
+
+[workspace.dependencies]
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+schemars = "=1.2.2"
+serde_jcs = "=0.2.0"
+sha2 = "0.10"
+rusqlite = { version = "=0.31.0", features = ["bundled"] }
+png = "=0.17.16"

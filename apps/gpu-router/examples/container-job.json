@@ -1,0 +1,16 @@
+{
+  "workload": {
+    "kind": "container",
+    "image": "example/gpu-runner@sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "command": ["python", "run.py"],
+    "input": { "prompt": "A cinematic Telugu music video shot" }
+  },
+  "gpu": { "count": 1, "minVramGb": 24 },
+  "limits": { "maxQueueSeconds": 300, "maxRuntimeSeconds": 600, "maxCostUsd": 2 },
+  "routing": {
+    "strategy": "lowest_cost",
+    "regions": ["us"],
+    "providers": [],
+    "allowInterruptible": false
+  }
+}

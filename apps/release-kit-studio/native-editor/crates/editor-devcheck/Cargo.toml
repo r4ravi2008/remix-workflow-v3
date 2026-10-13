@@ -1,0 +1,21 @@
+[package]
+name = "editor-devcheck"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+
+[[bin]]
+name = "native-editor-check"
+path = "src/main.rs"
+
+[dependencies]
+serde.workspace = true
+serde_json.workspace = true
+sha2.workspace = true
+syn = { version = "=2.0.119", features = ["full", "visit"] }
+proc-macro2 = { version = "1.0", features = ["span-locations"] }
+toml = "0.8"
+flate2 = "1.1"
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"

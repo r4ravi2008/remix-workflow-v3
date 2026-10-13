@@ -28,7 +28,7 @@ workspaces/
 
 # Node.js
 node_modules/
-package-lock.json
+/package-lock.json
 
 # ONNX model binaries
 *.onnx
@@ -40,3 +40,25 @@ tools/video-generator/template/public/design.json
 tools/video-generator/template/public/lyrics-timestamps.json
 tools/video-generator/template/public/video-config.json
 .claude/
+
+# Machine credentials and provider state
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Production media, private receipts, and review dialogue
+artifacts/
+assets/youtube/
+R11-ORBITAL-PULSE-REVIEW.html
+apps/release-kit-studio/.impeccable/
+apps/release-kit-studio/docs/*receipt.json
+apps/release-kit-studio/docs/*revalidation.json
+apps/release-kit-studio/docs/audio-perception-*.json
+apps/release-kit-studio/docs/editor/*receipt.json
+apps/release-kit-studio/docs/editor/*.png
+apps/release-kit-studio/docs/editor/*.jpg
+docs/research/*audit*.md
+docs/research/*evidence*.json
+docs/research/*validation*.json
+docs/research/*world-comparison*.jpg

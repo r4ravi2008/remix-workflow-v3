@@ -1,0 +1,273 @@
+{
+  "schema": 1,
+  "rounds": [
+    {"numerator": "1", "denominator": 2, "expected": "1"},
+    {"numerator": "-1", "denominator": 2, "expected": "-1"},
+    {"numerator": "3", "denominator": 2, "expected": "2"},
+    {"numerator": "-3", "denominator": 2, "expected": "-2"},
+    {"numerator": "5", "denominator": 2, "expected": "3"},
+    {"numerator": "-5", "denominator": 2, "expected": "-3"},
+    {"numerator": "1", "denominator": 3, "expected": "0"},
+    {"numerator": "-1", "denominator": 3, "expected": "0"},
+    {"numerator": "2", "denominator": 3, "expected": "1"},
+    {"numerator": "-2", "denominator": 3, "expected": "-1"},
+    {"numerator": "9007199254740993", "denominator": 2, "expected": "4503599627370497"}
+  ],
+  "cases": [
+    {
+      "name": "one-key-inherits-static",
+      "clip_frames": 4,
+      "base": {"destination": {"x": -7, "y": 5, "width": 12, "height": 8}, "opacity": 0.25},
+      "motion": {"x": {"keys": [{"frame": 0, "value": 3}]}},
+      "expected": [
+        {"destination": {"x": 3, "y": 5, "width": 12, "height": 8}, "opacity_q16": 16384},
+        {"destination": {"x": 3, "y": 5, "width": 12, "height": 8}, "opacity_q16": 16384},
+        {"destination": {"x": 3, "y": 5, "width": 12, "height": 8}, "opacity_q16": 16384},
+        {"destination": {"x": 3, "y": 5, "width": 12, "height": 8}, "opacity_q16": 16384}
+      ]
+    },
+    {
+      "name": "one-frame-one-key",
+      "clip_frames": 1,
+      "base": {"destination": {"x": -3, "y": 2, "width": 4, "height": 5}, "opacity": 1.0},
+      "motion": {"y": {"keys": [{"frame": 0, "value": -4}]}},
+      "expected": [
+        {"destination": {"x": -3, "y": -4, "width": 4, "height": 5}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "constant-keyed-program-no-visible-delta",
+      "clip_frames": 5,
+      "base": {"destination": {"x": 2, "y": -2, "width": 6, "height": 7}, "opacity": 0.5},
+      "motion": {
+        "x": {"keys": [
+          {"frame": 0, "value": 2, "to_next": "linear"},
+          {"frame": 2, "value": 2}
+        ]},
+        "opacity": {"keys": [{"frame": 0, "value": 0.5}]}
+      },
+      "expected": [
+        {"destination": {"x": 2, "y": -2, "width": 6, "height": 7}, "opacity_q16": 32768},
+        {"destination": {"x": 2, "y": -2, "width": 6, "height": 7}, "opacity_q16": 32768},
+        {"destination": {"x": 2, "y": -2, "width": 6, "height": 7}, "opacity_q16": 32768},
+        {"destination": {"x": 2, "y": -2, "width": 6, "height": 7}, "opacity_q16": 32768},
+        {"destination": {"x": 2, "y": -2, "width": 6, "height": 7}, "opacity_q16": 32768}
+      ]
+    },
+    {
+      "name": "linear-negative-half-ties",
+      "clip_frames": 3,
+      "base": {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity": 1.0},
+      "motion": {
+        "x": {"keys": [
+          {"frame": 0, "value": -2, "to_next": "linear"},
+          {"frame": 2, "value": 1}
+        ]},
+        "y": {"keys": [
+          {"frame": 0, "value": 1, "to_next": "linear"},
+          {"frame": 2, "value": -2}
+        ]}
+      },
+      "expected": [
+        {"destination": {"x": -2, "y": 1, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": -1, "y": -1, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 1, "y": -2, "width": 4, "height": 4}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "linear-positive-half-tie",
+      "clip_frames": 3,
+      "base": {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity": 1.0},
+      "motion": {
+        "x": {"keys": [
+          {"frame": 0, "value": -1, "to_next": "linear"},
+          {"frame": 2, "value": 2}
+        ]},
+        "y": {"keys": [
+          {"frame": 0, "value": -2, "to_next": "linear"},
+          {"frame": 2, "value": 1}
+        ]}
+      },
+      "expected": [
+        {"destination": {"x": -1, "y": -2, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 1, "y": -1, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 2, "y": 1, "width": 4, "height": 4}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "linear-three-half-ties",
+      "clip_frames": 3,
+      "base": {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity": 1.0},
+      "motion": {
+        "x": {"keys": [
+          {"frame": 0, "value": -3, "to_next": "linear"},
+          {"frame": 2, "value": 0}
+        ]},
+        "y": {"keys": [
+          {"frame": 0, "value": 0, "to_next": "linear"},
+          {"frame": 2, "value": 3}
+        ]}
+      },
+      "expected": [
+        {"destination": {"x": -3, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": -2, "y": 2, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 0, "y": 3, "width": 4, "height": 4}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "step-left-inclusive",
+      "clip_frames": 5,
+      "base": {"destination": {"x": 0, "y": 0, "width": 3, "height": 3}, "opacity": 0.5},
+      "motion": {"x": {"keys": [
+        {"frame": 0, "value": -5, "to_next": "step"},
+        {"frame": 2, "value": 7, "to_next": "step"},
+        {"frame": 4, "value": 9}
+      ]}},
+      "expected": [
+        {"destination": {"x": -5, "y": 0, "width": 3, "height": 3}, "opacity_q16": 32768},
+        {"destination": {"x": -5, "y": 0, "width": 3, "height": 3}, "opacity_q16": 32768},
+        {"destination": {"x": 7, "y": 0, "width": 3, "height": 3}, "opacity_q16": 32768},
+        {"destination": {"x": 7, "y": 0, "width": 3, "height": 3}, "opacity_q16": 32768},
+        {"destination": {"x": 9, "y": 0, "width": 3, "height": 3}, "opacity_q16": 32768}
+      ]
+    },
+    {
+      "name": "final-hold-before-clip-end",
+      "clip_frames": 6,
+      "base": {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity": 1.0},
+      "motion": {"x": {"keys": [
+        {"frame": 0, "value": 10, "to_next": "linear"},
+        {"frame": 2, "value": 13}
+      ]}},
+      "expected": [
+        {"destination": {"x": 10, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 12, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 13, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 13, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 13, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 13, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "complete-value-rounds-not-delta",
+      "clip_frames": 4,
+      "base": {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity": 1.0},
+      "motion": {"x": {"keys": [
+        {"frame": 0, "value": 0, "to_next": "linear"},
+        {"frame": 3, "value": 1}
+      ]}},
+      "expected": [
+        {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 1, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 1, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "negative-complete-value-rounds",
+      "clip_frames": 4,
+      "base": {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity": 1.0},
+      "motion": {"y": {"keys": [
+        {"frame": 0, "value": -1, "to_next": "linear"},
+        {"frame": 3, "value": 0}
+      ]}},
+      "expected": [
+        {"destination": {"x": 0, "y": -1, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 0, "y": -1, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536},
+        {"destination": {"x": 0, "y": 0, "width": 4, "height": 4}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "independent-opacity-key-counterexample",
+      "clip_frames": 4,
+      "base": {"destination": {"x": 10, "y": -4, "width": 5, "height": 6}, "opacity": 0.25},
+      "motion": {
+        "x": {"keys": [
+          {"frame": 0, "value": 0, "to_next": "linear"},
+          {"frame": 3, "value": 2}
+        ]},
+        "opacity": {"keys": [
+          {"frame": 0, "value": 0.0, "to_next": "linear"},
+          {"frame": 3, "value": 1.0}
+        ]}
+      },
+      "expected": [
+        {"destination": {"x": 0, "y": -4, "width": 5, "height": 6}, "opacity_q16": 0},
+        {"destination": {"x": 1, "y": -4, "width": 5, "height": 6}, "opacity_q16": 21845},
+        {"destination": {"x": 1, "y": -4, "width": 5, "height": 6}, "opacity_q16": 43691},
+        {"destination": {"x": 2, "y": -4, "width": 5, "height": 6}, "opacity_q16": 65536}
+      ]
+    },
+    {
+      "name": "independent-width-height-resize",
+      "clip_frames": 5,
+      "base": {"destination": {"x": -2, "y": 3, "width": 8, "height": 9}, "opacity": 0.5},
+      "motion": {
+        "width": {"keys": [
+          {"frame": 0, "value": 8, "to_next": "linear"},
+          {"frame": 4, "value": 12}
+        ]},
+        "height": {"keys": [
+          {"frame": 0, "value": 9, "to_next": "step"},
+          {"frame": 2, "value": 5, "to_next": "step"},
+          {"frame": 4, "value": 5}
+        ]}
+      },
+      "expected": [
+        {"destination": {"x": -2, "y": 3, "width": 8, "height": 9}, "opacity_q16": 32768},
+        {"destination": {"x": -2, "y": 3, "width": 9, "height": 9}, "opacity_q16": 32768},
+        {"destination": {"x": -2, "y": 3, "width": 10, "height": 5}, "opacity_q16": 32768},
+        {"destination": {"x": -2, "y": 3, "width": 11, "height": 5}, "opacity_q16": 32768},
+        {"destination": {"x": -2, "y": 3, "width": 12, "height": 5}, "opacity_q16": 32768}
+      ]
+    },
+    {
+      "name": "all-five-typed-curves",
+      "clip_frames": 4,
+      "base": {"destination": {"x": 0, "y": 0, "width": 10, "height": 8}, "opacity": 0.0},
+      "motion": {
+        "x": {"keys": [
+          {"frame": 0, "value": -3, "to_next": "linear"},
+          {"frame": 3, "value": 0}
+        ]},
+        "y": {"keys": [
+          {"frame": 0, "value": 4, "to_next": "step"},
+          {"frame": 2, "value": -2}
+        ]},
+        "width": {"keys": [
+          {"frame": 0, "value": 10, "to_next": "linear"},
+          {"frame": 3, "value": 7}
+        ]},
+        "height": {"keys": [
+          {"frame": 0, "value": 8, "to_next": "linear"},
+          {"frame": 3, "value": 11}
+        ]},
+        "opacity": {"keys": [
+          {"frame": 0, "value": 0.0, "to_next": "linear"},
+          {"frame": 3, "value": 0.5}
+        ]}
+      },
+      "expected": [
+        {"destination": {"x": -3, "y": 4, "width": 10, "height": 8}, "opacity_q16": 0},
+        {"destination": {"x": -2, "y": 4, "width": 9, "height": 9}, "opacity_q16": 10923},
+        {"destination": {"x": -1, "y": -2, "width": 8, "height": 10}, "opacity_q16": 21845},
+        {"destination": {"x": 0, "y": -2, "width": 7, "height": 11}, "opacity_q16": 32768}
+      ]
+    },
+    {
+      "name": "opacity-endpoints-and-midpoint",
+      "clip_frames": 3,
+      "base": {"destination": {"x": 4, "y": -3, "width": 7, "height": 5}, "opacity": 0.5},
+      "motion": {"opacity": {"keys": [
+        {"frame": 0, "value": 0.0, "to_next": "linear"},
+        {"frame": 2, "value": 1.0}
+      ]}},
+      "expected": [
+        {"destination": {"x": 4, "y": -3, "width": 7, "height": 5}, "opacity_q16": 0},
+        {"destination": {"x": 4, "y": -3, "width": 7, "height": 5}, "opacity_q16": 32768},
+        {"destination": {"x": 4, "y": -3, "width": 7, "height": 5}, "opacity_q16": 65536}
+      ]
+    }
+  ]
+}

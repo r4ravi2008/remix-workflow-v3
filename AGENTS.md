@@ -10,6 +10,10 @@ rendered music video with synced Indic-language lyrics, audio-reactive visuals, 
 AI-stylized cover art. The local production pipeline has 12 steps (0–11), each defined in
 `prompts/`, followed by an optional private YouTube draft skill.
 
+The standalone `video-director` skill also produces other videos and Shorts. Music
+is one category; Telugu news bytes start from a user-supplied item/story and use
+verified sources, Telugu scripts and narration rather than the remix pipeline.
+
 ## Repository Layout
 
 ```
@@ -27,6 +31,8 @@ tools/
   acapella-extractor/      ← Mel-Band RoFormer vocal isolation + CTC aligner
   video-generator/         ← Remotion video template system
 .agents/skills/
+  video-director/         ← Shared direction, production/review; Telugu news bytes
+  music-video-director/   ← Music category: song timing, continuity, optional lyrics
   remotion-best-practices/ ← Remotion rules (load via skill tool)
   suno-music-creator/      ← Suno AI workflow (load via skill tool)
   video-generation/        ← AI video generation (load via skill tool)
@@ -41,8 +47,9 @@ tools/
 2. **Native script only.** Lyrics are always in Indic script (Telugu, Hindi, Tamil).
 Never romanize or transliterate. See `prompts/references/workspace-conventions.md`.
 
-3. **Steps are sequential.** Run steps 0→11 in order. Each step's prerequisites list what
-must exist before it can run. See `prompts/README.md` for the full pipeline map.
+3. **Remix steps are sequential.** Run steps 0→11 in order for the remix pipeline.
+Each step's prerequisites list what must exist before it can run. See `prompts/README.md`
+for the full pipeline map.
 
 4. **Tools have their own docs.** Before using `acapella-extractor` or `video-generator`,
 read their README files in `tools/`. Shared usage patterns are in `prompts/references/`.
@@ -68,7 +75,21 @@ tool when working on the relevant step.
 5. Steps 6–11 complete autonomously after user selection
 6. When the user explicitly requests upload, `upload-remix-to-youtube` configures a private draft and stops for manual publication
 
+## How to Run Other Videos or Shorts
+
+Use `.agents/skills/video-director/SKILL.md` and select category and format separately.
+Music uses the `music-video-director` specialization. For Telugu news bytes, the user
+supplies a news item/story; follow `video-director/references/news-bytes.md` for source
+verification, Telugu scripting, narration, captions, visuals and final review. Read
+existing `meta.json` before resuming. New standalone projects live under the configured
+workspace root with detailed state in `<slug>/video/`; they do not run the song-remix steps.
+
 ## When You're Stuck
+
+For the standalone Rust editor, start at
+`apps/release-kit-studio/native-editor/AGENTS.md`.
+That entry point maps Poteto workflows, native command ownership, feature progress, and local acceptance checks.
+The native specification requires a separate executable path from the historical Python renderer.
 
 - Check `meta.json` status to see what's been completed
 - Read the relevant step's error handling section

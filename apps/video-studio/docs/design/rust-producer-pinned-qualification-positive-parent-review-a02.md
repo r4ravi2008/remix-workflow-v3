@@ -1,0 +1,17 @@
+# Rust producer pinned qualification A02 positive parent review
+
+Root accepts the actual positive diagnostic within runtime qualification scope. Rust constructed the private opaque qualification, completed fresh full revalidation and independently reproduced both expected final indexes. No P1 or P2 remains in this scope. Separate actual-evidence peer review is pending.
+
+The diagnostic ran once after completed root and peer source and external-bootstrap reviews. Its fixed no-argument command and ten-variable environment match the reviewed bootstrap. The process returned zero in 2.098 seconds. PID and process group 94921 were reaped and are absent. Both streams are empty. No timeout, overflow, termination signal or held stream occurred. The owned TMPDIR identity is unchanged and the directory remains empty. No historical control suite replayed.
+
+Root independently derived the complete 331-file invocation closure. All 124,627,905 bytes match before, after and current hash and nine recorded identity fields. The saved bootstrap, its completed reviews and compiled diagnostic remain unchanged. Root matched all three generated outputs and strictly parsed the ten-field canonical report with duplicate-key rejection. All four references, four expected paths and six scope flags match the fixed recipe and reviewed implementation.
+
+The actual Source final has 2,080 rows, 540,669 bytes and SHA-256 `c60e7e88aafff3d63bb7110ccf887974c732104a58d23f755000d31d7f3c902f`. The actual Runner final has 66 rows, 16,514 bytes and SHA-256 `1f98263dd736b5f30d1906fe15b3a91ef8db6032a0e9f5fc1a02c5732536f77b`. Both actual files equal the independently assembled expected vectors byte-for-byte. The canonical report is 1,777 bytes with SHA-256 `5439f8ca69305a5f1165a2aa46c556bcd3d32850bc68247153916d505a42bf4b`.
+
+Root independently decoded both actual final files with the frozen standalone decoder. Both closed reference graphs pass. Together they contain 2,041 regular-file rows, seventeen ordered lists, 76 scalars and twelve derived booleans. Every regular observation matches current content and six encoded identity fields. These observations cover 2,017 unique files totaling 431,367,482 bytes. The decoder source and its 104 declared runtime files match before and after this readback. Those checks do not attest loaded runtime images.
+
+The invocation report is 393,859 bytes with SHA-256 `aec0106bf764abaeb5711a6c5503c23a86bd976a9a7880b3c838bdfab250ffce`. The preflight is 196,961 bytes with SHA-256 `e190eadb096f5877086aea3bdff6b21f8c9a2ffcc061d8b2458bd474b95bc468`. Root's independent current invocation proof is 197,398 bytes with SHA-256 `11c09a790f41b6f17ff9540e60048e456c8af30bb21c2700098af4dd2233cfe9`. The actual-output decoder proof is 1,919,518 bytes with SHA-256 `aa8f18c7f228cccf1808c4a156aca4fea2fe06f3d7113e225f9dcb098628eb00`.
+
+The canonical report correctly distinguishes `privateOpaqueQualificationConstructed=true` from `callerAcceptedValueConstructible=false`. Execution authorization, native producer execution, native output acceptance and product integration remain false. WATCHED, HEARD and creative acceptance remain unverified. This review is same-model-family and nonblind.
+
+The next finite unit connects this opaque qualification to the reviewed A04 lifecycle through a narrow runner successor. It must stage and review an attempt-specific authorization before one primary native attempt. This successful diagnostic does not itself permit a native child.

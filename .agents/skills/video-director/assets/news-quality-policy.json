@@ -1,0 +1,279 @@
+{
+  "schemaVersion": 1,
+  "profile": "standard",
+  "profiles": {
+    "exploratory": 2,
+    "standard": 3,
+    "meticulous": 4
+  },
+  "max_attempts_per_component": 3,
+  "overrides": {},
+  "kinds": {
+    "audio": {
+      "criteria": [
+        "fidelity",
+        "phrase_integrity"
+      ],
+      "hard_gates": [
+        "correct_source",
+        "decodes",
+        "requested_range_intact"
+      ]
+    },
+    "brief": {
+      "criteria": [
+        "intent_fit",
+        "specificity"
+      ],
+      "hard_gates": [
+        "user_constraints_met",
+        "interpretation_evidence_disclosed"
+      ]
+    },
+    "storyboard": {
+      "criteria": [
+        "intent_fit",
+        "coherence",
+        "causal_readability",
+        "coverage",
+        "anchor_coverage",
+        "feasibility"
+      ],
+      "hard_gates": [
+        "scope_respected",
+        "content_map_bound",
+        "anchor_plan_complete",
+        "approval_boundary_met",
+        "creative_proof_reviewed"
+      ]
+    },
+    "source_selection": {
+      "criteria": [
+        "relevance",
+        "composition",
+        "identity"
+      ],
+      "hard_gates": [
+        "provenance_verified",
+        "reuse_policy_met",
+        "event_context_and_image_role_verified"
+      ]
+    },
+    "image": {
+      "criteria": [
+        "intent_fit",
+        "composition",
+        "identity",
+        "anatomy",
+        "sharpness",
+        "style_continuity",
+        "canvas_consistency",
+        "sequence_continuity"
+      ],
+      "hard_gates": [
+        "references_compared",
+        "no_forbidden_content",
+        "intended_use_feasible",
+        "provenance_recorded",
+        "production_canvas_verified",
+        "sequence_context_reviewed"
+      ]
+    },
+    "motion": {
+      "criteria": [
+        "intent_fit",
+        "identity",
+        "temporal_stability",
+        "motion_quality",
+        "continuity",
+        "endpoint_continuity"
+      ],
+      "hard_gates": [
+        "accepted_anchors_bound",
+        "whole_usable_range_watched",
+        "usable_duration_verified",
+        "lip_sync_policy_met",
+        "current_source_snapshot_verified",
+        "editorial_usable_range_reviewed"
+      ]
+    },
+    "edit": {
+      "criteria": [
+        "intent_fit",
+        "pacing",
+        "sync",
+        "continuity",
+        "causal_readability",
+        "temporal_direction",
+        "variety",
+        "color_consistency",
+        "focal_framing",
+        "focal_sharpness"
+      ],
+      "hard_gates": [
+        "dependency_inventory_complete",
+        "audio_preserved",
+        "coverage_complete",
+        "footage_policy_met",
+        "transitions_reviewed",
+        "event_order_monotonic",
+        "no_unintended_black_or_freeze",
+        "text_policy_met",
+        "render_state_verified",
+        "overlay_clearance_verified",
+        "corrections_rechecked",
+        "all_shots_composition_and_focus_reviewed",
+        "all_joins_rendered_and_reviewed",
+        "text_integrated_in_picture",
+        "creative_intent_realized",
+        "claim_ledger_bound",
+        "speech_and_visible_claims_verified",
+        "image_roles_and_disclosures_verified",
+        "single_narration_and_caption_owner"
+      ]
+    },
+    "export": {
+      "criteria": [
+        "intent_fit",
+        "pacing",
+        "sync",
+        "narrative_readability",
+        "focal_framing",
+        "focal_sharpness",
+        "visual_finish",
+        "audio_finish"
+      ],
+      "hard_gates": [
+        "dependency_inventory_complete",
+        "correct_render_bound",
+        "technical_checks_pass",
+        "full_playback_watched_and_heard",
+        "no_unintended_black_or_freeze",
+        "ending_intact",
+        "corrections_rechecked",
+        "no_known_visual_defect_deferred",
+        "shot_cue_join_review_complete",
+        "current_claim_ledger_bound",
+        "spoken_and_visible_facts_rechecked",
+        "sources_and_as_of_verified",
+        "illustration_and_archival_labels_verified"
+      ]
+    },
+    "story_graphic": {
+      "criteria": [
+        "semantic_clarity",
+        "reading_time",
+        "legibility",
+        "placement",
+        "motion_quality"
+      ],
+      "hard_gates": [
+        "content_and_scene_bound",
+        "all_panels_reviewed",
+        "subject_clearance_verified",
+        "scene_exit_verified",
+        "claim_ledger_bound",
+        "values_attribution_and_disclosures_verified"
+      ]
+    },
+    "claims": {
+      "criteria": [
+        "source_quality",
+        "context_fidelity",
+        "clarity"
+      ],
+      "hard_gates": [
+        "material_claims_checked",
+        "attribution_and_uncertainty_preserved",
+        "dates_numbers_names_verified",
+        "sources_and_as_of_recorded"
+      ]
+    },
+    "script": {
+      "criteria": [
+        "clarity",
+        "spoken_telugu",
+        "story_progression",
+        "duration_fit"
+      ],
+      "hard_gates": [
+        "claim_ledger_bound",
+        "native_script_verified",
+        "no_unsupported_claims",
+        "qualifiers_preserved"
+      ]
+    },
+    "narration": {
+      "criteria": [
+        "intelligibility",
+        "pronunciation",
+        "pacing",
+        "audio_finish"
+      ],
+      "hard_gates": [
+        "accepted_script_bound",
+        "complete_take_heard",
+        "words_numbers_qualifiers_verified",
+        "decodes",
+        "correct_take_bound"
+      ]
+    },
+    "captions": {
+      "criteria": [
+        "timing",
+        "legibility",
+        "placement",
+        "semantic_fidelity"
+      ],
+      "hard_gates": [
+        "script_and_narration_bound",
+        "native_glyphs_verified",
+        "all_cues_reviewed",
+        "rendered_bounds_and_subject_clearance_verified",
+        "qualifiers_and_values_preserved"
+      ]
+    }
+  },
+  "timed_review": {
+    "motion": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed"
+      ]
+    },
+    "story_graphic": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "edit": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "export": {
+      "scope": "full",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    },
+    "narration": {
+      "scope": "full",
+      "methods": [
+        "heard"
+      ]
+    },
+    "captions": {
+      "scope": "declared",
+      "methods": [
+        "watched_normal_speed",
+        "heard"
+      ]
+    }
+  }
+}

@@ -1,0 +1,10 @@
+{
+  "schema": 1,
+  "role": "preserved H.264 input for private fully-masked native worker execution test",
+  "sha256": "097dd9a1a59c02a8967db82463e8b43fc6ffc42a5294c997a77280967b1174df",
+  "bytes": 1319960,
+  "predecessor_receipt": "505847160c4b16355af75199cc3775a7064219359086f543a062929819c053d7",
+  "source_path": "/Users/aira/projects/remix-gpt-coding-agent/artifacts/scratch-video-goal-20261005/native-project-a01/state/artifacts/097dd9a1a59c02a8967db82463e8b43fc6ffc42a5294c997a77280967b1174df.mp4",
+  "fixture_path": "/Users/aira/projects/remix-gpt-coding-agent/apps/video-studio/crates/editor/tests/fixtures/native/h264-source-a14.mp4",
+  "scope": "Exact copied bytes; no new decode/export or creative acceptance"
+}

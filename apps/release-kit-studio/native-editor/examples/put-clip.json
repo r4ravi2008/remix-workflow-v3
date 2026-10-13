@@ -1,0 +1,24 @@
+{
+  "projectId": "pal-pal-cli-test",
+  "expectedRevision": 0,
+  "intentId": "background-v1",
+  "edits": [
+    {
+      "kind": "clip.put",
+      "clip": {
+        "id": "background",
+        "startFrame": 0,
+        "durationFrames": 96,
+        "source": {
+          "kind": "solid",
+          "rgba": [
+            12,
+            25,
+            48,
+            255
+          ]
+        }
+      }
+    }
+  ]
+}
