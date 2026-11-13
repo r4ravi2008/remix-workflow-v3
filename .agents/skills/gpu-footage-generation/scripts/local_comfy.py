@@ -54,7 +54,9 @@ def api(route, payload=None):
         return json.loads(r.read())
 
 
-def flux_graph(prompt, refs, width, height, seed, prefix, steps=4):
+def flux_graph(prompt, refs, width, height, seed, prefix, steps=4, init=None, denoise=1.0, mask=None):
+    """init: input-relative image used as the starting latent (img2img); denoise < 1 keeps its structure (faces, pose).
+    mask: input-relative grayscale image, white = regenerate, black = keep the init pixels (protect characters)."""
     g = {
         "1": {"class_type": "UNETLoader", "inputs": {"unet_name": FLUX_UNET, "weight_dtype": "default"}},
         "2": {"class_type": "CLIPLoader", "inputs": {"clip_name": FLUX_CLIP, "type": "flux2", "device": "default"}},
@@ -83,6 +85,19 @@ def flux_graph(prompt, refs, width, height, seed, prefix, steps=4):
         "16": {"class_type": "VAEDecode", "inputs": {"samples": ["15", 0], "vae": ["3", 0]}},
         "17": {"class_type": "SaveImage", "inputs": {"images": ["16", 0], "filename_prefix": prefix}},
     })
+    if init is not None:
+        g.update({
+            "90": {"class_type": "LoadImage", "inputs": {"image": init}},
+            "91": {"class_type": "ImageScale", "inputs": {"image": ["90", 0], "upscale_method": "lanczos", "width": width, "height": height, "crop": "center"}},
+            "92": {"class_type": "VAEEncode", "inputs": {"pixels": ["91", 0], "vae": ["3", 0]}},
+            "93": {"class_type": "SplitSigmasDenoise", "inputs": {"sigmas": ["11", 0], "denoise": denoise}},
+        })
+        g["15"]["inputs"]["latent_image"] = ["92", 0]
+        g["15"]["inputs"]["sigmas"] = ["93", 1]
+        if mask is not None:
+            g["94"] = {"class_type": "LoadImageMask", "inputs": {"image": mask, "channel": "red"}}
+            g["95"] = {"class_type": "SetLatentNoiseMask", "inputs": {"samples": ["92", 0], "mask": ["94", 0]}}
+            g["15"]["inputs"]["latent_image"] = ["95", 0]
     return g, "17"
 
 
@@ -219,6 +234,8 @@ def main():
     a = sp.add_parser("image"); a.add_argument("--job", required=True); a.add_argument("--prompt-file", type=Path, required=True)
     a.add_argument("--ref", action="append", default=[]); a.add_argument("--width", type=int, default=1344)
     a.add_argument("--height", type=int, default=768); a.add_argument("--seed", type=int, default=1); a.add_argument("--steps", type=int, default=4)
+    a.add_argument("--init", help="input-relative start image (img2img)"); a.add_argument("--denoise", type=float, default=1.0)
+    a.add_argument("--mask", help="input-relative mask with --init: white regenerates, black keeps")
     v = sp.add_parser("video"); v.add_argument("--job", required=True); v.add_argument("--prompt-file", type=Path, required=True)
     v.add_argument("--first", required=True); v.add_argument("--last"); v.add_argument("--width", type=int, default=1024)
     v.add_argument("--height", type=int, default=576); v.add_argument("--frames", type=int, default=121)
@@ -231,9 +248,11 @@ def main():
     JOBS = Path(os.environ.get("COMFY_JOBS", ROOT / "jobs" / args.project))
     if args.cmd == "image":
         prompt = args.prompt_file.read_text().strip()
-        g, node = flux_graph(prompt, args.ref, args.width, args.height, args.seed, f"{args.project}/{args.job}", args.steps)
-        submit(args.job, g, node, args.ref, {"kind": "flux2-klein-4b", "prompt": prompt, "refs": args.ref, "w": args.width,
-                                             "h": args.height, "seed": args.seed, "steps": args.steps})
+        g, node = flux_graph(prompt, args.ref, args.width, args.height, args.seed, f"{args.project}/{args.job}", args.steps,
+                             args.init, args.denoise, args.mask)
+        submit(args.job, g, node, args.ref + ([args.init] if args.init else []) + ([args.mask] if args.mask else []),
+               {"kind": "flux2-klein-4b", "prompt": prompt, "refs": args.ref, "w": args.width, "h": args.height, "seed": args.seed,
+                "steps": args.steps, "init": args.init, "denoise": args.denoise, "mask": args.mask})
     elif args.cmd == "video":
         prompt = args.prompt_file.read_text().strip()
         assert (args.frames - 1) % 8 == 0, "LTX length must be 8n+1"

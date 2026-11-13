@@ -33,6 +33,16 @@ Pip wheels assume a generic Linux. On NixOS:
 
 - `video --audio <file> --audio-start <s>`: lip sync. Following the installed `video_ltx2_3_ia2v` template, the audio window `[s, s + frames/24)` is encoded with the LTX audio VAE and held fixed (`SetLatentNoiseMask` with a zero `SolidMask`), so the picture is generated to it. Use an isolated lead-vocal stem whose sample alignment to the canonical master you have verified (FFT cross-correlation within one frame). Start the window a few frames before the edit slot (pre-roll) and use that same offset as the source in-point, so picture frame k equals song time `s + k/24`. The negative prompt then permits mouth movement. In two-person shots, say explicitly that only the singer's lips move; LTX otherwise animates both mouths. The output carries no audio stream, so prove sync by muxing each clip with the song at its window and watching it with sound.
 
+- `image --init <img> --denoise d [--mask m]`: img2img from a source frame. With FLUX.2 klein at 16 steps, 0.66 restyled the Nuvvantene leads to anime while keeping face geometry; 0.55 and below stayed photographic, and 0.72 and above replaced the face. A mask (white = regenerate) protects pixels, so characters can be restyled without touching a photoreal plate, or the reverse.
+
+Anime characters in a real environment ([composite_characters.py](../scripts/composite_characters.py), tools venv with rembg/BiRefNet):
+1. Generate a photoreal landmark plate matched to the source shot's camera angle and light. Include anything the characters touch (ledge, balustrade).
+2. Segment the people on the original photo (`--mask-from`, `--erode 3` to drop sky fringe) and place the photo cut-out on the plate.
+3. Restyle only the characters: masked img2img at 0.66 using `--char-mask-out`. The plate context fixes edge colour and light.
+4. Verify faces with [face_gate.py](../scripts/face_gate.py) before motion, then on motion mid/end frames.
+
+Converting characters on their original background and pasting later leaves background-coloured halos inside the stylized outline, and a low-denoise global harmonize pass changes nothing.
+
 Validate a new graph against `/object_info` before the first submission. ComfyUI's cached `LoadImage` option list omits subfolders; that alone is not an error.
 
 ## Measured performance (4070 Ti 12 GB, 128 GB RAM)

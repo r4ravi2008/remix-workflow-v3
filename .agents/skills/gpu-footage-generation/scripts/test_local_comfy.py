@@ -30,6 +30,19 @@ class GraphTests(unittest.TestCase):
         self.assert_closed(graph)
         self.assertEqual(graph["14"]["inputs"]["positive"], ["4", 0])
 
+    def test_flux_img2img_starts_from_encoded_init_with_split_sigmas(self):
+        graph, _ = lc.flux_graph("p", ["a/s.png"], 1360, 768, 1, "a/job", 8, init="a/src.png", denoise=0.5)
+        self.assert_closed(graph)
+        self.assertEqual(graph["15"]["inputs"]["latent_image"], ["92", 0])
+        self.assertEqual(graph["15"]["inputs"]["sigmas"], ["93", 1])
+        self.assertEqual(graph["93"]["inputs"]["denoise"], 0.5)
+
+    def test_flux_masked_img2img_protects_unmasked_pixels(self):
+        graph, _ = lc.flux_graph("p", [], 1360, 768, 1, "a/job", 16, init="a/c.png", denoise=0.8, mask="a/m.png")
+        self.assert_closed(graph)
+        self.assertEqual(graph["15"]["inputs"]["latent_image"], ["95", 0])
+        self.assertEqual(graph["95"]["inputs"]["mask"], ["94", 0])
+
     def test_ltx_single_image_guides_first_frame_at_full_strength(self):
         graph, out = lc.ltx_graph("p", "a/x.png", None, 1024, 576, 121, 3, "a/job")
         self.assert_closed(graph)
