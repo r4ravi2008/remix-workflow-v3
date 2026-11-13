@@ -16,6 +16,8 @@ Use the installed `imagegen` skill and its supported image-generation tool. Insp
 
 A useful prompt specifies subject and action, composition, intended style, lighting/palette, continuity requirements, and aspect ratio. Preserve the already approved workspace style where applicable. Distinguish source-character likeness from a generic “cinematic person.” Avoid unwanted captions, logos, baked borders, and UI text. Generate typography in the editor unless the brief needs it inside the image.
 
+When hosted image generation is unavailable or out of credits, generate anchors locally on the workstation with FLUX.2 [klein] reference editing ([local-ltx-flux-recipe.md](../../gpu-footage-generation/references/local-ltx-flux-recipe.md)). Spend scarce hosted credits on the two or three character references, then condition every local anchor on clean crops of them (face crops plus costume/body crops). If a hosted reference carries a plan watermark, use only watermark-free crops as conditioning; never retouch the watermark away or place the watermarked image in the film. For a first/last-frame pair, generate the start still, accept it, then generate the end still with the accepted start still as its first reference so framing and geometry match.
+
 Inspect each still for likeness, anatomy, focal sharpness, continuity, framing, canvas/matte consistency, chronological meaning, and whether it supports the planned movement. Normalize a derivative to the recorded production canvas without stretching while preserving the immutable generated original. Record accepted/rejected status and reason before spending motion generation on it. Review the still both individually and beside its chronological neighbors.
 
 ## Lock character and performance
@@ -53,7 +55,7 @@ Bind each job to accepted anchor IDs, revisions, hashes, and provider-input deri
 Two useful intents:
 
 - In-frame motion: animate an accepted frame with a simple subject action and a coherent camera path. Preserve composition/identity throughout.
-- Frame-to-frame bridge: connect deliberate start and end compositions if the current provider supports both references. If unsupported, generate compatible shots separately and bridge them in Resolve; label this as an editorial solution rather than a conditioned generation.
+- Frame-to-frame bridge: connect deliberate start and end compositions if the current provider supports both references. If unsupported, generate compatible shots separately and bridge them in Resolve; label this as an editorial solution rather than a conditioned generation. Even when supported, a bridge only transforms on screen when both frames share camera, scale and object placement. Very different compositions make the model hide the gap with an internal hard jump or ghosted double exposure; inspect the first second frame by frame. Then generate each state separately and cut on a meaningful audio event, such as the sung word that names the new state.
 
 Prompt card example:
 

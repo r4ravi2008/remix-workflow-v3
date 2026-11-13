@@ -1,11 +1,11 @@
 ---
 name: gpu-footage-generation
-description: Generate and recover AI motion footage on RunPod GPUs or a local network GPU reached through Herdr. Use for anchor-to-video jobs, ComfyUI setup, pilot cost checks, resumable batches, verified transfers, and reviewed footage handoff to an editor.
+description: Generate and recover AI motion footage and still anchors on a local workstation GPU reached through Herdr or on RunPod. Use for anchor-to-video jobs, local still generation, ComfyUI setup, pilot cost checks, resumable batches, verified transfers, and reviewed footage handoff to an editor.
 ---
 
 # GPU footage generation
 
-Turn selected anchors and shot requirements into usable local motion footage. Support RunPod and an existing local/WSL GPU reached through Herdr. Keep provider operations, model/workflow, source authority and creative acceptance explicit. Generating files alone does not complete an integrated film edit.
+Turn selected anchors and shot requirements into usable local motion footage. Prefer the connected local workstation GPU reached through Herdr (no rental bill, shared with the editor host); use RunPod when the user selects it or the workstation cannot fit the job. The same workstation can also generate production still anchors when hosted image credits are short. Keep provider operations, model/workflow, source authority and creative acceptance explicit. Generating files alone does not complete an integrated film edit.
 
 ## Establish the run
 
@@ -22,8 +22,9 @@ For local video upscaling, first read the director's [upscaling-and-restoration.
 | Backend | Read before connecting |
 |---|---|
 | RunPod | [runpod.md](references/runpod.md): account, capacity, actual price, persistent storage, transfer canary, bounded billing and shutdown |
-| Local network / WSL through Herdr | [herdr-local.md](references/herdr-local.md): managed-pane requirement, saved machine discovery, existing agent/queue ownership and source staging |
+| Local workstation through Herdr | [herdr-local.md](references/herdr-local.md): `hc` machine discovery, owned named terminals, existing agent/queue ownership, staging and the current host profile |
 | Either, using ComfyUI | [comfyui-runtime.md](references/comfyui-runtime.md): pinned runtime, live node schema, compatible workflow, save-node pilot and recovery |
+| Local LTX-2.5 motion / FLUX.2 [klein] stills | [local-ltx-flux-recipe.md](references/local-ltx-flux-recipe.md): ungated pinned models, NixOS Triton fixes, graph runner, measured timings and first/last-frame limits |
 | Reproduce the recorded H3 I2V workflow | [h3-recipe.md](references/h3-recipe.md): portable graph, parameterization, source bindings, and submit/collect commands |
 
 Use the selected backend. A bigger GPU can improve memory headroom or throughput; it does not by itself improve the same model's pictures. Compare identical workflow settings and accepted footage per dollar. Honor explicit GPU/model restrictions. Do not buy credits, silently switch provider, or start multiple billed machines without authorization covering that choice.
@@ -44,6 +45,8 @@ Use the selected backend. A bigger GPU can improve memory headroom or throughput
 python3 <skill-dir>/scripts/asset_snapshot.py create --root <asset-root> --output <run>/inputs.json <relative-file> ...
 python3 <skill-dir>/scripts/asset_snapshot.py verify --root <remote-staged-root> --manifest <run>/inputs.json
 python3 <skill-dir>/scripts/comfy_job.py --help
+bash <skill-dir>/scripts/comfyui_ltx_setup.sh install|nixroots|models|verify|serve   # on the workstation, in a named terminal
+<venv>/bin/python <skill-dir>/scripts/local_comfy.py --project <name> image|video|wait|check ...
 ```
 
 The ComfyUI helper submits one already-prepared API graph, preserves a submission intent before the request, recovers prompt IDs from queue/history, and collects a completed video on the execution host with full decoding and hashes. It never allocates a GPU, builds a model graph, approves images, transfers across hosts, enforces account spend, or shuts down a pod. Those are explicit run steps. Its deadline guards admission only; supervise or arrange an authorized independent shutdown mechanism before renting compute.
