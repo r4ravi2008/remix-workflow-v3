@@ -33,9 +33,10 @@ FLUX_UNET = "flux-2-klein-4b.safetensors"
 FLUX_CLIP = "qwen_3_4b.safetensors"
 FLUX_VAE = "flux2-vae.safetensors"
 
-LTX_NEG = ("blurry, out of focus, overexposed, flicker, exposure shift, morphing faces, deformed hands, extra limbs, "
-           "talking, singing, open mouth, lip movement, text, letters, subtitles, logos, watermark, borders, camera shake, "
-           "cartoon, 3D CGI look, neon, sudden cut, jump cut")
+LTX_NEG_BASE = ("blurry, out of focus, overexposed, flicker, exposure shift, morphing faces, deformed hands, extra limbs, "
+                "text, letters, subtitles, logos, watermark, borders, camera shake, cartoon, sudden cut, jump cut")
+LTX_NEG = LTX_NEG_BASE + ", talking, singing, open mouth, lip movement"
+LTX_NEG_SINGING = LTX_NEG_BASE + ", closed mouth while singing, lip sync drift, mumbling, chewing, extra mouths, distorted teeth"
 
 
 def sha(path):
@@ -85,14 +86,17 @@ def flux_graph(prompt, refs, width, height, seed, prefix, steps=4):
     return g, "17"
 
 
-def ltx_graph(prompt, first, last, width, height, frames, seed, prefix, guide_strength=0.7):
+def ltx_graph(prompt, first, last, width, height, frames, seed, prefix, guide_strength=0.7, audio=None, audio_start=0.0,
+              negative=None):
+    """audio: input-relative file; its [audio_start, audio_start + frames/24) window is encoded and held fixed
+    (noise mask 0) so the generated picture follows it, e.g. a lead-vocal stem for lip sync."""
     g = {
         "1": {"class_type": "UnetLoaderGGUF", "inputs": {"unet_name": LTX_UNET}},
         "2": {"class_type": "CLIPLoader", "inputs": {"clip_name": LTX_CLIP, "type": "ltxv", "device": "default"}},
         "3": {"class_type": "VAELoader", "inputs": {"vae_name": LTX_VAE}},
         "4": {"class_type": "VAELoader", "inputs": {"vae_name": LTX_AVAE}},
         "5": {"class_type": "CLIPTextEncode", "inputs": {"text": prompt, "clip": ["2", 0]}},
-        "6": {"class_type": "CLIPTextEncode", "inputs": {"text": LTX_NEG, "clip": ["2", 0]}},
+        "6": {"class_type": "CLIPTextEncode", "inputs": {"text": negative or (LTX_NEG_SINGING if audio else LTX_NEG), "clip": ["2", 0]}},
         "7": {"class_type": "LTXVConditioning", "inputs": {"positive": ["5", 0], "negative": ["6", 0], "frame_rate": 24}},
         "8": {"class_type": "EmptyLTXVLatentVideo", "inputs": {"width": width, "height": height, "length": frames, "batch_size": 1}},
         "20": {"class_type": "LoadImage", "inputs": {"image": first}},
@@ -115,10 +119,22 @@ def ltx_graph(prompt, first, last, width, height, frames, seed, prefix, guide_st
                                                              "strength": guide_strength}},
         })
         tip = "33"
+    if audio is None:
+        g["40"] = {"class_type": "LTXVEmptyLatentAudio", "inputs": {"audio_vae": ["4", 0], "frames_number": frames,
+                                                                     "frame_rate": 24, "batch_size": 1}}
+        audio_latent = ["40", 0]
+    else:
+        g.update({
+            "60": {"class_type": "LoadAudio", "inputs": {"audio": audio}},
+            "61": {"class_type": "TrimAudioDuration", "inputs": {"audio": ["60", 0], "start_index": round(audio_start, 4),
+                                                                  "duration": round(frames / 24, 4)}},
+            "62": {"class_type": "LTXVAudioVAEEncode", "inputs": {"audio": ["61", 0], "audio_vae": ["4", 0]}},
+            "63": {"class_type": "SolidMask", "inputs": {"value": 0.0, "width": 1024, "height": 1024}},
+            "64": {"class_type": "SetLatentNoiseMask", "inputs": {"samples": ["62", 0], "mask": ["63", 0]}},
+        })
+        audio_latent = ["64", 0]
     g.update({
-        "40": {"class_type": "LTXVEmptyLatentAudio", "inputs": {"audio_vae": ["4", 0], "frames_number": frames,
-                                                                 "frame_rate": 24, "batch_size": 1}},
-        "41": {"class_type": "LTXVConcatAVLatent", "inputs": {"video_latent": [tip, 2], "audio_latent": ["40", 0]}},
+        "41": {"class_type": "LTXVConcatAVLatent", "inputs": {"video_latent": [tip, 2], "audio_latent": audio_latent}},
         "42": {"class_type": "RandomNoise", "inputs": {"noise_seed": seed}},
         "43": {"class_type": "SamplerEulerAncestral", "inputs": {"eta": 0.0, "s_noise": 1.0}},
         "44": {"class_type": "ManualSigmas", "inputs": {"sigmas": "1.0, 0.99375, 0.9875, 0.98125, 0.975, 0.909375, 0.725, 0.421875, 0.0"}},
@@ -207,6 +223,8 @@ def main():
     v.add_argument("--first", required=True); v.add_argument("--last"); v.add_argument("--width", type=int, default=1024)
     v.add_argument("--height", type=int, default=576); v.add_argument("--frames", type=int, default=121)
     v.add_argument("--seed", type=int, default=1); v.add_argument("--strength", type=float, default=0.7)
+    v.add_argument("--audio", help="input-relative audio held fixed as conditioning (lip sync); picture frame k = audio-start + k/24 s")
+    v.add_argument("--audio-start", type=float, default=0.0)
     for name in ("wait", "check"):
         w = sp.add_parser(name); w.add_argument("--job", required=True); w.add_argument("--timeout", type=int, default=1800)
     args = ap.parse_args()
@@ -219,11 +237,12 @@ def main():
     elif args.cmd == "video":
         prompt = args.prompt_file.read_text().strip()
         assert (args.frames - 1) % 8 == 0, "LTX length must be 8n+1"
-        g, node = ltx_graph(prompt, args.first, args.last, args.width, args.height, args.frames, args.seed, f"{args.project}/{args.job}", args.strength)
-        ins = [args.first] + ([args.last] if args.last else [])
+        g, node = ltx_graph(prompt, args.first, args.last, args.width, args.height, args.frames, args.seed, f"{args.project}/{args.job}",
+                            args.strength, args.audio, args.audio_start)
+        ins = [args.first] + ([args.last] if args.last else []) + ([args.audio] if args.audio else [])
         submit(args.job, g, node, ins, {"kind": "ltx-2.5-distilled-gguf", "prompt": prompt, "first": args.first, "last": args.last,
                                         "w": args.width, "h": args.height, "frames": args.frames, "seed": args.seed,
-                                        "guide_strength": args.strength})
+                                        "guide_strength": args.strength, "audio": args.audio, "audio_start": args.audio_start})
     elif args.cmd == "wait":
         check(args.job, True, args.timeout)
     elif args.cmd == "check":

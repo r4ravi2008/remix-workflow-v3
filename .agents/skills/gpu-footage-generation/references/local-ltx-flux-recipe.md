@@ -31,6 +31,8 @@ Pip wheels assume a generic Linux. On NixOS:
 - `image`: FLUX.2 klein 4 steps, CFG 1, any number of `--ref` images chained as `ReferenceLatent` on positive and zero-out negative conditioning. Use reference crops for identity and the accepted start still as a reference for an end still with matching framing.
 - `video`: LTX-2.5 distilled, 8 manual sigmas, `LTXVAddGuide` at frame 0 (strength 1.0 for single-image I2V) or at frames 0 and −1 (default 0.7) for first/last-frame. Length must be `8n+1`. Generated audio is discarded by the edit; the canonical song owns sound.
 
+- `video --audio <file> --audio-start <s>`: lip sync. Following the installed `video_ltx2_3_ia2v` template, the audio window `[s, s + frames/24)` is encoded with the LTX audio VAE and held fixed (`SetLatentNoiseMask` with a zero `SolidMask`), so the picture is generated to it. Use an isolated lead-vocal stem whose sample alignment to the canonical master you have verified (FFT cross-correlation within one frame). Start the window a few frames before the edit slot (pre-roll) and use that same offset as the source in-point, so picture frame k equals song time `s + k/24`. The negative prompt then permits mouth movement. In two-person shots, say explicitly that only the singer's lips move; LTX otherwise animates both mouths. The output carries no audio stream, so prove sync by muxing each clip with the song at its window and watching it with sound.
+
 Validate a new graph against `/object_info` before the first submission. ComfyUI's cached `LoadImage` option list omits subfolders; that alone is not an error.
 
 ## Measured performance (4070 Ti 12 GB, 128 GB RAM)

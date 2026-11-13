@@ -44,6 +44,15 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(guides, [(-1, 0.7), (0, 0.7)])
         self.assertEqual(graph["48"]["inputs"]["positive"], ["33", 0])
 
+    def test_ltx_audio_conditioning_is_held_fixed_and_allows_mouths(self):
+        graph, _ = lc.ltx_graph("p", "a/x.png", None, 1024, 576, 121, 3, "a/job", audio="a/v.wav", audio_start=69.375)
+        self.assert_closed(graph)
+        self.assertEqual(graph["61"]["inputs"]["start_index"], 69.375)
+        self.assertAlmostEqual(graph["61"]["inputs"]["duration"], 121 / 24, places=3)
+        self.assertEqual(graph["63"]["inputs"]["value"], 0.0)
+        self.assertEqual(graph["41"]["inputs"]["audio_latent"], ["64", 0])
+        self.assertNotIn("singing, open mouth", graph["6"]["inputs"]["text"])
+
 
 if __name__ == "__main__":
     unittest.main()
