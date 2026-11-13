@@ -24,8 +24,14 @@ ap.add_argument("--feather", type=float, default=2.0); ap.add_argument("--match"
 a = ap.parse_args()
 
 plate = Image.open(a.plate).convert("RGB")
-chars = Image.open(a.characters).convert("RGB").resize(plate.size, Image.LANCZOS)
-seg_src = Image.open(a.mask_from).convert("RGB").resize(plate.size, Image.LANCZOS) if a.mask_from else chars
+def fit(im, size):
+    """scale-to-cover then centre-crop: never stretch people to a different aspect ratio"""
+    from PIL import ImageOps
+    return ImageOps.fit(im, size, Image.LANCZOS)
+
+
+chars = fit(Image.open(a.characters).convert("RGB"), plate.size)
+seg_src = fit(Image.open(a.mask_from).convert("RGB"), plate.size) if a.mask_from else chars
 cut = remove(seg_src, session=new_session(a.model))
 hard = cut.split()[-1]
 if a.erode > 0:

@@ -12,6 +12,7 @@ Use this recipe when the selected provider is the local workstation GPU. It was 
 | Motion text encoder | `gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors` | `comfyicu/LTX-2.5` | 15.4 GB |
 | Video / audio VAE | `ltx-2.5-video-vae-conv-bf16`, `ltx-2.5-audio-vae-bf16` | `unsloth/LTX-2.5-GGUF` | 1.8 GB |
 | Still model | `flux-2-klein-4b.safetensors` + `qwen_3_4b.safetensors` + `flux2-vae.safetensors` | `Comfy-Org/Flux-2-Klein-4B` (Apache-2.0) | 16.1 GB |
+| Anchor edit model (preferred) | `qwen-image-edit-2511-Q5_K_M.gguf` + `qwen_2.5_vl_7b_fp8_scaled` + `qwen_image_vae` + Lightning 8-step LoRA | `unsloth/Qwen-Image-Edit-2511-GGUF`, `Comfy-Org/Qwen-Image_ComfyUI`, `lightx2v/Qwen-Image-Edit-2511-Lightning` | 25.9 GB |
 
 The earlier Nuvvantene/cyberpunk local runs used differently named LTX-2.5 Q3_K_M and Gemma w4a8 files whose hashes match no published file; treat those records as historical. UD-Q3_K_XL is the closest published quant with better measured fidelity than Q3_K_M.
 
@@ -34,6 +35,8 @@ Pip wheels assume a generic Linux. On NixOS:
 - `video --audio <file> --audio-start <s>`: lip sync. Following the installed `video_ltx2_3_ia2v` template, the audio window `[s, s + frames/24)` is encoded with the LTX audio VAE and held fixed (`SetLatentNoiseMask` with a zero `SolidMask`), so the picture is generated to it. Use an isolated lead-vocal stem whose sample alignment to the canonical master you have verified (FFT cross-correlation within one frame). Start the window a few frames before the edit slot (pre-roll) and use that same offset as the source in-point, so picture frame k equals song time `s + k/24`. The negative prompt then permits mouth movement. In two-person shots, say explicitly that only the singer's lips move; LTX otherwise animates both mouths. The output carries no audio stream, so prove sync by muxing each clip with the song at its window and watching it with sound.
 
 - `image --init <img> --denoise d [--mask m]`: img2img from a source frame. With FLUX.2 klein at 16 steps, 0.66 restyled the Nuvvantene leads to anime while keeping face geometry; 0.55 and below stayed photographic, and 0.72 and above replaced the face. A mask (white = regenerate) protects pixels, so characters can be restyled without touching a photoreal plate, or the reverse.
+
+- `qedit --image src.png --image style.png`: Qwen-Image-Edit-2511 from the official 2511 template (AuraFlow shift 3.1, CFGNorm, Lightning 8 steps, CFG 1). It is the closest local equivalent of ChatGPT image editing: in one edit it redraws a source frame's people and builds a new world in a style key's look, about 95 s per image on the 4070 Ti. For Nuvvantene R20 it beat FLUX klein clearly on style and integration, with recognisable leads (structure about 0.45–0.50). FLUX klein img2img stays more literal (0.79) but reads as a filtered photo. Output follows Kontext preferred sizes (for example 1392×752); centre-crop to 16:9 before motion, never resize.
 
 Anime characters in a real environment ([composite_characters.py](../scripts/composite_characters.py), tools venv with rembg/BiRefNet):
 1. Generate a photoreal landmark plate matched to the source shot's camera angle and light. Include anything the characters touch (ledge, balustrade).

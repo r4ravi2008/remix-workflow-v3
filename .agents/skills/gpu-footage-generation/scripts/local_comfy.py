@@ -101,6 +101,42 @@ def flux_graph(prompt, refs, width, height, seed, prefix, steps=4, init=None, de
     return g, "17"
 
 
+QEDIT_UNET = "qwen-image-edit-2511-Q5_K_M.gguf"
+QEDIT_CLIP = "qwen_2.5_vl_7b_fp8_scaled.safetensors"
+QEDIT_VAE = "qwen_image_vae.safetensors"
+QEDIT_LORA = "Qwen-Image-Edit-2511-Lightning-8steps-V1.0-bf16.safetensors"
+
+
+def qedit_graph(prompt, images, seed, prefix, steps=8):
+    """Qwen-Image-Edit-2511 (official 2511 template structure, Lightning 8-step LoRA). images: 1-3 input-relative refs;
+    image 1 sets the output size (FluxKontextImageScale) and is the edit subject."""
+    g = {
+        "1": {"class_type": "UnetLoaderGGUF", "inputs": {"unet_name": QEDIT_UNET}},
+        "2": {"class_type": "ModelSamplingAuraFlow", "inputs": {"model": ["1", 0], "shift": 3.1}},
+        "3": {"class_type": "CFGNorm", "inputs": {"model": ["2", 0], "strength": 1.0}},
+        "4": {"class_type": "LoraLoaderModelOnly", "inputs": {"model": ["3", 0], "lora_name": QEDIT_LORA, "strength_model": 1.0}},
+        "5": {"class_type": "CLIPLoader", "inputs": {"clip_name": QEDIT_CLIP, "type": "qwen_image", "device": "default"}},
+        "6": {"class_type": "VAELoader", "inputs": {"vae_name": QEDIT_VAE}},
+    }
+    enc_imgs = {}
+    for i, im in enumerate(images[:3]):
+        n = str(10 + i)
+        g[n] = {"class_type": "LoadImage", "inputs": {"image": im}}
+        enc_imgs[f"image{i + 1}"] = [n, 0]
+    g["20"] = {"class_type": "FluxKontextImageScale", "inputs": {"image": ["10", 0]}}
+    enc_imgs["image1"] = ["20", 0]
+    for nid, text in (("21", prompt), ("22", "")):
+        g[nid] = {"class_type": "TextEncodeQwenImageEditPlus", "inputs": {"clip": ["5", 0], "vae": ["6", 0], "prompt": text, **enc_imgs}}
+    g["23"] = {"class_type": "FluxKontextMultiReferenceLatentMethod", "inputs": {"conditioning": ["21", 0], "reference_latents_method": "index_timestep_zero"}}
+    g["24"] = {"class_type": "FluxKontextMultiReferenceLatentMethod", "inputs": {"conditioning": ["22", 0], "reference_latents_method": "index_timestep_zero"}}
+    g["25"] = {"class_type": "VAEEncode", "inputs": {"pixels": ["20", 0], "vae": ["6", 0]}}
+    g["26"] = {"class_type": "KSampler", "inputs": {"model": ["4", 0], "positive": ["23", 0], "negative": ["24", 0], "latent_image": ["25", 0],
+                                                     "seed": seed, "steps": steps, "cfg": 1.0, "sampler_name": "euler", "scheduler": "simple", "denoise": 1.0}}
+    g["27"] = {"class_type": "VAEDecode", "inputs": {"samples": ["26", 0], "vae": ["6", 0]}}
+    g["28"] = {"class_type": "SaveImage", "inputs": {"images": ["27", 0], "filename_prefix": prefix}}
+    return g, "28"
+
+
 def ltx_graph(prompt, first, last, width, height, frames, seed, prefix, guide_strength=0.7, audio=None, audio_start=0.0,
               negative=None):
     """audio: input-relative file; its [audio_start, audio_start + frames/24) window is encoded and held fixed
@@ -242,6 +278,8 @@ def main():
     v.add_argument("--seed", type=int, default=1); v.add_argument("--strength", type=float, default=0.7)
     v.add_argument("--audio", help="input-relative audio held fixed as conditioning (lip sync); picture frame k = audio-start + k/24 s")
     v.add_argument("--audio-start", type=float, default=0.0)
+    q = sp.add_parser("qedit"); q.add_argument("--job", required=True); q.add_argument("--prompt-file", type=Path, required=True)
+    q.add_argument("--image", action="append", required=True); q.add_argument("--seed", type=int, default=1); q.add_argument("--steps", type=int, default=8)
     for name in ("wait", "check"):
         w = sp.add_parser(name); w.add_argument("--job", required=True); w.add_argument("--timeout", type=int, default=1800)
     args = ap.parse_args()
@@ -262,6 +300,11 @@ def main():
         submit(args.job, g, node, ins, {"kind": "ltx-2.5-distilled-gguf", "prompt": prompt, "first": args.first, "last": args.last,
                                         "w": args.width, "h": args.height, "frames": args.frames, "seed": args.seed,
                                         "guide_strength": args.strength, "audio": args.audio, "audio_start": args.audio_start})
+    elif args.cmd == "qedit":
+        prompt = args.prompt_file.read_text().strip()
+        g, node = qedit_graph(prompt, args.image, args.seed, f"{args.project}/{args.job}", args.steps)
+        submit(args.job, g, node, args.image, {"kind": "qwen-image-edit-2511-Q5_K_M+lightning8", "prompt": prompt, "images": args.image,
+                                               "seed": args.seed, "steps": args.steps})
     elif args.cmd == "wait":
         check(args.job, True, args.timeout)
     elif args.cmd == "check":

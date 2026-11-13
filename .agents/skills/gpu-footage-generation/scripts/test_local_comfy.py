@@ -43,6 +43,13 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(graph["15"]["inputs"]["latent_image"], ["95", 0])
         self.assertEqual(graph["95"]["inputs"]["mask"], ["94", 0])
 
+    def test_qedit_graph_conditions_on_all_images_and_scales_image1(self):
+        graph, out = lc.qedit_graph("p", ["a/s.png", "a/style.png"], 3, "a/job")
+        self.assert_closed(graph)
+        self.assertEqual(graph["21"]["inputs"]["image1"], ["20", 0])
+        self.assertEqual(graph["21"]["inputs"]["image2"], ["11", 0])
+        self.assertEqual(graph[out]["class_type"], "SaveImage")
+
     def test_ltx_single_image_guides_first_frame_at_full_strength(self):
         graph, out = lc.ltx_graph("p", "a/x.png", None, 1024, 576, 121, 3, "a/job")
         self.assert_closed(graph)
