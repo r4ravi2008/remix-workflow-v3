@@ -48,6 +48,10 @@ Converting characters on their original background and pasting later leaves back
 
 Validate a new graph against `/object_info` before the first submission. ComfyUI's cached `LoadImage` option list omits subfolders; that alone is not an error.
 
+## MiniMax H3 on the same 4070 Ti
+
+H3 ran locally on this card before the NixOS move (panja/Urvashi records) and again on 2026-11-13: `minimax_h3_fl2va_pruned_int8_convrot` (21 GB) + `minimax_h3_fl2v_turbo_8step` LoRA + `qwen3vl_32b_minimax_h3_nvfp4_awq` text encoder (15.7 GB, offloaded to system RAM) + video VAE, all pinned to `Comfy-Org/MiniMax-H3@e5eb578…` in the setup manifest. `local_comfy.py h3 --first a.png [--last b.png]` reproduces the recorded graph (res_multistep, 8 simple steps, length on the 17k+5 grid, 124 = ~5 s). At 1344×768 it ran about 38.6 s/step and 360–375 s per clip with 11.4 GB VRAM. For Nuvvantene R20 it beat LTX-2.5 clearly on identity and interaction (held hands stayed joined, faces stayed consistent). It has no audio conditioning, so keep LTX `--audio` for shots that must lip-sync to the song. Do not assume the nvfp4 encoder needs Blackwell; it works here through ComfyUI's fallback.
+
 ## Measured performance (4070 Ti 12 GB, 128 GB RAM)
 
 | Job | Setting | Time |

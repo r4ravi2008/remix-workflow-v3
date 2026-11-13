@@ -137,6 +137,39 @@ def qedit_graph(prompt, images, seed, prefix, steps=8):
     return g, "28"
 
 
+H3_UNET = "minimax_h3_fl2va_pruned_int8_convrot.safetensors"
+H3_LORA = "minimax_h3_fl2v_turbo_8step_v1.0_comfyui_bf16.safetensors"
+H3_CLIP = "qwen3vl_32b_minimax_h3_nvfp4_awq.safetensors"
+H3_VAE = "minimax_h3_video_vae_fp16.safetensors"
+
+
+def h3_graph(prompt, first, last, width, height, frames, seed, prefix, steps=8):
+    """MiniMax H3 first(/last)-frame to video, reproducing the graph recorded on the RTX 4070 Ti (panja/Urvashi).
+    Generated audio is not saved; the canonical song owns sound. length snaps to the model's 17k+5 grid (124 = ~5 s)."""
+    g = {
+        "1": {"class_type": "UNETLoader", "inputs": {"unet_name": H3_UNET, "weight_dtype": "default"}},
+        "2": {"class_type": "LoraLoaderModelOnly", "inputs": {"model": ["1", 0], "lora_name": H3_LORA, "strength_model": 1.0}},
+        "3": {"class_type": "CLIPLoader", "inputs": {"clip_name": H3_CLIP, "type": "minimax", "device": "default"}},
+        "4": {"class_type": "VAELoader", "inputs": {"vae_name": H3_VAE}},
+        "6": {"class_type": "LoadImage", "inputs": {"image": first}},
+        "8": {"class_type": "MiniMaxH3ImageToVideo", "inputs": {"clip": ["3", 0], "vae": ["4", 0], "prompt": prompt, "width": width,
+                                                                 "height": height, "length": frames, "first_frame": ["6", 0]}},
+        "9": {"class_type": "RandomNoise", "inputs": {"noise_seed": seed}},
+        "10": {"class_type": "BasicGuider", "inputs": {"model": ["2", 0], "conditioning": ["8", 0]}},
+        "11": {"class_type": "KSamplerSelect", "inputs": {"sampler_name": "res_multistep"}},
+        "12": {"class_type": "BasicScheduler", "inputs": {"model": ["2", 0], "scheduler": "simple", "steps": steps, "denoise": 1.0}},
+        "13": {"class_type": "SamplerCustomAdvanced", "inputs": {"noise": ["9", 0], "guider": ["10", 0], "sampler": ["11", 0],
+                                                                  "sigmas": ["12", 0], "latent_image": ["8", 1]}},
+        "14": {"class_type": "VAEDecode", "inputs": {"samples": ["13", 0], "vae": ["4", 0]}},
+        "16": {"class_type": "CreateVideo", "inputs": {"images": ["14", 0], "fps": 24}},
+        "17": {"class_type": "SaveVideo", "inputs": {"video": ["16", 0], "filename_prefix": prefix, "format": "mp4", "codec": "h264"}},
+    }
+    if last is not None:
+        g["7"] = {"class_type": "LoadImage", "inputs": {"image": last}}
+        g["8"]["inputs"]["last_frame"] = ["7", 0]
+    return g, "17"
+
+
 def ltx_graph(prompt, first, last, width, height, frames, seed, prefix, guide_strength=0.7, audio=None, audio_start=0.0,
               negative=None):
     """audio: input-relative file; its [audio_start, audio_start + frames/24) window is encoded and held fixed
@@ -278,6 +311,9 @@ def main():
     v.add_argument("--seed", type=int, default=1); v.add_argument("--strength", type=float, default=0.7)
     v.add_argument("--audio", help="input-relative audio held fixed as conditioning (lip sync); picture frame k = audio-start + k/24 s")
     v.add_argument("--audio-start", type=float, default=0.0)
+    h = sp.add_parser("h3"); h.add_argument("--job", required=True); h.add_argument("--prompt-file", type=Path, required=True)
+    h.add_argument("--first", required=True); h.add_argument("--last"); h.add_argument("--width", type=int, default=1536)
+    h.add_argument("--height", type=int, default=640); h.add_argument("--frames", type=int, default=124); h.add_argument("--seed", type=int, default=1)
     q = sp.add_parser("qedit"); q.add_argument("--job", required=True); q.add_argument("--prompt-file", type=Path, required=True)
     q.add_argument("--image", action="append", required=True); q.add_argument("--seed", type=int, default=1); q.add_argument("--steps", type=int, default=8)
     for name in ("wait", "check"):
@@ -300,6 +336,12 @@ def main():
         submit(args.job, g, node, ins, {"kind": "ltx-2.5-distilled-gguf", "prompt": prompt, "first": args.first, "last": args.last,
                                         "w": args.width, "h": args.height, "frames": args.frames, "seed": args.seed,
                                         "guide_strength": args.strength, "audio": args.audio, "audio_start": args.audio_start})
+    elif args.cmd == "h3":
+        prompt = args.prompt_file.read_text().strip()
+        g, node = h3_graph(prompt, args.first, args.last, args.width, args.height, args.frames, args.seed, f"{args.project}/{args.job}")
+        submit(args.job, g, node, [args.first] + ([args.last] if args.last else []),
+               {"kind": "minimax-h3-int8+turbo8", "prompt": prompt, "first": args.first, "last": args.last, "w": args.width,
+                "h": args.height, "frames": args.frames, "seed": args.seed})
     elif args.cmd == "qedit":
         prompt = args.prompt_file.read_text().strip()
         g, node = qedit_graph(prompt, args.image, args.seed, f"{args.project}/{args.job}", args.steps)

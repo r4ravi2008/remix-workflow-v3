@@ -50,6 +50,13 @@ class GraphTests(unittest.TestCase):
         self.assertEqual(graph["21"]["inputs"]["image2"], ["11", 0])
         self.assertEqual(graph[out]["class_type"], "SaveImage")
 
+    def test_h3_graph_matches_recorded_wiring_and_optional_last_frame(self):
+        graph, out = lc.h3_graph("p", "a/f.png", "a/l.png", 1536, 640, 124, 1, "a/job")
+        self.assert_closed(graph)
+        self.assertEqual(graph["13"]["inputs"]["latent_image"], ["8", 1])
+        self.assertEqual(graph["8"]["inputs"]["last_frame"], ["7", 0])
+        self.assertEqual(graph[out]["class_type"], "SaveVideo")
+
     def test_ltx_single_image_guides_first_frame_at_full_strength(self):
         graph, out = lc.ltx_graph("p", "a/x.png", None, 1024, 576, 121, 3, "a/job")
         self.assert_closed(graph)
