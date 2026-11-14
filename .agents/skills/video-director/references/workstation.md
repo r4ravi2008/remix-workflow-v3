@@ -18,7 +18,7 @@ Check the edition before planning the edit (`davinci-resolve` vs `davinci-resolv
 
 If only free Resolve exists, tell the user before assembly and offer:
 
-1. Install and activate Studio on the workstation (the user changes their Nix profile/config and enters their licence; never rebuild their system or handle the key yourself).
+1. Install and activate Studio on the workstation. By default the user changes their Nix profile/config. If they ask you to install it, change only the user profile, never the system config. Build first, then pin the free store path as a GC root, then swap: `NIXPKGS_ALLOW_UNFREE=1 nix build --impure -o studio-result nixpkgs#davinci-resolve-studio` (8.4 GB download, about 10 min), then `nix-store --add-root ./free-resolve-backup --realise <free path>`, `nix profile remove <free entry>`, `nix profile add ./studio-result`. The user still enters their own licence key and enables External scripting: Local; never handle the key.
 2. Keep generation on the workstation and edit in an available Studio on another machine.
 3. Prepare DNxHR media and an interchange timeline for a manual GUI import and render.
 

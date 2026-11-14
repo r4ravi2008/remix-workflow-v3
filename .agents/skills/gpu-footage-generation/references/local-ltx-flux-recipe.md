@@ -38,6 +38,13 @@ Pip wheels assume a generic Linux. On NixOS:
 
 - `qedit --image src.png --image style.png`: Qwen-Image-Edit-2511 from the official 2511 template (AuraFlow shift 3.1, CFGNorm, Lightning 8 steps, CFG 1). It is the closest local equivalent of ChatGPT image editing: in one edit it redraws a source frame's people and builds a new world in a style key's look, about 95 s per image on the 4070 Ti. For Nuvvantene R20 it beat FLUX klein clearly on style and integration, with recognisable leads (structure about 0.45–0.50). FLUX klein img2img stays more literal (0.79) but reads as a filtered photo. Output follows Kontext preferred sizes (for example 1392×752); centre-crop to 16:9 before motion, never resize.
 
+Character reference sheets for a stylized film (Nuvvantene R22, 2026-11-14):
+- Do not ask `qedit` to draw a new portrait "of the person in images 1 and 2". It invents a generic handsome face (ArcFace vs independent original faces 0.11–0.24, against a real-photo baseline of 0.29–0.47).
+- Instead, style-convert one large, frontal original close-up directly: image 1 = the close-up, image 2 = the style key, prompt "redraw image 1 … a style conversion of the same photo, not a new person; change only rendering, background and clothes". That reached 0.284 (hero) and 0.338 (heroine, inside her real baseline) and visually kept face shape, brow and beard. Try 2–3 source close-ups × 2 seeds; the source frame matters more than the seed.
+- Never name an unwanted feature, even to forbid it: "no bindi" put a bindi on every render. Describe the wanted state instead ("plain smooth clear skin from hairline to eyebrows exactly as in the photo"). A follow-up qedit removal pass also works.
+- Gate sheets with ArcFace against *independent* bank faces (not the input faces), then by eye side by side with the source.
+- For scene anchors, image 1 sets the output size, so put the 16:9 style key first and the portrait character refs second and third. Pass only the refs of people in the frame; give empty or hands-only shots no refs and say "no people and no faces", or the model invents people.
+
 Anime characters in a real environment ([composite_characters.py](../scripts/composite_characters.py), tools venv with rembg/BiRefNet):
 1. Generate a photoreal landmark plate matched to the source shot's camera angle and light. Include anything the characters touch (ledge, balustrade).
 2. Segment the people on the original photo (`--mask-from`, `--erode 3` to drop sky fringe) and place the photo cut-out on the plate.
