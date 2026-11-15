@@ -40,3 +40,12 @@ Stage inputs from the Mac with hashes, generate and render on the workstation, t
 ## Mobile review handoff
 
 When the user wants to watch from a phone, place iPhone-playable H.264/AAC files under the project's iCloud workspace (for example `<revision>/review-samples/`), with clear names, a labelled rough preview if no edit exists yet, and rejected stills marked as rejected. Give the iCloud Drive relative path. A workstation-only path or localhost page is not a mobile handoff.
+
+## Scripted Fusion on the workstation (R23, 2026-11-15)
+- Fusion's `Fonts:` path maps to `/usr/share/fonts`, which the NixOS sandbox lacks, so Text+ only sees 5 built-in fonts and renders fail with "Could not find font". Copy fonts to `~/.fonts` and run `fu.SetPrefs("Global.Paths.Map.Fonts:", "/home/aira/.fonts/;/usr/share/fonts/")` once (check with `fu.FontManager.GetFontList()`).
+- Render paths must be inside a Media Storage location (here `~/Videos`). Otherwise a modal "Render Path Inaccessible" appears and every later API call silently returns `None`.
+- Clip comps added with `TimelineItem.AddFusionComp()` and edited by script are skipped by the Deliver render and the viewer here. Render each comp through a Fusion `Saver` with `comp.Render({"Start":0,"End":n-1,"Wait":True})`, then assemble frames plus the song with ffmpeg.
+- Each `comp.Render()` leaves a stacked "Render completed" pop-up that blocks project-level calls. Press OK on all of them with `xdotool` (closing the window via Hyprland does not dismiss them). Delete old timelines whose comps hold Savers writing to the same folder.
+- Mask inputs don't connect by attribute assignment: use `merge.ConnectInput("EffectMask", bitmapMask)` and verify with `merge.EffectMask.GetConnectedOutput()`. Set `BitmapMask.Channel = "Luminance"` for grayscale mattes (the default alpha is all opaque).
+- Text+ write-on inputs are `Start`/`End` (0–1). Point inputs: `tool.SetInput("Center", {1: x, 2: y})`; moving layers via `tool.Center.SetExpression("Point(...time...)")`.
+- SAM 2 (`sam2.1_hiera_large`) in ComfyUI's venv via `uv pip --target`; seed from rembg isnet-anime masks, falling back to a face-derived box prompt when rembg misses a dim figure. Drop specks under 0.3% of the frame.
